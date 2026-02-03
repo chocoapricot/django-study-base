@@ -1,6 +1,7 @@
 {% extends 'common/_base.html' %}
 {% load badge_tags %}
 {% load parameters %}
+{% load favorite_tags %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
@@ -10,7 +11,7 @@
         <!-- スタッフ -->
         <div class="row mb-3 align-items-center">
             <div class="col-sm-2 text-start text-sm-end"><strong>スタッフ</strong></div>
-            <div class="col-sm-10">{{ timerecord.staff }}</div>
+            <div class="col-sm-10">{{ timerecord.staff }}{% favorite_star timerecord.staff %}</div>
         </div>
 
         <!-- 契約 -->
@@ -18,7 +19,7 @@
             <div class="col-sm-2 text-start text-sm-end"><strong>契約</strong></div>
             <div class="col-sm-10">
                 {% if timerecord.staff_contract %}
-                    {{ timerecord.staff_contract.contract_name }} 
+                    {{ timerecord.staff_contract.contract_name }}{% favorite_star timerecord.staff_contract.client %}
                     ({{ timerecord.staff_contract.start_date|date:"Y/m/d" }}〜{% if timerecord.staff_contract.end_date %}{{ timerecord.staff_contract.end_date|date:"Y/m/d" }}{% else %}継続中{% endif %})
                 {% else %}
                     <span class="text-muted">契約情報なし</span>

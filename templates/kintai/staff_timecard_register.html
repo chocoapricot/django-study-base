@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load help_tags %}
+{% load favorite_tags %}
 
 {% block title %}タイムカード登録{% endblock %}
 
@@ -39,7 +40,7 @@
                     <strong>スタッフ</strong>
                 </div>
                 <div class="col-sm">
-                    {{ staff.name_last }} {{ staff.name_first }} ({{ staff.employee_no|default:"社員番号未設定" }})
+                    {{ staff.name_last }} {{ staff.name_first }}{% favorite_star staff %} ({{ staff.employee_no|default:"社員番号未設定" }})
                 </div>
             </div>
         </div>
@@ -60,7 +61,7 @@
                 <tbody>
                     {% for data in contract_list %}
                     <tr>
-                        <td>{{ data.contract.contract_name }}</td>
+                        <td>{{ data.contract.contract_name }}{% favorite_star data.contract.client %}</td>
                         <td>
                             {{ data.contract.start_date|date:'Y/m/d' }}
                             ～

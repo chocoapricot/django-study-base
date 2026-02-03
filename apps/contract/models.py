@@ -501,6 +501,14 @@ class StaffContract(MyTenantModel):
         return f"{self.staff.name_last} {self.staff.name_first} - {self.contract_name} ({self.contract_period_display})"
 
     @property
+    def client(self):
+        """最新のアサインメントからクライアントを取得"""
+        assignment = self.contractassignment_set.order_by('-assignment_start_date').first()
+        if assignment:
+            return assignment.client_contract.client
+        return None
+
+    @property
     def contract_period_display(self):
         """表示用の契約期間文字列を返す"""
         start_str = self.start_date.strftime('%Y/%m/%d')

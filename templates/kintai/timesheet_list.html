@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load badge_tags %}
+{% load favorite_tags %}
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
@@ -41,7 +42,7 @@
                 <tbody>
                     {% for timesheet in timesheets %}
                     <tr>
-                        <td>{{ timesheet.staff }}</td>
+                        <td>{{ timesheet.staff }}{% favorite_star timesheet.staff %}</td>
                         <td>{{ timesheet.staff_contract.contract_period_display }}</td>
                         <td><a href="{% url 'kintai:timesheet_detail' timesheet.pk %}">{{ timesheet.target_month|date:"Y年m月" }}</a></td>
                         <td class="text-end">{{ timesheet.total_work_days }}日</td>
