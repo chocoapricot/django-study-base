@@ -3,90 +3,138 @@
 {% load badge_tags %}
 
 {% block content %}
-<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header">
-        通知詳細
-    </div>
-    <div class="card-body">
-        <!-- 通知ステータス -->
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-sm-end">
-                <strong>状態</strong>
+<div class="row mt-2">
+    <!-- 左側：通知詳細 -->
+    <div class="col-md-8">
+        <div class="content-box card bg-light mb-4">
+            <div class="card-header">
+                通知詳細
             </div>
-            <div class="col-sm">
-                {% if notification.is_read %}
-                    <span class="badge bg-secondary">既読</span>
-                {% else %}
-                    <span class="badge bg-warning text-dark">未読</span>
+            <div class="card-body">
+                <!-- 通知ステータス -->
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-3 text-start text-sm-end">
+                        <strong>状態</strong>
+                    </div>
+                    <div class="col-sm">
+                        {% if notification.is_read %}
+                            <span class="badge bg-secondary">既読</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">未読</span>
+                        {% endif %}
+
+                        <span class="badge {{ notification.notification_type|notification_type_badge_class }} ms-2">
+                            {{ notification.notification_type_display_name }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- タイトル -->
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-3 text-start text-sm-end">
+                        <strong>タイトル</strong>
+                    </div>
+                    <div class="col-sm">
+                        <h5 class="mb-0">{{ notification.title }}</h5>
+                    </div>
+                </div>
+
+                <!-- メッセージ -->
+                <div class="row mb-3 align-items-top">
+                    <div class="col-sm-3 text-start text-sm-end">
+                        <strong>メッセージ</strong>
+                    </div>
+                    <div class="col-sm">
+                        <div class="text-break">
+                            {{ notification.message|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- リンクURL -->
+                {% if notification.link_url %}
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-3 text-start text-sm-end">
+                        <strong>関連リンク</strong>
+                    </div>
+                    <div class="col-sm">
+                        <a href="{{ notification.link_url }}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-box-arrow-up-right me-1"></i>詳細を確認
+                        </a>
+                    </div>
+                </div>
                 {% endif %}
-                
-                <span class="badge {{ notification.notification_type|notification_type_badge_class }} ms-2">
-                    {{ notification.notification_type_display_name }}
-                </span>
-            </div>
-        </div>
 
-        <!-- タイトル -->
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-sm-end">
-                <strong>タイトル</strong>
-            </div>
-            <div class="col-sm">
-                <h5 class="mb-0">{{ notification.title }}</h5>
-            </div>
-        </div>
+                <!-- 作成日時 -->
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-3 text-start text-sm-end">
+                        <strong>作成日時</strong>
+                    </div>
+                    <div class="col-sm">
+                        <i class="bi bi-clock me-1"></i>
+                        {{ notification.created_at|date:"Y/m/d H:i:s" }}
+                    </div>
+                </div>
 
-        <!-- メッセージ -->
-        <div class="row mb-3 align-items-top">
-            <div class="col-sm-2 text-start text-sm-end">
-                <strong>メッセージ</strong>
-            </div>
-            <div class="col-sm">
-                <div>
-                    {{ notification.message|linebreaks }}
+                <!-- 既読日時 -->
+                {% if notification.is_read and notification.read_at %}
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-3 text-start text-sm-end">
+                        <strong>既読日時</strong>
+                    </div>
+                    <div class="col-sm">
+                        <i class="bi bi-check2 me-1"></i>
+                        {{ notification.read_at|date:"Y/m/d H:i:s" }}
+                    </div>
+                </div>
+                {% endif %}
+                <div class="mt-4 border-top pt-3">
+                    <a href="{% url 'system_notifications:notification_list' %}" class="btn btn-sm btn-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>一覧に戻る
+                    </a>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- リンクURL -->
-        {% if notification.link_url %}
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-sm-end">
-                <strong>関連リンク</strong>
+    <!-- 右側：通知一覧 -->
+    <div class="col-md-4">
+        <div class="content-box card bg-light mb-4">
+            <div class="card-header">
+                最近の通知
             </div>
-            <div class="col-sm">
-                <a href="{{ notification.link_url }}" class="btn btn-sm btn-outline-primary">
-                    <i class="bi bi-box-arrow-up-right me-1"></i>詳細を確認
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for item in recent_notifications %}
+                        <a href="{% url 'system_notifications:notification_detail' item.pk %}"
+                           class="list-group-item list-group-item-action {% if item.pk == notification.pk %}active{% endif %}">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1 text-truncate {% if item.pk == notification.pk %}text-white{% endif %}" style="max-width: 75%;">
+                                    {{ item.title }}
+                                </h6>
+                                <small class="{% if item.pk == notification.pk %}text-white{% else %}text-muted{% endif %}">
+                                    {{ item.created_at|date:"m/d" }}
+                                </small>
+                            </div>
+                            <div class="d-flex align-items-center mt-1">
+                                <span class="badge {{ item.notification_type|notification_type_badge_class }} me-2" style="font-size: 0.7rem;">
+                                    {{ item.notification_type_display_name }}
+                                </span>
+                                {% if not item.is_read %}
+                                    <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">未読</span>
+                                {% endif %}
+                            </div>
+                        </a>
+                    {% empty %}
+                        <div class="p-3 text-center text-muted">通知はありません</div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card-footer text-center bg-white border-top-0">
+                <a href="{% url 'system_notifications:notification_list' %}" class="small">
+                    <i class="bi bi-list me-1"></i>すべて見る
                 </a>
             </div>
-        </div>
-        {% endif %}
-
-        <!-- 作成日時 -->
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-sm-end">
-                <strong>作成日時</strong>
-            </div>
-            <div class="col-sm">
-                <i class="bi bi-clock me-1"></i>
-                {{ notification.created_at|date:"Y/m/d H:i:s" }}
-            </div>
-        </div>
-
-        <!-- 既読日時 -->
-        {% if notification.is_read and notification.read_at %}
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-sm-end">
-                <strong>既読日時</strong>
-            </div>
-            <div class="col-sm">
-                <i class="bi bi-check2 me-1"></i>
-                {{ notification.read_at|date:"Y/m/d H:i:s" }}
-            </div>
-        </div>
-        {% endif %}
-        <div class="mt-4">
-            <a href="{% url 'system_notifications:notification_list' %}" class="btn btn-sm btn-secondary">戻る</a>
         </div>
     </div>
 </div>

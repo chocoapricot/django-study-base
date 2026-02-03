@@ -41,8 +41,12 @@ def notification_detail(request, pk):
     if not notification.is_read:
         notification.mark_as_read()
     
+    # 最近の通知一覧（サイドバー用）
+    recent_notifications = Notification.objects.filter(user=request.user).order_by('-created_at')[:10]
+
     context = {
         'notification': notification,
+        'recent_notifications': recent_notifications,
     }
     
     return render(request, 'system/notifications/notification_detail.html', context)
