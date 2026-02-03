@@ -1,5 +1,5 @@
 {% extends 'common/_base.html' %}
-{% load help_tags %}
+{% load help_tags staff_tags %}
 {% load favorite_tags %}
 
 {% block extra_css %}
@@ -36,7 +36,7 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <div>
             スタッフ別日次勤怠カレンダー入力
-            <span class="text-muted">- {{ staff.name }}{% favorite_star staff %} ({{ target_date|date:"Y年m月" }})</span>
+            <span class="text-muted">- {{ staff.name }}{% favorite_star staff %}{% staff_status_markers staff %} ({{ target_date|date:"Y年m月" }})</span>
         </div>
         <div>
             <button type="button" class="btn btn-sm btn-info" id="fill-all-btn">契約通り</button>

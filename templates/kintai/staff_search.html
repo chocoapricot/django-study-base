@@ -1,5 +1,5 @@
 {% extends 'common/_base.html' %}
-{% load favorite_tags %}
+{% load favorite_tags staff_tags %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
@@ -33,7 +33,7 @@
                             {{ item.staff.employee_no|default:"-" }}
                         </td>
                         <td>
-                            {{ item.staff.name }}{% favorite_star item.staff %}
+                            {{ item.staff.name }}{% favorite_star item.staff %}{% staff_status_markers item.staff %}
                         </td>
                         <td class="text-end">
                             {{ item.contract_count }}件

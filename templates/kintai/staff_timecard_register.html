@@ -1,5 +1,5 @@
 {% extends 'common/_base.html' %}
-{% load help_tags %}
+{% load help_tags staff_tags %}
 {% load favorite_tags %}
 
 {% block title %}タイムカード登録{% endblock %}
@@ -40,7 +40,7 @@
                     <strong>スタッフ</strong>
                 </div>
                 <div class="col-sm">
-                    {{ staff.name_last }} {{ staff.name_first }}{% favorite_star staff %} ({{ staff.employee_no|default:"社員番号未設定" }})
+                    {{ staff.name_last }} {{ staff.name_first }}{% favorite_star staff %}{% staff_status_markers staff %} ({{ staff.employee_no|default:"社員番号未設定" }})
                 </div>
             </div>
         </div>

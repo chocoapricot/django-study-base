@@ -14,7 +14,9 @@ from apps.common.constants import Constants
 @permission_required('kintai.view_stafftimesheet', raise_exception=True)
 def timesheet_list(request):
     """月次勤怠一覧"""
-    timesheets = StaffTimesheet.objects.select_related('staff', 'staff_contract').all()
+    timesheets = StaffTimesheet.objects.select_related(
+        'staff', 'staff__international', 'staff__disability', 'staff_contract'
+    ).all()
     context = {
         'timesheets': timesheets,
     }
@@ -55,7 +57,9 @@ def contract_search(request):
     # 検索対象の契約を取得
     # 契約期間が指定月と重なるものを抽出
     # start_date <= month_end AND (end_date >= month_start OR end_date IS NULL)
-    contracts = StaffContract.objects.select_related('staff').filter(
+    contracts = StaffContract.objects.select_related(
+        'staff', 'staff__international', 'staff__disability'
+    ).filter(
         start_date__lte=month_end
     ).filter(
         Q(end_date__gte=target_date) | Q(end_date__isnull=True)
@@ -161,7 +165,9 @@ def staff_search(request):
 
     # 指定月に有効な契約を持つスタッフを取得
     # 契約期間が指定月と重なるスタッフを抽出
-    staff_with_contracts = Staff.objects.filter(
+    staff_with_contracts = Staff.objects.select_related(
+        'international', 'disability'
+    ).filter(
         contracts__start_date__lte=month_end
     ).filter(
         Q(contracts__end_date__gte=target_date) | Q(contracts__end_date__isnull=True)
@@ -217,7 +223,7 @@ def staff_timecard_calendar(request, staff_pk, target_month):
     from django.db.models import Q
     from django.core.exceptions import ValidationError
     
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(Staff.objects.select_related('international', 'disability'), pk=staff_pk)
     try:
         year, month = map(int, target_month.split('-'))
         target_date = date(year, month, 1)
@@ -472,7 +478,9 @@ def timesheet_detail(request, pk):
     """月次勤怠詳細"""
     import jpholiday
     
-    timesheet = get_object_or_404(StaffTimesheet.objects.select_related('staff', 'staff_contract'), pk=pk)
+    timesheet = get_object_or_404(StaffTimesheet.objects.select_related(
+        'staff', 'staff__international', 'staff__disability', 'staff_contract'
+    ), pk=pk)
     timecards = timesheet.timecards.all().order_by('work_date')
     
     # 各timecardに曜日情報と祝日情報を追加
@@ -527,7 +535,9 @@ def timesheet_preview(request, contract_pk, target_month):
     from datetime import datetime, date
     from apps.contract.models import StaffContract
     
-    contract = get_object_or_404(StaffContract, pk=contract_pk)
+    contract = get_object_or_404(StaffContract.objects.select_related(
+        'staff', 'staff__international', 'staff__disability'
+    ), pk=contract_pk)
     try:
         year, month = map(int, target_month.split('-'))
         target_date = date(year, month, 1)
@@ -1558,7 +1568,7 @@ def staff_timecard_register(request):
     
     # ログインユーザーに紐づくスタッフを取得
     try:
-        staff = Staff.objects.get(email=request.user.email)
+        staff = Staff.objects.select_related('international', 'disability').get(email=request.user.email)
     except Staff.DoesNotExist:
         messages.error(request, 'スタッフ情報が見つかりません。管理者にお問い合わせください。')
         return redirect('/')
@@ -1654,7 +1664,7 @@ def staff_timecard_register_detail(request, contract_pk, target_month):
     
     # ログインユーザーに紐づくスタッフを取得
     try:
-        staff = Staff.objects.get(email=request.user.email)
+        staff = Staff.objects.select_related('international', 'disability').get(email=request.user.email)
     except Staff.DoesNotExist:
         messages.error(request, 'スタッフ情報が見つかりません。管理者にお問い合わせください。')
         return redirect('/')
