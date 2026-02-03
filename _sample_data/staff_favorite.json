@@ -1,0 +1,16 @@
+[
+{
+    "model": "staff.stafffavorite",
+    "pk": 1,
+    "fields": {
+        "version": 1770127045370398,
+        "created_at": "2026-02-03T14:13:12.022Z",
+        "created_by": 1,
+        "updated_at": "2026-02-03T14:13:12.022Z",
+        "updated_by": 1,
+        "tenant_id": 1,
+        "staff": 10,
+        "user": 1
+    }
+}
+]

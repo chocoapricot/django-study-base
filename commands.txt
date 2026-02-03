@@ -66,12 +66,14 @@ python _scripts/load_sample_data.py
 python manage.py export_group_permissions --output _sample_data/group_permissions.json
 python manage.py dumpdata settings.dropdowns    --format=json --indent=4 > _sample_data/dropdowns.json
 python manage.py dumpdata settings.menu         --format=json --indent=4 > _sample_data/menus.json
-python manage.py dumpdata settings.parameter   --format=json --indent=4 > _sample_data/parameters.json
+python manage.py dumpdata settings.parameter    --format=json --indent=4 > _sample_data/parameters.json
 python manage.py dumpdata staff                 --format=json --indent=4 > _sample_data/staff.json
 python manage.py dumpdata staff.staffevaluation --format=json --indent=4 > _sample_data/staff_evaluation.json
+python manage.py dumpdata staff.stafffavorite   --format=json --indent=4 > _sample_data/staff_favorite.json
 python manage.py dumpdata client.client         --format=json --indent=4 > _sample_data/client.json
 python manage.py dumpdata client.clientdepartment      --format=json --indent=4 > _sample_data/client_department.json
 python manage.py dumpdata client.clientuser            --format=json --indent=4 > _sample_data/client_user.json
+
 python manage.py dumpdata company.company              --format=json --indent=4 > _sample_data/company.json
 python manage.py dumpdata company.companydepartment    --format=json --indent=4 > _sample_data/company_department.json
 python manage.py dumpdata company.companyuser          --format=json --indent=4 > _sample_data/company_user.json
