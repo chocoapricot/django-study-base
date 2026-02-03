@@ -59,6 +59,14 @@ def contact_schedule_summary(request):
         staff_count = StaffContactSchedule.objects.filter(contact_date=current_date).count() if has_staff_perm else 0
         client_count = ClientContactSchedule.objects.filter(contact_date=current_date).count() if has_client_perm else 0
         
+        is_holiday = jpholiday.is_holiday(current_date)
+        holiday_name = None
+        if is_holiday:
+            try:
+                holiday_name = jpholiday.is_holiday_name(current_date)
+            except Exception:
+                pass
+
         daily_schedules.append({
             'date': current_date,
             'day_of_week': jp_weeks[current_date.weekday()],
@@ -66,7 +74,8 @@ def contact_schedule_summary(request):
             'client_count': client_count,
             'is_today': current_date == today,
             'is_yesterday': current_date == yesterday,
-            'is_holiday': jpholiday.is_holiday(current_date),
+            'is_holiday': is_holiday,
+            'holiday_name': holiday_name,
             'weekday_num': current_date.weekday(), # 5:土, 6:日
         })
     
@@ -94,6 +103,10 @@ def contact_schedule_summary(request):
             s.day_of_week = jp_weeks[s.contact_date.weekday()]
             s.weekday_num = s.contact_date.weekday()
             s.is_holiday = jpholiday.is_holiday(s.contact_date)
+            try:
+                s.holiday_name = jpholiday.is_holiday_name(s.contact_date)
+            except Exception:
+                s.holiday_name = None
 
     client_schedules = []
     if has_client_perm:
@@ -104,6 +117,10 @@ def contact_schedule_summary(request):
             s.day_of_week = jp_weeks[s.contact_date.weekday()]
             s.weekday_num = s.contact_date.weekday()
             s.is_holiday = jpholiday.is_holiday(s.contact_date)
+            try:
+                s.holiday_name = jpholiday.is_holiday_name(s.contact_date)
+            except Exception:
+                s.holiday_name = None
 
     # 1ヶ月以内の全予定数
     total_scheduled_count = StaffContactSchedule.objects.filter(

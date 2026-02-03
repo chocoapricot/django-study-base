@@ -1,6 +1,7 @@
 {% extends 'common/_base.html' %}
 {% load badge_tags %}
 {% load dropdowns %}
+{% load help_tags %}
 
 {% block content %}
 <style>
@@ -47,6 +48,9 @@
                             <div class="small">{{ day.date|date:'m/d' }}</div>
                             <div class="{% if day.is_holiday or day.weekday_num == 6 %}text-sunday-holiday{% elif day.weekday_num == 5 %}text-saturday{% endif %}">
                                 ({{ day.day_of_week }})
+                                {% if day.is_holiday and day.holiday_name %}
+                                    {% my_help_icon day.holiday_name %}
+                                {% endif %}
                             </div>
                             {% if day.is_today %}
                                 <span class="badge bg-primary">本日</span>
@@ -164,6 +168,9 @@
                         <tr class="{% if schedule.contact_date < yesterday %}table-danger{% elif schedule.contact_date == today or schedule.contact_date == yesterday %}table-warning{% endif %}">
                             <td class="{% if schedule.is_holiday or schedule.weekday_num == 6 %}text-sunday-holiday{% elif schedule.weekday_num == 5 %}text-saturday{% endif %}">
                                 {{ schedule.contact_date|date:'Y/m/d' }}({{ schedule.day_of_week }})
+                                {% if schedule.is_holiday and schedule.holiday_name %}
+                                    {% my_help_icon schedule.holiday_name %}
+                                {% endif %}
                                 {% if schedule.contact_date < yesterday %}
                                     <span class="badge bg-danger ms-1" style="font-size: 0.6rem;">昨日より前</span>
                                 {% elif schedule.contact_date == today %}
@@ -216,6 +223,9 @@
                         <tr class="{% if schedule.contact_date < yesterday %}table-danger{% elif schedule.contact_date == today or schedule.contact_date == yesterday %}table-warning{% endif %}">
                             <td class="{% if schedule.is_holiday or schedule.weekday_num == 6 %}text-sunday-holiday{% elif schedule.weekday_num == 5 %}text-saturday{% endif %}">
                                 {{ schedule.contact_date|date:'Y/m/d' }}({{ schedule.day_of_week }})
+                                {% if schedule.is_holiday and schedule.holiday_name %}
+                                    {% my_help_icon schedule.holiday_name %}
+                                {% endif %}
                                 {% if schedule.contact_date < yesterday %}
                                     <span class="badge bg-danger ms-1" style="font-size: 0.6rem;">昨日より前</span>
                                 {% elif schedule.contact_date == today %}
