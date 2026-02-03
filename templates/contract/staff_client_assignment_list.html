@@ -3,6 +3,7 @@
 {% load humanize %}
 {% load dropdowns %}
 {% load badge_tags %}
+{% load favorite_tags %}
 
 {% block title %}クライアント割当一覧{% endblock %}
 
@@ -42,6 +43,7 @@
                                 <a href="{% url 'contract:client_contract_detail' contract.pk %}">
                                     {{ contract.client.name }}
                                 </a>
+                                {% favorite_star contract.client size='1rem' as_link=True %}
                             </td>
                             <td>{{ contract.contract_name }}</td>
                             <td>

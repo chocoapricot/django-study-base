@@ -63,6 +63,7 @@
                     <td>
                         {% if item.client_name %}
                             {{ item.client_name }}
+                            {% favorite_star item.client size='1rem' as_link=True %}
                         {% else %}
                             {{ item.client_corporate_number }}
                         {% endif %}

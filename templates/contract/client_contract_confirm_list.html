@@ -3,6 +3,7 @@
 {% load humanize %}
 {% load dropdowns %}
 {% load badge_tags %}
+{% load favorite_tags %}
 
 {% block title %}クライアント契約確認{% endblock %}
 
@@ -31,7 +32,10 @@
                 {% for item in contracts_with_status %}
                 <tr>
                     <td>{{ item.contract.contract_name }}</td>
-                    <td>{{ item.contract.client.name }}</td>
+                    <td>
+                        {{ item.contract.client.name }}
+                        {% favorite_star item.contract.client size='1rem' as_link=True %}
+                    </td>
                     <td>
                         <span class="badge {{item.contract.client_contract_type_code|badge_class}}">
                             {% my_name 'client_contract_type' item.contract.client_contract_type_code %}
