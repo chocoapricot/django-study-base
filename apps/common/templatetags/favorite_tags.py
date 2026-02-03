@@ -56,5 +56,5 @@ def favorite_star(context, obj, size='0.9rem', as_link=False):
                 url, size
             )
         else:
-            return format_html('<i class="bi bi-star-fill text-warning ms-1" style="font-size: {};"></i>', size)
+            return format_html('<i class="bi bi-star-fill text-warning ms-1" style="font-size: {};" data-bs-toggle="tooltip" data-bs-placement="top" title="お気に入り"></i>', size)
     return ''
