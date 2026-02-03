@@ -1,4 +1,4 @@
-{% load favorite_tags %}
+{% load favorite_tags staff_tags %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">
         月次勤怠詳細
@@ -8,7 +8,7 @@
             <div class="col-md-6">
                 <h6 class="text-muted mb-3">基本情報</h6>
                 <table class="table table-sm">
-                    <tr><th style="width: 40%;">スタッフ</th><td><a href="{% url 'staff:staff_detail' timesheet.staff.pk %}">{{ timesheet.staff }}</a>{% favorite_star timesheet.staff %}</td></tr>
+                    <tr><th style="width: 40%;">スタッフ</th><td><a href="{% url 'staff:staff_detail' timesheet.staff.pk %}">{{ timesheet.staff }}</a>{% favorite_star timesheet.staff %}{% staff_status_markers timesheet.staff %}</td></tr>
                     <tr><th>スタッフ契約</th><td><a href="{% url 'contract:staff_contract_detail' timesheet.staff_contract.pk %}">{{ timesheet.staff_contract }}</a>{% favorite_star timesheet.staff_contract.client %}</td></tr>
                     <tr><th>契約期間</th><td>{{ timesheet.staff_contract.contract_period_display }}</td></tr>
                     <tr>

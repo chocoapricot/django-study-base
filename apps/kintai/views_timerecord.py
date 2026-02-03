@@ -22,7 +22,7 @@ def timerecord_list(request):
     # スタッフ特定（メールアドレス連携）
     staff = None
     if request.user.email:
-        staff = Staff.objects.filter(email=request.user.email).first()
+        staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
 
     # スタッフユーザーの場合は自分の打刻のみ表示
     if staff:
@@ -48,7 +48,9 @@ def timerecord_list(request):
         timerecords = timerecords.filter(work_date__lte=date_to)
     
     # ページネーション
-    timerecords = timerecords.select_related('staff').order_by('-work_date', '-created_at')
+    timerecords = timerecords.select_related(
+        'staff', 'staff__international', 'staff__disability'
+    ).order_by('-work_date', '-created_at')
     paginator = Paginator(timerecords, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -91,12 +93,15 @@ def timerecord_create(request):
 @permission_required('kintai.view_stafftimerecord', raise_exception=True)
 def timerecord_detail(request, pk):
     """勤怠打刻詳細"""
-    timerecord = get_object_or_404(StaffTimerecord, pk=pk)
+    timerecord = get_object_or_404(
+        StaffTimerecord.objects.select_related('staff', 'staff__international', 'staff__disability'),
+        pk=pk
+    )
     
     # スタッフ特定
     staff = None
     if request.user.email:
-        staff = Staff.objects.filter(email=request.user.email).first()
+        staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
 
     # スタッフユーザーの場合は自分の打刻のみ表示
     if staff and timerecord.staff != staff:
@@ -123,7 +128,7 @@ def timerecord_update(request, pk):
     # スタッフ特定
     staff = None
     if request.user.email:
-        staff = Staff.objects.filter(email=request.user.email).first()
+        staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
 
     # スタッフユーザーの場合は自分の打刻のみ編集可能
     if staff and timerecord.staff != staff:
@@ -156,7 +161,7 @@ def timerecord_delete(request, pk):
     # スタッフ特定
     staff = None
     if request.user.email:
-        staff = Staff.objects.filter(email=request.user.email).first()
+        staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
 
     # スタッフユーザーの場合は自分の打刻のみ削除可能
     if staff and timerecord.staff != staff:
@@ -184,7 +189,7 @@ def timerecord_break_create(request, timerecord_pk):
     # スタッフ特定
     staff = None
     if request.user.email:
-        staff = Staff.objects.filter(email=request.user.email).first()
+        staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
 
     # スタッフユーザーの場合は自分の打刻のみ編集可能
     if staff and timerecord.staff != staff:
@@ -220,7 +225,7 @@ def timerecord_break_update(request, pk):
     # スタッフ特定
     staff = None
     if request.user.email:
-        staff = Staff.objects.filter(email=request.user.email).first()
+        staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
 
     # スタッフユーザーの場合は自分の打刻のみ編集可能
     if staff and timerecord.staff != staff:
@@ -255,7 +260,7 @@ def timerecord_break_delete(request, pk):
     # スタッフ特定
     staff = None
     if request.user.email:
-        staff = Staff.objects.filter(email=request.user.email).first()
+        staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
 
     # スタッフユーザーの場合は自分の打刻のみ編集可能
     if staff and timerecord.staff != staff:
@@ -282,7 +287,7 @@ def timerecord_punch(request):
     # スタッフ特定
     staff = None
     if request.user.email:
-        staff = Staff.objects.filter(email=request.user.email).first()
+        staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
     
     if not staff:
         messages.error(request, 'スタッフ情報が見つかりません。')
@@ -414,7 +419,7 @@ def timerecord_action(request):
     today = now_jst.date()
     
     # スタッフ特定
-    staff = Staff.objects.filter(email=request.user.email).first()
+    staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
     if not staff:
         messages.error(request, 'スタッフ情報が見つかりません。')
         return redirect('/')

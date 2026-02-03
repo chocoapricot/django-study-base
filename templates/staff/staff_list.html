@@ -1,7 +1,7 @@
 {% extends 'common/_base.html' %}
 {% load dropdowns %}
 {% load badge_tags %}
-{% load favorite_tags %}
+{% load favorite_tags staff_tags %}
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
@@ -252,12 +252,7 @@
                             {{ staff.name_last }} {{ staff.name_first }}
                         </a>
                         {% favorite_star staff %}
-                        {% if staff.has_international_info %}
-                            <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
-                        {% endif %}
-                        {% if staff.has_disability_info %}
-                            <i class="bi bi-heart" style="color:#17a2b8;" title="障害者"></i>
-                        {% endif %}
+                        {% staff_status_markers staff %}
                         <div class="mt-0">
                             {% for tag in staff.tags.all %}
                                 <span class="badge rounded-pill {{ tag.display_order|badge_class }}" style="font-size: 10px;">
