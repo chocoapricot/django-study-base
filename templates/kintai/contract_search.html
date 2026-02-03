@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load badge_tags %}
+{% load favorite_tags %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
@@ -52,7 +53,7 @@
                             {{ item.contract.staff.employee_no|default:"-" }}
                         </td>
                         <td>
-                            {{ item.contract.staff.name }}
+                            {{ item.contract.staff.name }}{% favorite_star item.contract.staff %}
                         </td>
                         <td>
                             {% if item.contract.employment_type %}

@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load help_tags %}
+{% load favorite_tags %}
 
 {% block extra_css %}
 <style>
@@ -37,7 +38,7 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <div>
             日次勤怠カレンダー入力
-            <span class="text-muted">- {{ timesheet.staff }} ({{ timesheet.target_month|date:"Y年m月" }})</span>
+            <span class="text-muted">- {{ timesheet.staff }}{% favorite_star timesheet.staff %} ({{ timesheet.target_month|date:"Y年m月" }})</span>
         </div>
         <div>
             <button type="button" class="btn btn-sm btn-info" id="fill-all-btn">契約通り</button>

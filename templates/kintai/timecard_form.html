@@ -1,12 +1,13 @@
 {% extends 'common/_base.html' %}
 {% load help_tags %}
+{% load favorite_tags %}
 {% block content %}
 {% include 'kintai/_timesheet_summary_card.html' with timesheet=timesheet %}
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">
         {% if timecard %}日次勤怠編集{% else %}日次勤怠作成{% endif %}
-        <span class="text-muted">- {{ timesheet.staff }} ({{ timesheet.year }}年{{ timesheet.month }}月)</span>
+        <span class="text-muted">- {{ timesheet.staff }}{% favorite_star timesheet.staff %} ({{ timesheet.year }}年{{ timesheet.month }}月)</span>
     </div>
     <div class="card-body">
         <form method="post">

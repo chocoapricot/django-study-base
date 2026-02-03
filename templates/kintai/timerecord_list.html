@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load badge_tags %}
+{% load favorite_tags %}
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
@@ -50,7 +51,7 @@
                 <tbody>
                     {% for timerecord in page_obj %}
                     <tr>
-                        <td>{{ timerecord.staff }}</td>
+                        <td>{{ timerecord.staff }}{% favorite_star timerecord.staff %}</td>
                         <td>
                             <a href="{% url 'kintai:timerecord_detail' timerecord.pk %}">
                                 {{ timerecord.work_date|date:"Y/m/d" }}
