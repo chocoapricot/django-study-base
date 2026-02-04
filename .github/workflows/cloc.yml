@@ -1,0 +1,22 @@
+name: Django Project LOC
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  cloc:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install cloc
+        run: sudo apt-get update && sudo apt-get install -y cloc
+
+      - name: Count LOC (Django optimized)
+        run: |
+          cloc . \
+            --exclude-dir=.git,venv,.venv,node_modules,__pycache__,staticfiles,migrations,media,.pytest_cache
