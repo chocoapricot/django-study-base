@@ -75,7 +75,9 @@ class MyTenantModel(MyModel):
             if not self.tenant_id:
                 import sys
                 if 'test' in sys.argv or 'pytest' in sys.modules:
-                    self.tenant_id = 1
+                    # Companyモデルの場合は自身のPKをtenant_idにする特殊な動きがあるため、ここでは設定しない
+                    if self.__class__.__name__ != 'Company':
+                        self.tenant_id = 1
 
         super().save(*args, **kwargs)
 
