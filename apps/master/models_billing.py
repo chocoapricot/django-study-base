@@ -249,6 +249,7 @@ class Bank(MyTenantModel):
     """
     銀行情報を管理するマスターデータモデル。
     """
+    objects = models.Manager()
 
     name = models.CharField('銀行名', max_length=100)
     bank_code = models.CharField('銀行コード', max_length=4, unique=True, help_text='4桁の数字で入力')
@@ -307,6 +308,7 @@ class BankBranch(MyTenantModel):
     銀行の支店情報を管理するマスターデータモデル。
     Bankモデルと連携する。
     """
+    objects = models.Manager()
 
     bank = models.ForeignKey(
         Bank,
