@@ -34,6 +34,7 @@
             width: 100%;
             height: 70px;
             background-color: {% user_parameter 'MAIN_HEADER_COLOR' '#ffffff' %};
+            color: {% user_parameter 'MAIN_HEADER_TEXT_COLOR' '#000000' %};
             border-bottom: 1px solid #e0e0e0;
             border-top: 1px solid #e0e0e0;
             display: flex;
@@ -48,7 +49,7 @@
     background-color: {% user_parameter 'MAIN_HEADER_COLOR' '#f0f0f0' %}; /* 初期状態の背景色 */
     border: none; /* ボーダーを削除 */
     border-radius: 10px;
-    color: #000;
+    color: {% user_parameter 'MAIN_HEADER_TEXT_COLOR' '#000000' %};
     padding: 8px; /* ボタン内の余白を最小限に */
     width: 40px; /* 明示的にボタンの幅を指定 */
     height: 40px; /* 明示的にボタンの高さを指定 */
@@ -106,7 +107,7 @@
             background-color: {% user_parameter 'MAIN_HEADER_COLOR' '#f0f0f0' %};
             padding: 8px;
             border-radius: 10px;
-            color: #000;
+            color: {% user_parameter 'MAIN_HEADER_TEXT_COLOR' '#000000' %};
             width: 40px;
             height: 40px;
             display: flex;
