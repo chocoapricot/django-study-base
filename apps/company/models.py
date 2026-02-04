@@ -21,8 +21,6 @@ class CompanyDepartment(MyTenantModel):
     valid_from = models.DateField('有効期限開始日', blank=True, null=True, help_text='未入力の場合は無期限')
     valid_to = models.DateField('有効期限終了日', blank=True, null=True, help_text='未入力の場合は無期限')
     
-    objects = TenantManager()
-
     class Meta:
         db_table = 'apps_company_department'
         verbose_name = '部署'
@@ -149,6 +147,8 @@ class Company(MyTenantModel):
     このシステムは単一の会社で運用されることを想定しているため、
     通常、このテーブルには1つのレコードのみが存在する。
     """
+    objects = models.Manager()
+
     name = models.CharField('会社名', max_length=255, unique=True)
     # 会社情報として必要そうなフィールドを追加（例）
     corporate_number = models.CharField('法人番号', max_length=13, blank=True, null=True, unique=True)
@@ -215,8 +215,6 @@ class CompanyUser(MyTenantModel):
     phone_number = models.CharField('電話番号', max_length=20, blank=True, null=True)
     email = models.EmailField('メールアドレス', blank=True, null=True)
     display_order = models.PositiveIntegerField('表示順', default=0)
-
-    objects = TenantManager()
 
     class Meta:
         db_table = 'apps_company_user'

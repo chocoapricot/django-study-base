@@ -17,7 +17,6 @@ class StaffTimesheet(MyTenantModel):
     月次勤怠情報を管理するモデル。
     スタッフ契約に対して毎月作成される。
     """
-    objects = TenantManager()
     staff_contract = models.ForeignKey(
         StaffContract,
         on_delete=models.CASCADE,
@@ -381,7 +380,6 @@ class StaffTimecard(MyTenantModel):
     日次勤怠情報を管理するモデル。
     月次勤怠（StaffTimesheet）に紐づく。
     """
-    objects = TenantManager()
     timesheet = models.ForeignKey(
         StaffTimesheet,
         on_delete=models.CASCADE,

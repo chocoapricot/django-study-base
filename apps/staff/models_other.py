@@ -29,7 +29,6 @@ class StaffMynumber(MyTenantModel):
     スタッフのマイナンバー情報を管理するモデル。
     Staffモデルと1対1で連携し、暗号化して保存することを想定（要追加実装）。
     """
-    objects = TenantManager()
 
     staff = models.OneToOneField(
         Staff,
@@ -63,7 +62,6 @@ class StaffContact(MyTenantModel):
     """
     スタッフの連絡先情報を管理するモデル。
     """
-    objects = TenantManager()
     staff = models.OneToOneField(
         Staff,
         on_delete=models.CASCADE,
@@ -94,7 +92,6 @@ class StaffBank(MyTenantModel):
     スタッフの銀行情報を管理するモデル。
     Staffモデルと1対1で連携し、振込先銀行情報を保存する。
     """
-    objects = TenantManager()
 
     staff = models.OneToOneField(
         Staff,
@@ -196,7 +193,6 @@ class StaffInternational(MyTenantModel):
     スタッフの外国籍情報を管理するモデル。
     Staffモデルと1対1で連携し、在留カード情報を保存する。
     """
-    objects = TenantManager()
 
     staff = models.OneToOneField(
         Staff,
@@ -253,7 +249,6 @@ class StaffDisability(MyTenantModel):
     """
     スタッフの障害者情報を管理するモデル。
     """
-    objects = TenantManager()
 
     staff = models.OneToOneField(
         Staff,
@@ -315,7 +310,6 @@ class StaffFavorite(MyTenantModel):
     """
     スタッフのお気に入り情報を管理するモデル。
     """
-    objects = TenantManager()
 
     staff = models.ForeignKey(
         Staff,

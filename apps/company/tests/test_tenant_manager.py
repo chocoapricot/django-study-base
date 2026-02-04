@@ -28,12 +28,12 @@ class TenantManagerTest(TestCase):
             name_last="佐藤", name_first="花子", tenant_id=200
         )
 
-    def _get_request_with_session(self, tenant_id=None, user=None):
+    def _get_request_with_session(self, tenant_id=None, user=None, skip_tenant_id=False):
         request = self.factory.get('/')
         # SessionMiddlewareをシミュレート
         middleware = SessionMiddleware(lambda r: None)
         middleware.process_request(request)
-        if tenant_id:
+        if not skip_tenant_id:
             request.session['current_tenant_id'] = tenant_id
         request.session.save()
 

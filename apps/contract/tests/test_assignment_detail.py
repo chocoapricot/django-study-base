@@ -43,25 +43,29 @@ class ContractAssignmentDetailViewTest(TestCase):
         # テストクライアント
         self.client_obj = Client.objects.create(
             name='テストクライアント',
-            corporate_number='1234567890123'
+            corporate_number='1234567890123',
+            tenant_id=1
         )
         
         # テストスタッフ
         self.staff = Staff.objects.create(
             name_last='テスト',
             name_first='太郎',
-            email='staff@example.com'
+            email='staff@example.com',
+            tenant_id=1
         )
         
         # 契約パターン
         self.client_pattern = ContractPattern.objects.create(
             name='クライアント契約パターン',
-            domain=Constants.DOMAIN.CLIENT
+            domain=Constants.DOMAIN.CLIENT,
+            tenant_id=1
         )
         
         self.staff_pattern = ContractPattern.objects.create(
             name='スタッフ契約パターン',
-            domain=Constants.DOMAIN.STAFF
+            domain=Constants.DOMAIN.STAFF,
+            tenant_id=1
         )
         
         # クライアント契約
@@ -72,7 +76,8 @@ class ContractAssignmentDetailViewTest(TestCase):
             start_date=date(2024, 1, 1),
             end_date=date(2024, 12, 31),
             contract_amount=1000000,
-            contract_status=Constants.CONTRACT_STATUS.DRAFT
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            tenant_id=1
         )
         
         # スタッフ契約
@@ -83,17 +88,23 @@ class ContractAssignmentDetailViewTest(TestCase):
             start_date=date(2024, 1, 1),
             end_date=date(2024, 12, 31),
             contract_amount=500000,
-            contract_status=Constants.CONTRACT_STATUS.DRAFT
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            tenant_id=1
         )
         
         # 契約アサイン
         self.assignment = ContractAssignment.objects.create(
             client_contract=self.client_contract,
-            staff_contract=self.staff_contract
+            staff_contract=self.staff_contract,
+            tenant_id=1
         )
         
         # Djangoテストクライアント
         self.test_client = TestClient()
+        # セッションにテナントIDを設定
+        session = self.test_client.session
+        session['current_tenant_id'] = 1
+        session.save()
 
     def test_assignment_detail_view_get(self):
         """アサイン詳細画面のGETリクエストテスト"""

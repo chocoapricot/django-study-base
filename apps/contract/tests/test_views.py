@@ -575,6 +575,7 @@ class ClientContractConfirmListViewTest(TestCase):
             corporate_number=self.company.corporate_number,
             worktime_pattern=self.worktime_pattern,
             overtime_pattern=self.overtime_pattern,
+            tenant_id=1
         )
 
         # ②「発行済」の契約を作成
@@ -587,12 +588,14 @@ class ClientContractConfirmListViewTest(TestCase):
             corporate_number=self.company.corporate_number,
             worktime_pattern=self.worktime_pattern,
             overtime_pattern=self.overtime_pattern,
+            tenant_id=1
         )
         # 発行済契約には、確認ボタンの表示条件である発行済みPDFが必要
         ClientContractPrint.objects.create(
             client_contract=self.issued_contract,
             print_type=ClientContractPrint.PrintType.CONTRACT,
-            document_title='契約書'
+            document_title='契約書',
+            tenant_id=1
         )
 
         # ③「下書き」の契約を作成（これはリストに表示されないはず）
@@ -605,6 +608,7 @@ class ClientContractConfirmListViewTest(TestCase):
             corporate_number=self.company.corporate_number,
             worktime_pattern=self.worktime_pattern,
             overtime_pattern=self.overtime_pattern,
+            tenant_id=1
         )
 
     def test_list_contracts_and_button_visibility(self):
