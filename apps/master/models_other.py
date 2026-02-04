@@ -228,6 +228,8 @@ class UserParameter(MyTenantModel):
     """
     ユーザーごとの設定値を管理するマスターデータ。
     """
+    objects = models.Manager()
+
     FORMAT_CHOICES = [
         ('text', 'テキスト'),
         ('textarea', 'テキストエリア'),

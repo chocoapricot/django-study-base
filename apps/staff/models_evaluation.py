@@ -7,7 +7,6 @@ class StaffEvaluation(MyTenantModel):
     """
     スタッフの評価を管理するモデル。
     """
-    objects = TenantManager()
     staff = models.ForeignKey(
         Staff, 
         on_delete=models.CASCADE, 

@@ -47,6 +47,8 @@ class MyTenantModel(MyModel):
     """
     tenant_id = models.PositiveIntegerField('テナントID', blank=True, null=True, db_index=True)
 
+    objects = TenantManager()
+
     class Meta:
         abstract = True
 
@@ -94,8 +96,6 @@ class MyFlagModel(MyTenantModel):
         null=True,
         help_text='フラッグに関する詳細情報'
     )
-    
-    objects = TenantManager()
     
     class Meta:
         abstract = True

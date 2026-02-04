@@ -16,7 +16,6 @@ def client_file_upload_path(instance, filename):
 
 class Client(MyTenantModel):
     """取引先企業（クライアント）の基本情報を管理するモデル。"""
-    objects = TenantManager()
     corporate_number=models.CharField('法人番号',max_length=13, unique=True, blank=True, null=True)
     name = models.TextField('会社名')
     name_furigana = models.TextField('会社名カナ')
@@ -92,7 +91,6 @@ class Client(MyTenantModel):
 
 class ClientDepartment(MyTenantModel):
     """クライアント企業内の組織（部署）情報を管理するモデル。"""
-    objects = TenantManager()
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='departments', verbose_name='クライアント')
     name = models.CharField('組織名', max_length=100)
     department_code = models.CharField('組織コード', max_length=20, blank=True, null=True)
@@ -185,7 +183,6 @@ class ClientDepartment(MyTenantModel):
 
 class ClientUser(MyTenantModel):
     """クライアント企業の担当者情報を管理するモデル。"""
-    objects = TenantManager()
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='users', verbose_name='クライアント')
     department = models.ForeignKey(ClientDepartment, on_delete=models.SET_NULL, blank=True, null=True, related_name='users', verbose_name='所属組織')
     name_last = models.CharField('姓', max_length=50)
@@ -228,7 +225,6 @@ class ClientUser(MyTenantModel):
 
 class ClientContacted(MyTenantModel):
     """クライアント企業への連絡履歴を管理するモデル。"""
-    objects = TenantManager()
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='contacted_histories', verbose_name='クライアント')
     department = models.ForeignKey(ClientDepartment, on_delete=models.SET_NULL, blank=True, null=True, related_name='contacted_histories', verbose_name='組織')
     user = models.ForeignKey(ClientUser, on_delete=models.SET_NULL, blank=True, null=True, related_name='contacted_histories', verbose_name='担当者')
@@ -263,7 +259,6 @@ class ClientContactSchedule(MyTenantModel):
     """
     クライアント企業への連絡予定を管理するモデル。
     """
-    objects = TenantManager()
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='contact_schedules', verbose_name='クライアント')
     department = models.ForeignKey(ClientDepartment, on_delete=models.SET_NULL, blank=True, null=True, related_name='contact_schedules', verbose_name='組織')
     user = models.ForeignKey(ClientUser, on_delete=models.SET_NULL, blank=True, null=True, related_name='contact_schedules', verbose_name='担当者')
@@ -296,7 +291,6 @@ class ClientContactSchedule(MyTenantModel):
 
 class ClientFile(MyTenantModel):
     """クライアントに関連する添付ファイルを管理するモデル。"""
-    objects = TenantManager()
     client = models.ForeignKey(
         Client, 
         on_delete=models.CASCADE, 
@@ -402,7 +396,6 @@ class ClientFavorite(MyTenantModel):
     """
     クライアントのお気に入り情報を管理するモデル。
     """
-    objects = TenantManager()
 
     client = models.ForeignKey(
         Client,
