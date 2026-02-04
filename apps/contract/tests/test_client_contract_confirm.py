@@ -77,29 +77,34 @@ class ClientContractConfirmTest(TestCase):
             contract_name='Test Contract',
             start_date=timezone.now().date(),
             contract_status=Constants.CONTRACT_STATUS.ISSUED,
-            contract_pattern=self.contract_pattern
+            contract_pattern=self.contract_pattern,
+            tenant_id=1
         )
 
         # テスト用の発行済み書類を作成
         self.contract_pdf = ClientContractPrint.objects.create(
             client_contract=self.contract,
             print_type=ClientContractPrint.PrintType.CONTRACT,
-            document_title='Test Contract PDF'
+            document_title='Test Contract PDF',
+            tenant_id=1
         )
         self.quotation = ClientContractPrint.objects.create(
             client_contract=self.contract,
             print_type=ClientContractPrint.PrintType.QUOTATION,
-            document_title='Test Quotation'
+            document_title='Test Quotation',
+            tenant_id=1
         )
         self.teishokubi_notification = ClientContractPrint.objects.create(
             client_contract=self.contract,
             print_type=ClientContractPrint.PrintType.TEISHOKUBI_NOTIFICATION,
-            document_title='Test Clash Day Notification'
+            document_title='Test Clash Day Notification',
+            tenant_id=1
         )
         self.dispatch_notification = ClientContractPrint.objects.create(
             client_contract=self.contract,
             print_type=ClientContractPrint.PrintType.DISPATCH_NOTIFICATION,
-            document_title='Test Dispatch Notification'
+            document_title='Test Dispatch Notification',
+            tenant_id=1
         )
 
         self.client = TestClient()
