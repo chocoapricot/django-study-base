@@ -128,7 +128,7 @@
             "format": "choice",
             "value": "simplex",
             "choices": "simplex:Simplex,pulse:Pulse,journal:Journal,zephyr:Zephyr,cerulean:Cerulean,cosmo:Cosmo,flatly:Flatly,lumen:Lumen,united:United,brite:Brite",
-            "display_order": 22,
+            "display_order": 15,
             "tenant_id": 1
         }
     },
