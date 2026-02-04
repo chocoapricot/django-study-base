@@ -132,7 +132,7 @@
       position: fixed;
       top: 70px;
       left: 0;
-      background-color: #f8f9fa;
+      background-color: {% user_parameter 'LEFT_MENU_COLOR' '#f8f9fa' %};
       padding-top: 0px;
       overflow-y: auto;
       overflow-x: hidden; /* 横方向のはみ出しを隠す */
@@ -176,7 +176,7 @@
     }
     
     .sidebar::-webkit-scrollbar { width: 8px; }
-    .sidebar::-webkit-scrollbar-track { background: #f8f9fa; }
+    .sidebar::-webkit-scrollbar-track { background: {% user_parameter 'LEFT_MENU_COLOR' '#f8f9fa' %}; }
     .sidebar::-webkit-scrollbar-thumb { background: #dcdcdc; border-radius: 4px; }
     .sidebar::-webkit-scrollbar-thumb:hover { background: #c8c8c8; }
 
@@ -185,7 +185,7 @@
             display: flex;
             align-items: center;
             font-size: 0.875rem; /* 14px */
-            color: #000;
+            color: {% user_parameter 'LEFT_MENU_TEXT_COLOR' '#000000' %};
             border-bottom: 1px solid #eee;
             white-space: nowrap; /* テキストを折り返さない */
             overflow: hidden; /* はみ出したテキストを隠す */
@@ -209,6 +209,16 @@
         .sidebar .nav-link.active > i {
             color: #28a745; /* 選択されたメニューアイコンの色 */
         }
+    .offcanvas {
+        background-color: {% user_parameter 'LEFT_MENU_COLOR' '#f8f9fa' %};
+        color: {% user_parameter 'LEFT_MENU_TEXT_COLOR' '#000000' %};
+    }
+    .offcanvas-header {
+        color: {% user_parameter 'LEFT_MENU_TEXT_COLOR' '#000000' %};
+    }
+    .offcanvas .btn {
+        color: {% user_parameter 'LEFT_MENU_TEXT_COLOR' '#000000' %};
+    }
     .offcanvas-body {
       padding-top: 0px;
       padding-left: 0px;
@@ -220,7 +230,7 @@
             align-items: center;
             justify-content: space-between;
             font-size: 0.875rem; /* 14px */
-            color: #000;
+            color: {% user_parameter 'LEFT_MENU_TEXT_COLOR' '#000000' %};
             border-bottom: 1px solid #eee;
         }
         .offcanvas-body .nav-link i {
@@ -399,7 +409,7 @@
     </div>
 
 <!-- Sidebar for large screens -->
-<div id="sidebar" class="d-none d-md-block bg-light sidebar {% if request.session.is_sidebar_collapsed %}collapsed{% endif %}">
+<div id="sidebar" class="d-none d-md-block sidebar {% if request.session.is_sidebar_collapsed %}collapsed{% endif %}">
   <div class="position-sticky">
     <ul class="nav flex-column">
       {% for menu in menus %}
