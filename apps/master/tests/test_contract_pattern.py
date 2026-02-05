@@ -3,13 +3,17 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from apps.master.models import ContractPattern, ContractTerms
 from apps.system.settings.models import Dropdowns
+from apps.common.middleware import set_current_tenant_id
+from apps.company.models import Company
 
 User = get_user_model()
 
 class ContractPatternCopyTest(TestCase):
     def setUp(self):
+        set_current_tenant_id(1)
+        self.company = Company.objects.create(name='Test Company', tenant_id=1)
         self.client = Client()
-        self.user = User.objects.create_superuser(username='testuser', password='password', email='test@test.com')
+        self.user = User.objects.create_superuser(username='testuser', password='password', email='test@test.com', tenant_id=1)
         self.client.login(username='testuser', password='password')
 
         Dropdowns.objects.create(category='domain', value='1', name='スタッフ')
@@ -79,8 +83,10 @@ class ContractPatternCopyTest(TestCase):
 
 class ContractPatternContractTypeTest(TestCase):
     def setUp(self):
+        set_current_tenant_id(1)
+        self.company = Company.objects.create(name='Test Company', tenant_id=1)
         self.client = Client()
-        self.user = User.objects.create_superuser(username='testuser3', password='password', email='test3@test.com')
+        self.user = User.objects.create_superuser(username='testuser3', password='password', email='test3@test.com', tenant_id=1)
         self.client.login(username='testuser3', password='password')
 
         Dropdowns.objects.create(category='domain', value='1', name='スタッフ')
@@ -155,8 +161,10 @@ class ContractPatternContractTypeTest(TestCase):
 
 class ContractPatternMemoTest(TestCase):
     def setUp(self):
+        set_current_tenant_id(1)
+        self.company = Company.objects.create(name='Test Company', tenant_id=1)
         self.client = Client()
-        self.user = User.objects.create_superuser(username='testuser2', password='password', email='test2@test.com')
+        self.user = User.objects.create_superuser(username='testuser2', password='password', email='test2@test.com', tenant_id=1)
         self.client.login(username='testuser2', password='password')
 
         Dropdowns.objects.create(category='domain', value='1', name='スタッフ')
@@ -218,8 +226,10 @@ class ContractPatternMemoTest(TestCase):
 
 class ContractTermDisplayPositionTest(TestCase):
     def setUp(self):
+        set_current_tenant_id(1)
+        self.company = Company.objects.create(name='Test Company', tenant_id=1)
         self.client = Client()
-        self.user = User.objects.create_superuser(username='testuser4', password='password', email='test4@test.com')
+        self.user = User.objects.create_superuser(username='testuser4', password='password', email='test4@test.com', tenant_id=1)
         self.client.login(username='testuser4', password='password')
 
         self.pattern = ContractPattern.objects.create(name='Test Pattern')
@@ -324,8 +334,10 @@ class ContractPatternEmploymentTypeTest(TestCase):
     """雇用形態機能のテストクラス"""
     
     def setUp(self):
+        set_current_tenant_id(1)
+        self.company = Company.objects.create(name='Test Company', tenant_id=1)
         self.client = Client()
-        self.user = User.objects.create_superuser(username='testuser', password='password', email='test@test.com')
+        self.user = User.objects.create_superuser(username='testuser', password='password', email='test@test.com', tenant_id=1)
         self.client.login(username='testuser', password='password')
 
         # 雇用形態マスタを作成
