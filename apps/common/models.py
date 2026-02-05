@@ -23,7 +23,6 @@ class TenantManager(models.Manager):
     """
     def get_queryset(self):
         from apps.common.middleware import get_current_tenant_id, is_in_request, is_tenant_id_set, _thread_locals
-        import sys
 
         # リクエスト外（テスト、シェル、コマンド等）ではフィルタリングしない
         if not is_in_request():
@@ -37,14 +36,8 @@ class TenantManager(models.Manager):
 
         # セッションにテナントIDがない場合
         if tenant_id is None:
-            # 明示的に None が設定されているのではなく、単に未設定の場合
-            if not is_tenant_id_set():
-                # テスト実行中はフィルタリングをスキップして、既存の多くのテストが通るようにする
-                if 'test' in sys.argv or 'pytest' in sys.modules:
-                    return super().get_queryset()
-
-            # セッションにテナントIDがない場合は、ユーザーの要求通り「データなし」と同じ扱いにする
-            return super().get_queryset().none()
+            # セッションにテナントIDがない場合は、全件取得できるようにする
+            return super().get_queryset()
 
         return super().get_queryset().filter(tenant_id=tenant_id)
 
@@ -69,15 +62,6 @@ class MyTenantModel(MyModel):
         if not self.tenant_id:
             from apps.common.middleware import get_current_tenant_id
             self.tenant_id = get_current_tenant_id()
-
-            # テスト実行中でテナントIDが特定できない場合は、デフォルト値(1)を設定して
-            # 多くの既存テストが通るようにする（スーパーユーザーの自動テナント生成と合わせる）
-            if not self.tenant_id:
-                import sys
-                if 'test' in sys.argv or 'pytest' in sys.modules:
-                    # Companyモデルの場合は自身のPKをtenant_idにする特殊な動きがあるため、ここでは設定しない
-                    if self.__class__.__name__ != 'Company':
-                        self.tenant_id = 1
 
         super().save(*args, **kwargs)
 

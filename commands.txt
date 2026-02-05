@@ -6,7 +6,7 @@ python.exe -m pip install --upgrade pip
 
 # 環境つくりなおし
 python -3.14 -m venv .venv
-.venv\Scripts\Activate 
+.venv\Scripts\Activate
 python.exe -m pip install --upgrade pip
 pip install -r requirements.txt
 
@@ -111,26 +111,26 @@ python manage.py dumpdata master.flagstatus                 --format=json --inde
 python manage.py dbshell
 
 #テストデータ作成（スタッフ評価）
-.venv\Scripts\Activate 
+.venv\Scripts\Activate
 python _scripts/make_sample_data_staff_evaluation.py
 
 # テスト実施
-python manage.py test 
+python manage.py test
 python manage.py test apps.api.tests
 python manage.py test apps.kintai.tests
 
 # サーバ起動
-.venv\Scripts\Activate 
+.venv\Scripts\Activate
 python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver
 
 # 起動のみ
-.venv\Scripts\Activate 
+.venv\Scripts\Activate
 python manage.py runserver
 
 # まとめ
-.venv\Scripts\Activate 
+.venv\Scripts\Activate
 .\_scripts\setup.bat
 python manage.py runserver
 
