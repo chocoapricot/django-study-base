@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import models
+from django.db.models import Exists, OuterRef
 from django.core.paginator import Paginator
 from apps.system.logs.utils import log_model_action, log_view_detail
 from django.utils import timezone
@@ -9,7 +10,7 @@ from datetime import timedelta
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
 from django.views.decorators.http import require_POST
-from .models import Staff, StaffInquiry, StaffInquiryMessage
+from .models import Staff, StaffInquiry, StaffInquiryMessage, StaffFavorite
 from apps.company.models import CompanyUser, Company
 from apps.connect.models import ConnectStaff
 from .forms_inquiry import StaffInquiryForm, StaffInquiryMessageForm, StaffInquiryFromAdminForm, StaffInquiryFilterForm
@@ -56,7 +57,15 @@ def staff_inquiry_list(request):
     staff_map = {}
     if is_company_or_admin:
         emails = inquiries_qs.values_list('user__email', flat=True).distinct()
-        staffs = Staff.objects.filter(email__in=emails).select_related('regist_status', 'employment_type').prefetch_related('tags')
+        favorites = StaffFavorite.objects.filter(
+            staff=OuterRef('pk'),
+            user=request.user
+        )
+        staffs = Staff.objects.filter(email__in=emails).annotate(
+            is_favorite=Exists(favorites)
+        ).select_related(
+            'regist_status', 'employment_type', 'international', 'disability'
+        ).prefetch_related('tags', 'flags__flag_status')
         staff_map = {s.email: s for s in staffs}
 
     processed_inquiries = []

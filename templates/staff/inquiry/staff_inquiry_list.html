@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load badge_tags %}
+{% load favorite_tags staff_tags %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
@@ -63,10 +64,17 @@
                             <a href="{% url 'staff:staff_detail' inquiry.staff.pk %}" class="text-decoration-none">
                                 {{ inquiry.user_full_name }}
                             </a>
+                            {% favorite_star inquiry.staff %}
+                            {% staff_status_markers inquiry.staff %}
                             <div class="mt-0">
                                 {% for tag in inquiry.staff.tags.all %}
                                     <span class="badge rounded-pill {{ tag.display_order|badge_class }}" style="font-size: 10px;">
                                         <i class="bi bi-tag-fill"></i> {{ tag.name }}
+                                    </span>
+                                {% endfor %}
+                                {% for flag in inquiry.staff.flags.all %}
+                                    <span class="badge rounded-pill {{ flag.flag_status.display_order|badge_class }}" style="font-size: 10px;">
+                                        <i class="bi bi-flag-fill"></i> {{ flag.flag_status.name }}
                                     </span>
                                 {% endfor %}
                             </div>
