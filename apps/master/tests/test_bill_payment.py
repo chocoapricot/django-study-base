@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from apps.master.models import BillPayment, ContractPattern
 from apps.master.forms import BillPaymentForm
+from apps.common.middleware import set_current_tenant_id
+from apps.company.models import Company
 
 User = get_user_model()
 
@@ -205,11 +207,14 @@ class BillPaymentViewTest(TestCase):
     """支払条件ビューのテスト"""
     
     def setUp(self):
+        set_current_tenant_id(1)
+        self.company = Company.objects.create(name='Test Company', tenant_id=1)
         self.client = Client()
         self.user = User.objects.create_user(
             username='testuser',
             password='testpass123',
-            is_superuser=True
+            is_superuser=True,
+            tenant_id=1
         )
         self.client.login(username='testuser', password='testpass123')
         
