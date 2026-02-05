@@ -138,6 +138,8 @@
       overflow-x: hidden; /* 横方向のはみ出しを隠す */
       transition: width 0.3s ease-in-out; /* アニメーション */
       z-index: 1020;
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+      border-right: 1px solid #e0e0e0;
     }
 
     #sidebar.collapsed {
@@ -212,6 +214,8 @@
     .offcanvas {
         background-color: {% user_parameter 'LEFT_MENU_COLOR' '#f8f9fa' %};
         color: {% user_parameter 'LEFT_MENU_TEXT_COLOR' '#000000' %};
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+        border-right: 1px solid #e0e0e0;
     }
     .offcanvas-header {
         color: {% user_parameter 'LEFT_MENU_TEXT_COLOR' '#000000' %};
