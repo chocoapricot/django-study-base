@@ -72,13 +72,14 @@ class TenantManagerTest(TestCase):
         tenant_middleware = TenantMiddleware(view_func)
         tenant_middleware(request)
 
-    def test_no_tenant_id_in_session_returns_none(self):
-        """セッションにテナントIDがない場合は空のクエリセットを返すか"""
+    def test_no_tenant_id_in_session_returns_all(self):
+        """セッションにテナントIDがない場合は全件のクエリセットを返すか"""
         request = self._get_request_with_session(tenant_id=None)
 
         def view_func(req):
-            self.assertEqual(CompanyDepartment.objects.count(), 0)
-            self.assertEqual(CompanyUser.objects.count(), 0)
+            # 新しい仕様では、テナントIDが特定できない場合は全件取得できる
+            self.assertEqual(CompanyDepartment.objects.count(), 2)
+            self.assertEqual(CompanyUser.objects.count(), 2)
             return None
 
         tenant_middleware = TenantMiddleware(view_func)

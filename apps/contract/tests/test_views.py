@@ -7,6 +7,8 @@ from apps.client.models import Client as TestClient, ClientUser, ClientDepartmen
 from apps.staff.models import Staff
 from apps.master.models import ContractPattern, DefaultValue
 from apps.common.constants import Constants
+from apps.common.middleware import set_current_tenant_id
+from apps.company.models import Company
 import datetime
 
 User = get_user_model()
@@ -16,11 +18,15 @@ class ContractViewTest(TestCase):
 
     def setUp(self):
         """テストデータの準備"""
+        self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
+        if not self.company.tenant_id:
+             self.company.tenant_id = self.company.pk
+        set_current_tenant_id(self.company.tenant_id)
+
         from django.conf import settings
         settings.DROPDOWN_CLIENT_CONTRACT_TYPE = []
         from django.contrib.auth.models import Permission
         from django.contrib.contenttypes.models import ContentType
-        from apps.company.models import Company
         from apps.system.settings.models import Dropdowns
         
         # Dropdownsデータを作成
@@ -52,7 +58,8 @@ class ContractViewTest(TestCase):
         self.user = User.objects.create_user(
             username='testuser',
             email='test@example.com',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=self.company.tenant_id
         )
 
         # 契約関連の権限を追加
@@ -74,8 +81,6 @@ class ContractViewTest(TestCase):
         all_permissions.extend(assignment_permissions)
 
         self.user.user_permissions.set(all_permissions)
-
-        self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
 
         self.test_client = TestClient.objects.create(
             name='Test Client',
@@ -168,6 +173,13 @@ class ContractViewTest(TestCase):
         self.bill_unit_monthly = Dropdowns.objects.create(category='bill_unit', value='10', name='月額', active=True)
 
         self.client.login(username='testuser', password='testpass123')
+        set_current_tenant_id(self.company.tenant_id)
+        session = self.client.session
+        session['current_tenant_id'] = self.company.tenant_id
+        session.save()
+
+    def tearDown(self):
+        set_current_tenant_id(None)
 
     def test_permission_denied(self):
         """権限のないユーザーがアクセスできないことをテスト"""
@@ -461,8 +473,9 @@ class ContractViewTest(TestCase):
         self.assertContains(response, 'アサインされているクライアントはありません。')
 
         # --- シナリオ2: アサインあり ---
+        set_current_tenant_id(self.company.tenant_id)
         # 契約をアサイン
-        ContractAssignment.objects.create(
+        assignment = ContractAssignment.objects.create(
             client_contract=self.client_contract,
             staff_contract=assigned_staff_contract
         )
@@ -533,6 +546,7 @@ class ClientContractConfirmListViewTest(TestCase):
 
         # 会社を作成
         self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123', tenant_id=1)
+        set_current_tenant_id(1)
 
         # クライアントとクライアントユーザーを作成
         self.test_client = TestClient.objects.create(name='Test Client Corp', corporate_number='9876543210987', tenant_id=1)
@@ -611,6 +625,9 @@ class ClientContractConfirmListViewTest(TestCase):
             tenant_id=1
         )
 
+    def tearDown(self):
+        set_current_tenant_id(None)
+
     def test_list_contracts_and_button_visibility(self):
         """承認済・発行済契約が表示され、ボタンの可視性が正しいことをテスト"""
         # クライアントユーザーとしてログイン
@@ -667,6 +684,11 @@ class ClientContractIssueHistoryViewTest(TestCase):
         self.client.login(username='testuser', password='testpass123')
 
         self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
+        if not self.company.tenant_id: self.company.tenant_id = self.company.pk
+        set_current_tenant_id(self.company.tenant_id)
+        session = self.client.session
+        session['current_tenant_id'] = self.company.tenant_id
+        session.save()
         self.test_client_model = TestClient.objects.create(name='Test Client', corporate_number='6000000000001')
         self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='10')
         
@@ -708,6 +730,9 @@ class ClientContractIssueHistoryViewTest(TestCase):
                 printed_by=self.user,
                 document_title=f'Doc {i+1}'
             )
+
+    def tearDown(self):
+        set_current_tenant_id(None)
 
     def test_detail_view_history_limit(self):
         """詳細ページで発行履歴が10件に制限されることをテスト"""
@@ -781,12 +806,14 @@ class ClientContractTtpViewTest(TestCase):
 
     def setUp(self):
         """テストデータの準備"""
+        self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
+        if not self.company.tenant_id: self.company.tenant_id = self.company.pk
+        set_current_tenant_id(self.company.tenant_id)
+
         from django.contrib.auth.models import Permission
         from django.contrib.contenttypes.models import ContentType
-        from apps.company.models import Company
 
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
-        self.client.login(username='testuser', password='testpassword')
+        self.user = User.objects.create_user(username='testuser', password='testpassword', tenant_id=self.company.tenant_id)
 
         # 必要な権限を付与
         content_types = [
@@ -797,7 +824,10 @@ class ClientContractTtpViewTest(TestCase):
         permissions = Permission.objects.filter(content_type__in=content_types)
         self.user.user_permissions.set(permissions)
 
-        self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
+        self.client.login(username='testuser', password='testpassword')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.tenant_id
+        session.save()
         self.test_client_model = TestClient.objects.create(name='Test Client', corporate_number='6000000000001')
         self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='10', contract_type_code='20')
         from apps.master.models import OvertimePattern
@@ -828,6 +858,9 @@ class ClientContractTtpViewTest(TestCase):
         )
         self.approved_haken = ClientContractHaken.objects.create(client_contract=self.approved_contract)
         self.approved_ttp = ClientContractTtp.objects.create(haken=self.approved_haken, business_content='Approved Content')
+
+    def tearDown(self):
+        set_current_tenant_id(None)
 
     def test_ttp_buttons_visibility_for_draft_contract(self):
         """「作成中」の契約では、TTP詳細ページに編集・削除ボタンが表示される"""
@@ -951,13 +984,16 @@ class ContractAssignmentViewTest(TestCase):
 
     def setUp(self):
         """テストデータの準備"""
+        self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
+        if not self.company.tenant_id: self.company.tenant_id = self.company.pk
+        set_current_tenant_id(self.company.tenant_id)
+
         from django.contrib.auth.models import Permission
         from django.contrib.contenttypes.models import ContentType
-        from apps.company.models import Company
         from ..models import ContractAssignment
 
         # ユーザーと権限
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.user = User.objects.create_user(username='testuser', password='testpassword', tenant_id=self.company.tenant_id)
         content_types = [
             ContentType.objects.get_for_model(ClientContract),
             ContentType.objects.get_for_model(StaffContract),
@@ -965,10 +1001,11 @@ class ContractAssignmentViewTest(TestCase):
         ]
         permissions = Permission.objects.filter(content_type__in=content_types)
         self.user.user_permissions.set(permissions)
-        self.client.login(username='testuser', password='testpassword')
 
-        # 会社、クライアント、スタッフ
-        self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
+        self.client.login(username='testuser', password='testpassword')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.tenant_id
+        session.save()
         self.test_client_model = TestClient.objects.create(name='Test Client', corporate_number='6000000000001')
         self.staff1 = Staff.objects.create(name_last='Staff', name_first='One', employee_no='S001', hire_date=datetime.date(2024, 1, 1))
         self.staff2 = Staff.objects.create(name_last='Staff', name_first='Two', employee_no='S002', hire_date=datetime.date(2024, 1, 1))
@@ -1030,6 +1067,9 @@ class ContractAssignmentViewTest(TestCase):
         self.assignment_approved = ContractAssignment.objects.create(
             client_contract=self.client_contract_approved, staff_contract=self.staff_contract_draft
         )
+
+    def tearDown(self):
+        set_current_tenant_id(None)
 
     def test_assign_button_visibility(self):
         """詳細ページで「割当」ボタンが正しく表示/非表示になるかテスト"""
@@ -1210,6 +1250,7 @@ class ContractAssignmentViewTest(TestCase):
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             business_content='', # Empty
             overtime_pattern=self.overtime_pattern,
+            tenant_id=self.company.tenant_id
         )
         staff_contract_1 = StaffContract.objects.create(
             staff=self.staff1, contract_name='Staff for Sync 1',
@@ -1217,6 +1258,7 @@ class ContractAssignmentViewTest(TestCase):
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             business_content='Staff content', # Not empty
             overtime_pattern=self.overtime_pattern,
+            tenant_id=self.company.tenant_id
         )
 
         url = reverse('contract:create_contract_assignment')
@@ -1241,6 +1283,7 @@ class ContractAssignmentViewTest(TestCase):
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             business_content='Client content', # Not empty
             overtime_pattern=self.overtime_pattern,
+            tenant_id=self.company.tenant_id
         )
         staff_contract_2 = StaffContract.objects.create(
             staff=self.staff1, contract_name='Staff for Sync 2',
@@ -1248,6 +1291,7 @@ class ContractAssignmentViewTest(TestCase):
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             business_content='', # Empty
             overtime_pattern=self.overtime_pattern,
+            tenant_id=self.company.tenant_id
         )
 
         post_data_2 = {
@@ -1271,6 +1315,7 @@ class ContractAssignmentViewTest(TestCase):
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             business_content='Original client content',
             overtime_pattern=self.overtime_pattern,
+            tenant_id=self.company.tenant_id
         )
         staff_contract_3 = StaffContract.objects.create(
             staff=self.staff1, contract_name='Staff for Sync 3',
@@ -1278,6 +1323,7 @@ class ContractAssignmentViewTest(TestCase):
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             business_content='Original staff content',
             overtime_pattern=self.overtime_pattern,
+            tenant_id=self.company.tenant_id
         )
         post_data_3 = {
             'client_contract_id': client_contract_3.pk,
@@ -1301,6 +1347,7 @@ class ContractAssignmentViewTest(TestCase):
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             business_content='',
             overtime_pattern=self.overtime_pattern,
+            tenant_id=self.company.tenant_id
         )
         staff_contract_4 = StaffContract.objects.create(
             staff=self.staff1, contract_name='Staff for Sync 4',
@@ -1308,6 +1355,7 @@ class ContractAssignmentViewTest(TestCase):
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             business_content='',
             overtime_pattern=self.overtime_pattern,
+            tenant_id=self.company.tenant_id
         )
         post_data_4 = {
             'client_contract_id': client_contract_4.pk,
@@ -1333,10 +1381,12 @@ class ContractAssignmentViewTest(TestCase):
             start_date=datetime.date(2025, 1, 1), contract_pattern=self.client_pattern,
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             overtime_pattern=self.overtime_pattern,
+            tenant_id=self.company.tenant_id
         )
         haken_info_1 = ClientContractHaken.objects.create(
             client_contract=client_contract_1,
-            work_location='' # Empty
+            work_location='', # Empty
+            tenant_id=self.company.tenant_id
         )
         staff_contract_1 = StaffContract.objects.create(
             staff=self.staff1, contract_name='Staff for Work Location Sync 1',
@@ -1344,6 +1394,7 @@ class ContractAssignmentViewTest(TestCase):
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             work_location='Staff Work Location', # Not empty
             overtime_pattern=self.overtime_pattern,
+            tenant_id=self.company.tenant_id
         )
 
         url = reverse('contract:create_contract_assignment')
@@ -1367,10 +1418,12 @@ class ContractAssignmentViewTest(TestCase):
             start_date=datetime.date(2025, 1, 1), contract_pattern=self.client_pattern,
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             overtime_pattern=self.overtime_pattern,
+            tenant_id=self.company.tenant_id
         )
         haken_info_2 = ClientContractHaken.objects.create(
             client_contract=client_contract_2,
-            work_location='Client Work Location' # Not empty
+            work_location='Client Work Location', # Not empty
+            tenant_id=self.company.tenant_id
         )
         staff_contract_2 = StaffContract.objects.create(
             staff=self.staff1, contract_name='Staff for Work Location Sync 2',
@@ -1378,6 +1431,7 @@ class ContractAssignmentViewTest(TestCase):
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             work_location='', # Empty
             overtime_pattern=self.overtime_pattern,
+            tenant_id=self.company.tenant_id
         )
 
         post_data_2 = {
@@ -1432,19 +1486,29 @@ class ContractAssignmentDisplayTest(TestCase):
 
     def setUp(self):
         """テストデータの準備"""
+        self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
+        if not self.company.tenant_id: self.company.tenant_id = self.company.pk
+        set_current_tenant_id(self.company.tenant_id)
+
         from django.contrib.auth.models import Permission
         from django.contrib.contenttypes.models import ContentType
         from ..models import ContractAssignment
 
         # ユーザーと権限
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.user = User.objects.create_user(username='testuser', password='testpassword', tenant_id=self.company.tenant_id)
         content_types = [
             ContentType.objects.get_for_model(ClientContract),
             ContentType.objects.get_for_model(StaffContract),
         ]
         permissions = Permission.objects.filter(content_type__in=content_types)
         self.user.user_permissions.set(permissions)
+        self.user.tenant_id = self.company.tenant_id
+        self.user.save()
+
         self.client.login(username='testuser', password='testpassword')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.tenant_id
+        session.save()
 
         # クライアント、スタッフ
         self.test_client_model = TestClient.objects.create(name='Test Client')
@@ -1488,6 +1552,9 @@ class ContractAssignmentDisplayTest(TestCase):
             contract_number='S-UNASSIGNED',
             overtime_pattern=self.overtime_pattern,
         )
+
+    def tearDown(self):
+        set_current_tenant_id(None)
 
     def test_client_contract_list_assignment_badge(self):
         """クライアント契約一覧で割当済バッジが正しく表示されるかテスト"""

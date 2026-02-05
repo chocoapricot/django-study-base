@@ -20,6 +20,9 @@ class StaffViewsTest(TestCase):
     def setUp(self):
         self.client = TestClient()
         self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        if not self.company.tenant_id:
+            self.company.tenant_id = 1
+            self.company.save()
         # スレッドローカルにテナントIDをセット
         set_current_tenant_id(self.company.tenant_id)
         self.user = User.objects.create_user(username='testuser', password='testpassword', tenant_id=self.company.tenant_id)
