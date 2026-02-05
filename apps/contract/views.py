@@ -477,7 +477,7 @@ def client_contract_update(request, pk):
                 # or POST contains any TTP-specific fields (user is editing/creating TTP)
                 ttp_field_names = [
                     'contract_period', 'probation_period', 'working_hours', 'break_time',
-                    'insurances', 'employer_name', 'business_content', 'work_location',
+                    'insurances', 'employer_name',
                     'overtime', 'holidays', 'vacations', 'wages', 'other'
                 ]
                 has_ttp_post = any(name in request.POST for name in ttp_field_names)
