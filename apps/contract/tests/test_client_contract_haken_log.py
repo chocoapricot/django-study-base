@@ -57,13 +57,25 @@ class ClientContractHakenLogTest(TestCase):
         cls.bill_unit = Dropdowns.objects.create(category='bill_unit', value='10', name='月額', active=True)
 
         # 契約書パターン
-        cls.pattern = ContractPattern.objects.create(name='Haken Pattern', domain='10', contract_type_code='20')
-        cls.non_haken_pattern = ContractPattern.objects.create(name='Non-Haken Pattern', domain='10', contract_type_code='10')
+        cls.pattern = ContractPattern.objects.create(
+            name='Haken Pattern', domain='10', contract_type_code='20',
+            tenant_id=cls.company.tenant_id
+        )
+        cls.non_haken_pattern = ContractPattern.objects.create(
+            name='Non-Haken Pattern', domain='10', contract_type_code='10',
+            tenant_id=cls.company.tenant_id
+        )
         
         # 就業時間パターン
         from apps.master.models import WorkTimePattern, OvertimePattern
-        cls.worktime_pattern = WorkTimePattern.objects.create(name='標準勤務', is_active=True)
-        cls.overtime_pattern = OvertimePattern.objects.create(name='標準時間外')
+        cls.worktime_pattern = WorkTimePattern.objects.create(
+            name='標準勤務', is_active=True,
+            tenant_id=cls.company.tenant_id
+        )
+        cls.overtime_pattern = OvertimePattern.objects.create(
+            name='標準時間外',
+            tenant_id=cls.company.tenant_id
+        )
 
         # 派遣先・派遣元の担当者・部署
         cls.haken_office = ClientDepartment.objects.create(

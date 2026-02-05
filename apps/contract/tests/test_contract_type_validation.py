@@ -9,6 +9,7 @@ from datetime import date
 from apps.contract.models import ClientContract, ClientContractHaken, ClientContractTtp
 from apps.client.models import Client
 from apps.master.models import ContractPattern
+from apps.company.models import Company
 from apps.common.constants import Constants
 
 User = get_user_model()
@@ -19,10 +20,18 @@ class ContractTypeValidationTest(TestCase):
 
     def setUp(self):
         """テストデータのセットアップ"""
+        # 会社を作成（tenant_id=1を確保するため）
+        self.company = Company.objects.create(
+            name='テスト会社',
+            corporate_number='1111222233334'
+        )
+        # Companyのsaveでtenant_idが設定されることを期待
+
         self.user = User.objects.create_user(
             username='testuser',
             email='test@example.com',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=self.company.tenant_id
         )
         self.user.is_staff = True
         self.user.is_superuser = True
@@ -33,7 +42,8 @@ class ContractTypeValidationTest(TestCase):
             name='テストクライアント',
             corporate_number='1234567890123',
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=self.company.tenant_id
         )
 
         # 契約書パターン
@@ -41,7 +51,8 @@ class ContractTypeValidationTest(TestCase):
             name='テスト契約パターン',
             domain=Constants.DOMAIN.CLIENT,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=self.company.tenant_id
         )
 
     def test_quasi_mandate_contract_approval_over_6_months(self):
@@ -56,7 +67,8 @@ class ContractTypeValidationTest(TestCase):
             end_date=date(2025, 10, 31),  # 10ヶ月
             contract_status=Constants.CONTRACT_STATUS.PENDING,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=self.company.tenant_id
         )
 
         # 承認処理を実行
@@ -85,7 +97,8 @@ class ContractTypeValidationTest(TestCase):
             end_date=date(2025, 8, 31),  # 8ヶ月
             contract_status=Constants.CONTRACT_STATUS.PENDING,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=self.company.tenant_id
         )
 
         # 承認処理を実行
@@ -114,14 +127,16 @@ class ContractTypeValidationTest(TestCase):
             end_date=date(2025, 8, 31),  # 8ヶ月
             contract_status=Constants.CONTRACT_STATUS.PENDING,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=self.company.tenant_id
         )
 
         # 派遣情報を作成（TTP情報は作成しない）
         ClientContractHaken.objects.create(
             client_contract=contract,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=self.company.tenant_id
         )
 
         # 承認処理を実行
@@ -150,14 +165,16 @@ class ContractTypeValidationTest(TestCase):
             end_date=date(2025, 8, 31),  # 8ヶ月
             contract_status=Constants.CONTRACT_STATUS.PENDING,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=self.company.tenant_id
         )
 
         # 派遣情報を作成
         haken_info = ClientContractHaken.objects.create(
             client_contract=contract,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=self.company.tenant_id
         )
 
         # TTP情報を作成
@@ -166,7 +183,8 @@ class ContractTypeValidationTest(TestCase):
             contract_period='8ヶ月',
             business_content='テスト業務',
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=self.company.tenant_id
         )
 
         # 承認処理を実行
@@ -195,14 +213,16 @@ class ContractTypeValidationTest(TestCase):
             end_date=date(2025, 5, 31),  # 5ヶ月
             contract_status=Constants.CONTRACT_STATUS.PENDING,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=self.company.tenant_id
         )
 
         # 派遣情報を作成
         haken_info = ClientContractHaken.objects.create(
             client_contract=contract,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=self.company.tenant_id
         )
 
         # TTP情報を作成
@@ -211,7 +231,8 @@ class ContractTypeValidationTest(TestCase):
             contract_period='5ヶ月',
             business_content='テスト業務',
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=self.company.tenant_id
         )
 
         # 承認処理を実行
