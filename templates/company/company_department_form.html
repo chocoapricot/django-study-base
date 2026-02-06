@@ -12,6 +12,15 @@
     <div class="card-body">
         <form method="post">
             {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-dismissible alert-warning">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.name.label }}</label>
                 <div class="col-sm-6">
