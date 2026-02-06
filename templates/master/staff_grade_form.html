@@ -39,7 +39,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.salary_type.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">給与種別・金額</label>
+                <label for="{{ form.salary_type.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">基本単価</label>
                 <div class="col-sm-4">
                     <div class="input-group input-group-sm">
                         {{ form.salary_type }}
@@ -126,8 +126,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     <ul>
                         <li><strong>コード:</strong> 必須項目です。</li>
                         <li><strong>名称:</strong> 必須項目です。</li>
-                        <li><strong>給与種別:</strong> プルダウンから選択してください（時給・日給・月給）。</li>
-                        <li><strong>金額:</strong> 必須項目です。数値で入力してください。</li>
+                        <li><strong>基本単価（種別）:</strong> プルダウンから選択してください（時給・日給・月給）。</li>
+                        <li><strong>基本単価（金額）:</strong> 必須項目です。数値で入力してください。</li>
                         <li><strong>有効期間:</strong> 任意項目です。開始日と終了日を設定できます。</li>
                     </ul>
                 </div>

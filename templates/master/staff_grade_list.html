@@ -1,6 +1,7 @@
 {% extends 'common/_base.html' %}
 {% load static %}
 {% load badge_tags %}
+{% load humanize %}
 
 {% block title %}スタッフ等級一覧{% endblock %}
 
@@ -35,8 +36,7 @@
                     <tr>
                         <th width="10%">コード</th>
                         <th width="20%">名称</th>
-                        <th width="10%">給与種別</th>
-                        <th width="10%">金額</th>
+                        <th width="20%">基本単価</th>
                         <th width="20%">有効期間</th>
                         <th width="10%">状態</th>
                         <th width="10%">表示順</th>
@@ -50,8 +50,7 @@
                         <td>
                             <a href="{% url 'master:staff_grade_update' item.pk %}">{{ item.name }}</a>
                         </td>
-                        <td>{{ item.get_salary_type_display }}</td>
-                        <td>{{ item.amount|floatformat:"0" }}円</td>
+                        <td>{{ item.get_salary_type_display }} {{ item.amount|intcomma }}円</td>
                         <td>
                             {{ item.start_date|date:"Y/m/d"|default:"-" }} ～ {{ item.end_date|date:"Y/m/d"|default:"-" }}
                         </td>
@@ -74,7 +73,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="8" class="text-center">データが登録されていません。</td>
+                        <td colspan="7" class="text-center">データが登録されていません。</td>
                     </tr>
                     {% endfor %}
                 </tbody>
