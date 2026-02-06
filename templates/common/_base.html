@@ -27,6 +27,15 @@
             background-color: {% user_parameter 'MAIN_BACKGROUND_COLOR' '#f0f0f0' %};
             font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
         }
+        :root {
+            --global-shadow-color: {% user_parameter 'GLOBAL_SHADOW_COLOR' '#000000' %};
+            --main-shadow-color-with-alpha: rgba(0, 0, 0, 0.3);
+        }
+        @supports (color: color-mix(in srgb, black, white)) {
+            :root {
+                --main-shadow-color-with-alpha: color-mix(in srgb, var(--global-shadow-color), transparent 70%);
+            }
+        }
         /* ヘッダスタイル */
         .header {
             position: fixed;
@@ -42,7 +51,7 @@
             align-items: center;
             padding: 0 20px;
             z-index: 1030; /* サイドバー(1020)より上 */
-            box-shadow: 0 0px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px var(--main-shadow-color-with-alpha);
             }
 /* ボタン全体のスタイル */
 .header .btn {
@@ -138,7 +147,7 @@
       overflow-x: hidden; /* 横方向のはみ出しを隠す */
       transition: width 0.3s ease-in-out; /* アニメーション */
       z-index: 1020;
-      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 4px 0 8px var(--main-shadow-color-with-alpha);
       border-right: 1px solid #e0e0e0;
     }
 
@@ -214,7 +223,7 @@
     .offcanvas {
         background-color: {% user_parameter 'LEFT_MENU_COLOR' '#f8f9fa' %};
         color: {% user_parameter 'LEFT_MENU_TEXT_COLOR' '#000000' %};
-        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 4px 0 8px var(--main-shadow-color-with-alpha);
         border-right: 1px solid #e0e0e0;
     }
     .offcanvas-header {
@@ -278,7 +287,7 @@
 .content-box {
     background-color: white; /* 白塗り */
     border-radius: 15px; /* 丸み */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* 影を追加 */
+    box-shadow: 0 4px 8px var(--main-shadow-color-with-alpha); /* 影を追加 */
 }
 /* 通常テキストと同じ見た目にする */
 .no-link-style,
