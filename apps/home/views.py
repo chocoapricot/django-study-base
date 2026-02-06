@@ -28,6 +28,7 @@ from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from apps.staff.models import StaffContactSchedule
 from apps.client.models import ClientContactSchedule
+from django.db.models import Exists, OuterRef
 import jpholiday
 
 @login_required
@@ -96,10 +97,20 @@ def contact_schedule_summary(request):
     # 10日間の予定詳細リストを取得（過去分も含む）
     staff_schedules = []
     if has_staff_perm:
+        from apps.staff.models_other import StaffFavorite, StaffInternational, StaffDisability
         staff_schedules = StaffContactSchedule.objects.filter(
             contact_date__lt=start_of_other
-        ).select_related('staff').order_by('contact_date', 'id')
+        ).select_related('staff').annotate(
+            is_favorite_staff=Exists(StaffFavorite.objects.filter(staff=OuterRef('staff_id'), user=request.user)),
+            has_international_staff=Exists(StaffInternational.objects.filter(staff=OuterRef('staff_id'))),
+            has_disability_staff=Exists(StaffDisability.objects.filter(staff=OuterRef('staff_id')))
+        ).order_by('contact_date', 'id')
         for s in staff_schedules:
+            # テンプレートタグがアクセスできるようにスタッフオブジェクトに値を伝播
+            s.staff.is_favorite = s.is_favorite_staff
+            s.staff.has_international_info = s.has_international_staff
+            s.staff.has_disability_info = s.has_disability_staff
+
             s.day_of_week = jp_weeks[s.contact_date.weekday()]
             s.weekday_num = s.contact_date.weekday()
             s.is_holiday = jpholiday.is_holiday(s.contact_date)
@@ -110,10 +121,16 @@ def contact_schedule_summary(request):
 
     client_schedules = []
     if has_client_perm:
+        from apps.client.models import ClientFavorite
         client_schedules = ClientContactSchedule.objects.filter(
             contact_date__lt=start_of_other
-        ).select_related('client').order_by('contact_date', 'id')
+        ).select_related('client').annotate(
+            is_favorite_client=Exists(ClientFavorite.objects.filter(client=OuterRef('client_id'), user=request.user))
+        ).order_by('contact_date', 'id')
         for s in client_schedules:
+            # テンプレートタグがアクセスできるようにクライアントオブジェクトに値を伝播
+            s.client.is_favorite = s.is_favorite_client
+
             s.day_of_week = jp_weeks[s.contact_date.weekday()]
             s.weekday_num = s.contact_date.weekday()
             s.is_holiday = jpholiday.is_holiday(s.contact_date)

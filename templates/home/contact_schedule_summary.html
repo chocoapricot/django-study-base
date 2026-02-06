@@ -2,6 +2,8 @@
 {% load badge_tags %}
 {% load dropdowns %}
 {% load help_tags %}
+{% load favorite_tags %}
+{% load staff_tags %}
 
 {% block content %}
 <style>
@@ -179,8 +181,13 @@
                                     <span class="badge bg-secondary ms-1" style="font-size: 0.6rem;">昨日</span>
                                 {% endif %}
                             </td>
-                            <td class="fw-bold">
-                                {{ schedule.staff.name_last }} {{ schedule.staff.name_first }}
+                            <td>
+                                <a href="{% url 'staff:staff_detail' schedule.staff.pk %}" target="_blank" class="text-decoration-none">
+                                    {{ schedule.staff.name_last }} {{ schedule.staff.name_first }}
+                                    <i class="bi bi-box-arrow-up-right ms-1 small"></i>
+                                </a>
+                                {% favorite_star schedule.staff %}
+                                {% staff_status_markers schedule.staff %}
                             </td>
                             <td>
                                 {% if schedule.contact_type %}
@@ -234,8 +241,12 @@
                                     <span class="badge bg-secondary ms-1" style="font-size: 0.6rem;">昨日</span>
                                 {% endif %}
                             </td>
-                            <td class="fw-bold">
-                                {{ schedule.client.name }}
+                            <td>
+                                <a href="{% url 'client:client_detail' schedule.client.pk %}" target="_blank" class="text-decoration-none">
+                                    {{ schedule.client.name }}
+                                    <i class="bi bi-box-arrow-up-right ms-1 small"></i>
+                                </a>
+                                {% favorite_star schedule.client %}
                             </td>
                             <td>
                                 {% if schedule.contact_type %}
