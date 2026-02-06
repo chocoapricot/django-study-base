@@ -8,7 +8,7 @@
         "created_by": 1,
         "updated_at": "2026-01-29T10:27:33.665Z",
         "updated_by": 1,
-        "tenant_id": null,
+        "tenant_id": 1,
         "name": "問い合わせ",
         "display_order": 10,
         "is_active": true
@@ -23,7 +23,7 @@
         "created_by": 1,
         "updated_at": "2026-01-29T10:27:43.493Z",
         "updated_by": 1,
-        "tenant_id": null,
+        "tenant_id": 1,
         "name": "打ち合わせ",
         "display_order": 20,
         "is_active": true
@@ -38,7 +38,7 @@
         "created_by": 1,
         "updated_at": "2026-01-29T10:27:54.037Z",
         "updated_by": 1,
-        "tenant_id": null,
+        "tenant_id": 1,
         "name": "クレーム",
         "display_order": 40,
         "is_active": true
@@ -53,7 +53,7 @@
         "created_by": 1,
         "updated_at": "2026-01-29T10:28:03.591Z",
         "updated_by": 1,
-        "tenant_id": null,
+        "tenant_id": 1,
         "name": "メール配信",
         "display_order": 50,
         "is_active": true
