@@ -144,11 +144,6 @@
                                         <span class="copy-message">コピーしました!</span>
                                     </span>
                                 {% endif %}
-                                {% if staff.grade %}
-                                    <span class="badge bg-secondary ms-2" style="font-size:15px">
-                                        {{ staff.grade_object.name|default:staff.grade }}
-                                    </span>
-                                {% endif %}
                                 {% if staff.has_mynumber %}
                                 <a href="{% url 'staff:staff_mynumber_detail' staff.pk %}" class="btn btn-sm btn-primary ms-2" title="マイナンバー">
                                     <i class="bi bi-credit-card"></i>

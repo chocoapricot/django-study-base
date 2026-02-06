@@ -449,37 +449,7 @@ class StaffFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('雇用形態を選択する場合は、入社日も入力してください', str(form.errors))
 
-    def test_grade_field_in_form(self):
-        """等級フィールドのテスト"""
-        from apps.master.models import StaffGrade
-        # 等級マスタを作成
-        grade_1 = StaffGrade.objects.create(
-            code='G1', name='等級1', salary_type='hourly', amount=1000, is_active=True
-        )
 
-        form_data = {
-            'regist_status': self.regist_status_1.pk,
-            'employee_no': 'EMP100',
-            'employment_type': self.employment_type_1.pk,
-            'name_last': '山田',
-            'name_first': '太郎',
-            'name_kana_last': 'ヤマダ',
-            'name_kana_first': 'タロウ',
-            'birth_date': date(1990, 1, 1),
-            'sex': '1',
-            'hire_date': date(2020, 4, 1),
-            'grade': 'G1',
-            'postal_code': '1000001',
-            'address1': '東京都',
-            'phone': '03-1234-5678',
-            'email': 'yamada_grade@example.com'
-        }
-
-        form = StaffForm(data=form_data)
-        self.assertTrue(form.is_valid())
-        staff = form.save()
-        self.assertEqual(staff.grade, 'G1')
-        self.assertEqual(staff.grade_object.name, '等級1')
 
     def test_valid_all_three_fields_filled(self):
         """入社日・社員番号・雇用形態すべて入力済みの場合は有効"""

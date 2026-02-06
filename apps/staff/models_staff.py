@@ -42,9 +42,9 @@ class Staff(MyTenantModel):
         null=True
     )
     employee_no = models.CharField('社員番号', max_length=10, unique=True, blank=True, null=True, help_text='半角英数字10文字まで')
-    grade = models.CharField('等級', max_length=20, blank=True, null=True)
     # 入社・退職・所属情報
     hire_date = models.DateField('入社日', blank=True, null=True)
+
     resignation_date = models.DateField('退職日', blank=True, null=True)
     department_code = models.CharField('所属部署コード', max_length=20, blank=True, null=True, help_text='会社部署の部署コードを参照')
     memo = models.TextField('メモ', blank=True, null=True)
@@ -195,14 +195,6 @@ class Staff(MyTenantModel):
         elif self.name_first:
             return self.name_first[:2]
         return ""
-
-    @property
-    def grade_object(self):
-        """等級マスタオブジェクトを取得"""
-        if not self.grade:
-            return None
-        from apps.master.models import StaffGrade
-        return StaffGrade.objects.filter(code=self.grade, tenant_id=self.tenant_id, is_active=True).first()
 
     @property
     def avatar_color(self):
