@@ -1,0 +1,182 @@
+[
+{
+    "model": "master.grade",
+    "pk": 1,
+    "fields": {
+        "version": 1770383720671998,
+        "created_at": "2026-02-06T13:31:07.324Z",
+        "created_by": 1,
+        "updated_at": "2026-02-06T13:31:07.324Z",
+        "updated_by": 1,
+        "tenant_id": 1,
+        "code": "C-1",
+        "name": "新人レベル1",
+        "salary_type": "30",
+        "amount": 210000,
+        "start_date": null,
+        "end_date": null,
+        "display_order": 10,
+        "is_active": true
+    }
+},
+{
+    "model": "master.grade",
+    "pk": 2,
+    "fields": {
+        "version": 1770383744226462,
+        "created_at": "2026-02-06T13:31:30.878Z",
+        "created_by": 1,
+        "updated_at": "2026-02-06T13:31:30.878Z",
+        "updated_by": 1,
+        "tenant_id": 1,
+        "code": "C-2",
+        "name": "新人レベル2",
+        "salary_type": "30",
+        "amount": 220000,
+        "start_date": null,
+        "end_date": null,
+        "display_order": 11,
+        "is_active": true
+    }
+},
+{
+    "model": "master.grade",
+    "pk": 3,
+    "fields": {
+        "version": 1770383771114426,
+        "created_at": "2026-02-06T13:31:57.766Z",
+        "created_by": 1,
+        "updated_at": "2026-02-06T13:31:57.766Z",
+        "updated_by": 1,
+        "tenant_id": 1,
+        "code": "C-3",
+        "name": "新人レベル3",
+        "salary_type": "30",
+        "amount": 230000,
+        "start_date": null,
+        "end_date": null,
+        "display_order": 12,
+        "is_active": true
+    }
+},
+{
+    "model": "master.grade",
+    "pk": 4,
+    "fields": {
+        "version": 1770383838205804,
+        "created_at": "2026-02-06T13:33:04.858Z",
+        "created_by": 1,
+        "updated_at": "2026-02-06T13:33:04.858Z",
+        "updated_by": 1,
+        "tenant_id": 1,
+        "code": "B-1",
+        "name": "基本レベル1",
+        "salary_type": "30",
+        "amount": 300000,
+        "start_date": null,
+        "end_date": null,
+        "display_order": 30,
+        "is_active": true
+    }
+},
+{
+    "model": "master.grade",
+    "pk": 5,
+    "fields": {
+        "version": 1770383859983367,
+        "created_at": "2026-02-06T13:33:26.635Z",
+        "created_by": 1,
+        "updated_at": "2026-02-06T13:33:26.637Z",
+        "updated_by": 1,
+        "tenant_id": 1,
+        "code": "B-2",
+        "name": "基本レベル2",
+        "salary_type": "30",
+        "amount": 310000,
+        "start_date": null,
+        "end_date": null,
+        "display_order": 31,
+        "is_active": true
+    }
+},
+{
+    "model": "master.grade",
+    "pk": 6,
+    "fields": {
+        "version": 1770383893670022,
+        "created_at": "2026-02-06T13:33:52.086Z",
+        "created_by": 1,
+        "updated_at": "2026-02-06T13:34:00.322Z",
+        "updated_by": 1,
+        "tenant_id": 1,
+        "code": "B-3",
+        "name": "基本レベル3",
+        "salary_type": "30",
+        "amount": 320000,
+        "start_date": null,
+        "end_date": null,
+        "display_order": 32,
+        "is_active": true
+    }
+},
+{
+    "model": "master.grade",
+    "pk": 7,
+    "fields": {
+        "version": 1770383917643472,
+        "created_at": "2026-02-06T13:34:24.295Z",
+        "created_by": 1,
+        "updated_at": "2026-02-06T13:34:24.295Z",
+        "updated_by": 1,
+        "tenant_id": 1,
+        "code": "A-1",
+        "name": "熟練レベル1",
+        "salary_type": "30",
+        "amount": 400000,
+        "start_date": null,
+        "end_date": null,
+        "display_order": 40,
+        "is_active": true
+    }
+},
+{
+    "model": "master.grade",
+    "pk": 8,
+    "fields": {
+        "version": 1770383939517873,
+        "created_at": "2026-02-06T13:34:46.170Z",
+        "created_by": 1,
+        "updated_at": "2026-02-06T13:34:46.170Z",
+        "updated_by": 1,
+        "tenant_id": 1,
+        "code": "A-2",
+        "name": "熟練レベル2",
+        "salary_type": "30",
+        "amount": 410000,
+        "start_date": null,
+        "end_date": null,
+        "display_order": 41,
+        "is_active": true
+    }
+},
+{
+    "model": "master.grade",
+    "pk": 9,
+    "fields": {
+        "version": 1770383969513155,
+        "created_at": "2026-02-06T13:35:07.287Z",
+        "created_by": 1,
+        "updated_at": "2026-02-06T13:35:16.165Z",
+        "updated_by": 1,
+        "tenant_id": 1,
+        "code": "A-3",
+        "name": "熟練レベル3",
+        "salary_type": "30",
+        "amount": 420000,
+        "start_date": null,
+        "end_date": null,
+        "display_order": 42,
+        "is_active": true
+    }
+}
+]

@@ -43,6 +43,7 @@ SAMPLE_DATA_FILES = [
     ("_sample_data/master_contract_terms.json", "契約文言マスタデータ"),
     ("_sample_data/master_generative_ai_setting.json", "生成AI設定マスタデータ"),
     ("_sample_data/master_flag_status.json", "フラッグステータスマスタデータ"),
+    ("_sample_data/master_grade.json", "スタッフ等級マスタデータ"),
     ("_sample_data/company.json", "会社データ"),
     ("_sample_data/company_department.json", "部署データ"),
     ("_sample_data/company_user.json", "自社担当者データ"),
