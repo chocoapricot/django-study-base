@@ -135,6 +135,18 @@ class Staff(MyTenantModel):
 
         return "在職中"
 
+    def get_current_grade(self, date=None):
+        """指定日時点で有効な等級を取得"""
+        from django.utils import timezone
+        if date is None:
+            date = timezone.localdate()
+        
+        return self.grades.filter(
+            models.Q(valid_from__isnull=True) | models.Q(valid_from__lte=date)
+        ).filter(
+            models.Q(valid_to__isnull=True) | models.Q(valid_to__gte=date)
+        ).first()
+
     def __str__(self):
         return self.name_last + " " + self.name_first
 
@@ -471,6 +483,76 @@ class StaffGrade(MyTenantModel):
         blank=True,
         null=True
     )
+
+    def clean(self):
+        super().clean()
+        from django.core.exceptions import ValidationError
+        
+        # 自身の日付整合性チェック
+        if self.valid_from and self.valid_to and self.valid_from > self.valid_to:
+            raise ValidationError('有効期間開始日は有効期間終了日以前である必要があります。')
+            
+        # 重複チェック（スタッフが設定されている場合のみ）
+        if hasattr(self, 'staff') and self.staff:
+            qs = StaffGrade.objects.filter(staff=self.staff)
+            if self.pk:
+                qs = qs.exclude(pk=self.pk)
+            
+            for other in qs:
+                # 重複の判定条件: (A.start <= B.end or B.end is None) AND (B.start <= A.end or A.end is None)
+                # ただし A.start, B.start が None の場合はそれぞれ -infinity とみなす
+                
+                # AとBが重複しない条件: (A.end < B.start) OR (B.end < A.start)
+                # これを反転させると重複条件になる
+                
+                is_overlap = True
+                
+                # 条件1: 自身の終了日が相手の開始日より前 (重複しない)
+                if self.valid_to and other.valid_from and self.valid_to < other.valid_from:
+                    is_overlap = False
+                
+                # 条件2: 相手の終了日が自身の開始日より前 (重複しない)
+                elif other.valid_to and self.valid_from and other.valid_to < self.valid_from:
+                    is_overlap = False
+                
+                if is_overlap:
+                    start_str = self.valid_from.strftime('%Y/%m/%d') if self.valid_from else '無期限'
+                    end_str = self.valid_to.strftime('%Y/%m/%d') if self.valid_to else '無期限'
+                    other_start = other.valid_from.strftime('%Y/%m/%d') if other.valid_from else '無期限'
+                    other_end = other.valid_to.strftime('%Y/%m/%d') if other.valid_to else '無期限'
+                    
+                    raise ValidationError(
+                        f'有効期間が重複しています。入力: {start_str}～{end_str}, '
+                        f'既存: {other_start}～{other_end}'
+                    )
+
+    def save(self, *args, **kwargs):
+        if not kwargs.pop('skip_validation', False):
+            self.clean()
+        super().save(*args, **kwargs)
+
+    def is_valid_on_date(self, date=None):
+        """指定日時点で有効かどうかを判定"""
+        from django.utils import timezone
+        if date is None:
+            date = timezone.localdate()
+        
+        # 開始日チェック
+        if self.valid_from and date < self.valid_from:
+            return False
+        
+        # 終了日チェック
+        if self.valid_to and date > self.valid_to:
+            return False
+        
+        return True
+
+    @property
+    def grade_name(self):
+        """等級コードから名称を取得"""
+        from apps.master.models_staff import Grade
+        grade = Grade.objects.filter(code=self.grade_code, tenant_id=self.tenant_id).first()
+        return grade.name if grade else self.grade_code
 
     class Meta:
         db_table = 'apps_staff_grade'

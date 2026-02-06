@@ -6,11 +6,17 @@
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">
-        スタッフ等級 登録
+        スタッフ等級 {% if grade %}編集{% else %}登録{% endif %}
     </div>
     <div class="card-body">
         <form method="post">
             {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
             
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.grade_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">等級コード</label>
@@ -38,9 +44,50 @@
 
             <div class="d-flex justify-content-start">
                 <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
-                <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+                <a href="{% url 'staff:staff_grade_list' staff.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
             </div>
         </form>
+    </div>
+</div>
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        登録済みのスタッフ等級
+    </div>
+    <div class="card-body mb-0">
+        <table class="table table-hover mt-1 mb-0" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>等級（コード）</th>
+                    <th>有効期間</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for g in grades %}
+                <tr{% if grade and g.pk == grade.pk %} class="table-warning"{% endif %}{% if not g.is_valid_on_date %} style="opacity: 0.6;"{% endif %}>
+                    <td>{{ g.grade_name }} <span class="text-muted small">({{ g.grade_code }})</span></td>
+                    <td>
+                        {{ g.valid_from|date:"Y/m/d"|default:"無期限" }} ～ 
+                        {{ g.valid_to|date:"Y/m/d"|default:"" }}
+                        {% if not g.is_valid_on_date %}
+                            <span class="badge bg-secondary ms-1">無効</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'staff:staff_grade_update' g.pk %}" class="btn btn-dark btn-sm me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="編集">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{% url 'staff:staff_grade_delete' g.pk %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="削除">
+                            <i class="bi bi-x"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" class="text-center py-3">登録されている等級はありません。</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}
