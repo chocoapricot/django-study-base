@@ -92,9 +92,9 @@ django-study-base/
 └── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（114テーブル）
+## データベーステーブル一覧（116テーブル）
 
-### 本アプリケーション独自テーブル（97テーブル）
+### 本アプリケーション独自テーブル（99テーブル）
 
 | テーブル名 | モデル名 | 説明 |
 | --- | --- | --- |
@@ -150,6 +150,7 @@ django-study-base/
 | `apps_master_default_value` | `DefaultValue` | デフォルト値マスター |
 | `apps_master_employment_type` | `EmploymentType` | 雇用形態マスター |
 | `apps_master_flag_status` | `FlagStatus` | フラッグステータス |
+| `apps_master_grade` | `Grade` | スタッフ等級マスタ |
 | `apps_master_generative_ai_setting` | `GenerativeAiSetting` | 生成AI設定マスター |
 | `apps_master_information` | `Information` | お知らせマスター |
 | `apps_master_information_file` | `InformationFile` | お知らせファイル |
@@ -185,6 +186,7 @@ django-study-base/
 | `apps_staff_contacts` | `StaffContact` | スタッフ連絡先 |
 | `apps_staff_disability` | `StaffDisability` | スタッフ障害者情報 |
 | `apps_staff_flag` | `StaffFlag` | スタッフフラッグ |
+| `apps_staff_grade` | `StaffGrade` | スタッフ等級 |
 | `apps_staff_evaluation` | `StaffEvaluation` | スタッフ評価 |
 | `apps_staff_file` | `StaffFile` | スタッフファイル |
 | `apps_staff_international` | `StaffInternational` | スタッフ外国籍情報 |
