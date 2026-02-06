@@ -27,7 +27,7 @@ def staff_grade_create(request, staff_pk):
             try:
                 grade.save()
                 messages.success(request, '等級を登録しました。')
-                return redirect('staff:staff_grade_list', staff_pk=staff.pk)
+                return redirect('staff:staff_detail', pk=staff.pk)
             except ValidationError as e:
                 if hasattr(e, 'message_dict'):
                     for field, msgs in e.message_dict.items():
@@ -58,7 +58,7 @@ def staff_grade_update(request, pk):
             try:
                 form.save()
                 messages.success(request, '等級を更新しました。')
-                return redirect('staff:staff_grade_list', staff_pk=staff.pk)
+                return redirect('staff:staff_detail', pk=staff.pk)
             except ValidationError as e:
                 if hasattr(e, 'message_dict'):
                     for field, msgs in e.message_dict.items():
@@ -86,6 +86,6 @@ def staff_grade_delete(request, pk):
     if request.method == 'POST':
         grade.delete()
         messages.success(request, '等級を削除しました。')
-        return redirect('staff:staff_grade_list', staff_pk=staff.pk)
+        return redirect('staff:staff_detail', pk=staff.pk)
     
     return render(request, 'staff/staff_grade_confirm_delete.html', {'grade': grade, 'staff': staff})

@@ -554,6 +554,42 @@ class StaffGrade(MyTenantModel):
         grade = Grade.objects.filter(code=self.grade_code, tenant_id=self.tenant_id).first()
         return grade.name if grade else self.grade_code
 
+    @property
+    def duration(self):
+        """有効期間の長さを計算して文字列で返す"""
+        if not self.valid_from:
+            return ""
+        
+        from django.utils import timezone
+        from dateutil.relativedelta import relativedelta
+        today = timezone.localdate()
+        
+        end_date = None
+        if self.valid_to:
+            end_date = self.valid_to
+        elif self.valid_from <= today:
+            # 終了日がない（無期限）かつ開始日が今日以前なら、今日までとして計算
+            end_date = today
+            
+        if not end_date:
+            return ""
+        
+        # 終了日の翌日との差分を取ることで、当日分を含める
+        delta = relativedelta(end_date + relativedelta(days=1), self.valid_from)
+        
+        res = []
+        if delta.years > 0:
+            res.append(f"{delta.years}年")
+            # 年がある場合は、月が0でも「0ヶ月」と表示する
+            res.append(f"{delta.months}ヶ月")
+        elif delta.months > 0:
+            res.append(f"{delta.months}ヶ月")
+        
+        if not res:
+            return "1ヶ月未満"
+        
+        return "".join(res)
+
     class Meta:
         db_table = 'apps_staff_grade'
         verbose_name = 'スタッフ等級'
