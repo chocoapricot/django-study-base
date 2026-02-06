@@ -27,7 +27,7 @@ from .models import (
     StaffContactType,
     ClientContactType,
     StaffTag,
-    StaffGrade,
+    Grade,
     ClientTag,
     TimePunch,
     FlagStatus,
@@ -130,10 +130,10 @@ class JobCategoryForm(forms.ModelForm):
         }
 
 
-class StaffGradeForm(forms.ModelForm):
+class GradeForm(forms.ModelForm):
     """スタッフ等級フォーム"""
     class Meta:
-        model = StaffGrade
+        model = Grade
         fields = ['code', 'name', 'salary_type', 'amount', 'start_date', 'end_date', 'display_order', 'is_active']
         widgets = {
             'code': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),

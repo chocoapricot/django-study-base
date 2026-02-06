@@ -310,7 +310,7 @@ class StaffRegistStatus(MyTenantModel):
     def __str__(self):
         return self.name
 
-class StaffGrade(MyTenantModel):
+class Grade(MyTenantModel):
     """
     スタッフ等級マスタ
     """
@@ -324,7 +324,7 @@ class StaffGrade(MyTenantModel):
     is_active = models.BooleanField('有効', default=True)
 
     class Meta:
-        db_table = 'apps_master_staff_grade'
+        db_table = 'apps_master_grade'
         verbose_name = 'スタッフ等級'
         verbose_name_plural = 'スタッフ等級'
         ordering = ['display_order', 'code']

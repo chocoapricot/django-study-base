@@ -80,9 +80,9 @@ MASTER_CONFIGS = [
         "category": "スタッフ",
         "name": "スタッフ等級管理",
         "description": "スタッフの等級（給与単価）を管理",
-        "model": "master.StaffGrade",
-        "url_name": "master:staff_grade_list",
-        "permission": "master.view_staffgrade",
+        "model": "master.Grade",
+        "url_name": "master:grade_list",
+        "permission": "master.view_grade",
     },
     {
         "category": "クライアント",

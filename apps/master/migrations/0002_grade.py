@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="StaffGrade",
+            name="Grade",
             fields=[
                 (
                     "id",
@@ -102,7 +102,7 @@ class Migration(migrations.Migration):
             options={
                 "verbose_name": "スタッフ等級",
                 "verbose_name_plural": "スタッフ等級",
-                "db_table": "apps_master_staff_grade",
+                "db_table": "apps_master_grade",
                 "ordering": ["display_order", "code"],
                 "indexes": [
                     models.Index(

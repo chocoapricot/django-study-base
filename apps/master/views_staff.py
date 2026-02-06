@@ -15,12 +15,12 @@ from .models import (
     StaffRegistStatus,
     StaffContactType,
     StaffTag,
-    StaffGrade,
+    Grade,
 )
 from .forms import (
     EmploymentTypeForm,
     StaffRegistStatusForm,
-    StaffGradeForm,
+    GradeForm,
     StaffContactTypeForm,
     StaffTagForm,
     QualificationForm,
@@ -1071,81 +1071,81 @@ def staff_tag_change_history_list(request):
 
 # スタッフ等級管理ビュー
 @login_required
-@permission_required("master.view_staffgrade", raise_exception=True)
-def staff_grade_list(request):
+@permission_required("master.view_grade", raise_exception=True)
+def grade_list(request):
     """スタッフ等級一覧"""
     search_query = request.GET.get("search", "")
-    items = StaffGrade.objects.all()
+    items = Grade.objects.all()
     if search_query:
         items = items.filter(Q(name__icontains=search_query) | Q(code__icontains=search_query))
     items = items.order_by("display_order", "code")
     paginator = Paginator(items, 20)
     page = request.GET.get("page")
     items_page = paginator.get_page(page)
-    change_logs = AppLog.objects.filter(model_name="StaffGrade", action__in=["create", "update", "delete"]).order_by("-timestamp")[:5]
-    change_logs_count = AppLog.objects.filter(model_name="StaffGrade", action__in=["create", "update", "delete"]).count()
+    change_logs = AppLog.objects.filter(model_name="Grade", action__in=["create", "update", "delete"]).order_by("-timestamp")[:5]
+    change_logs_count = AppLog.objects.filter(model_name="Grade", action__in=["create", "update", "delete"]).count()
     context = {
         "items": items_page,
         "search_query": search_query,
         "change_logs": change_logs,
         "change_logs_count": change_logs_count,
-        "history_url_name": "master:staff_grade_change_history_list",
+        "history_url_name": "master:grade_change_history_list",
     }
-    return render(request, "master/staff_grade_list.html", context)
+    return render(request, "master/grade_list.html", context)
 
 
 @login_required
-@permission_required("master.add_staffgrade", raise_exception=True)
-def staff_grade_create(request):
+@permission_required("master.add_grade", raise_exception=True)
+def grade_create(request):
     """スタッフ等級作成"""
     if request.method == "POST":
-        form = StaffGradeForm(request.POST)
+        form = GradeForm(request.POST)
         if form.is_valid():
             item = form.save()
             messages.success(request, f"スタッフ等級「{item.name}」を作成しました。")
-            return redirect("master:staff_grade_list")
+            return redirect("master:grade_list")
     else:
-        form = StaffGradeForm()
+        form = GradeForm()
     context = {"form": form, "title": "スタッフ等級作成"}
-    return render(request, "master/staff_grade_form.html", context)
+    return render(request, "master/grade_form.html", context)
 
 
 @login_required
-@permission_required("master.change_staffgrade", raise_exception=True)
-def staff_grade_update(request, pk):
+@permission_required("master.change_grade", raise_exception=True)
+def grade_update(request, pk):
     """スタッフ等級編集"""
-    item = get_object_or_404(StaffGrade, pk=pk)
+    item = get_object_or_404(Grade, pk=pk)
     if request.method == "POST":
-        form = StaffGradeForm(request.POST, instance=item)
+        form = GradeForm(request.POST, instance=item)
         if form.is_valid():
             item = form.save()
             messages.success(request, f"スタッフ等級「{item.name}」を更新しました。")
-            return redirect("master:staff_grade_list")
+            return redirect("master:grade_list")
     else:
-        form = StaffGradeForm(instance=item)
+        form = GradeForm(instance=item)
     context = {"form": form, "item": item, "title": "スタッフ等級編集"}
-    return render(request, "master/staff_grade_form.html", context)
+    return render(request, "master/grade_form.html", context)
 
 
 @login_required
-@permission_required("master.delete_staffgrade", raise_exception=True)
-def staff_grade_delete(request, pk):
+@permission_required("master.delete_grade", raise_exception=True)
+def grade_delete(request, pk):
     """スタッフ等級削除"""
-    item = get_object_or_404(StaffGrade, pk=pk)
+    item = get_object_or_404(Grade, pk=pk)
     if request.method == "POST":
         item_name = item.name
         item.delete()
         messages.success(request, f"スタッフ等級「{item_name}」を削除しました。")
-        return redirect("master:staff_grade_list")
+        return redirect("master:grade_list")
     context = {"item": item, "title": "スタッフ等級削除"}
-    return render(request, "master/staff_grade_delete.html", context)
+    return render(request, "master/grade_delete.html", context)
 
 
 @login_required
-@permission_required("master.view_staffgrade", raise_exception=True)
-def staff_grade_change_history_list(request):
+@permission_required("master.view_grade", raise_exception=True)
+def grade_change_history_list(request):
     """スタッフ等級変更履歴一覧"""
-    logs = AppLog.objects.filter(model_name="StaffGrade", action__in=["create", "update", "delete"]).order_by("-timestamp")
+    logs = AppLog.objects.filter(model_name="Grade", action__in=["create", "update", "delete"]).order_by("-timestamp")
     paginator = Paginator(logs, 20)
     page = request.GET.get("page")
     logs_page = paginator.get_page(page)
@@ -1155,7 +1155,7 @@ def staff_grade_change_history_list(request):
         {
             "change_logs": logs_page,
             "page_title": "スタッフ等級変更履歴",
-            "back_url_name": "master:staff_grade_list",
-            "model_name": "StaffGrade",
+            "back_url_name": "master:grade_list",
+            "model_name": "Grade",
         },
     )
