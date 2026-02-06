@@ -31,6 +31,7 @@ def contract_search(request):
     from datetime import date, datetime
     from django.db.models import Q
     from apps.contract.models import StaffContract
+    from apps.staff.utils import get_annotated_staff_queryset, annotate_staff_connection_info
     
     # 年月の取得（デフォルトは当月）
     today = timezone.localdate()
@@ -57,13 +58,27 @@ def contract_search(request):
     # 検索対象の契約を取得
     # 契約期間が指定月と重なるものを抽出
     # start_date <= month_end AND (end_date >= month_start OR end_date IS NULL)
-    contracts = StaffContract.objects.select_related(
-        'staff', 'staff__international', 'staff__disability'
-    ).filter(
+
+    # スタッフの注釈を事前に取得
+    annotated_staffs = get_annotated_staff_queryset(request.user).select_related('international', 'disability')
+
+    contracts = StaffContract.objects.select_related('staff').filter(
+        staff__in=annotated_staffs,
         start_date__lte=month_end
     ).filter(
         Q(end_date__gte=target_date) | Q(end_date__isnull=True)
     ).order_by('staff__employee_no')
+
+    # 各スタッフのオブジェクトを注釈済みのもので置き換える、または注釈情報を付与する
+    # contract_searchではQuerySetの結果をループするので、その中でスタッフ情報を取得
+    staff_map = {s.pk: s for s in annotated_staffs.filter(pk__in=[c.staff_id for c in contracts])}
+    for contract in contracts:
+        if contract.staff_id in staff_map:
+            contract.staff = staff_map[contract.staff_id]
+
+    # 接続情報の付与
+    staff_list_for_connection = [contract.staff for contract in contracts]
+    annotate_staff_connection_info(staff_list_for_connection)
 
     # フィルタリング条件の取得
     input_status = request.GET.get('input_status')
@@ -140,6 +155,7 @@ def staff_search(request):
     from django.db.models import Q
     from apps.contract.models import StaffContract
     from apps.staff.models import Staff
+    from apps.staff.utils import get_annotated_staff_queryset, annotate_staff_connection_info
     
     # 年月の取得（デフォルトは当月）
     today = timezone.localdate()
@@ -165,13 +181,16 @@ def staff_search(request):
 
     # 指定月に有効な契約を持つスタッフを取得
     # 契約期間が指定月と重なるスタッフを抽出
-    staff_with_contracts = Staff.objects.select_related(
+    staff_with_contracts = get_annotated_staff_queryset(request.user).select_related(
         'international', 'disability'
     ).filter(
         contracts__start_date__lte=month_end
     ).filter(
         Q(contracts__end_date__gte=target_date) | Q(contracts__end_date__isnull=True)
     ).distinct().order_by('employee_no')
+
+    # 接続情報の付与
+    annotate_staff_connection_info(staff_with_contracts)
 
     # 各スタッフの情報を集計
     staff_list = []

@@ -1,6 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load badge_tags %}
-{% load favorite_tags %}
+{% load favorite_tags staff_tags %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
@@ -51,9 +51,21 @@
                     <tr>
                         <td>
                             {{ item.contract.staff.employee_no|default:"-" }}
+                            {% if item.contract.staff.next_contact_date %}
+                                <i class="bi bi-alarm ms-1 text-primary" title="連絡予定あり: {{ item.contract.staff.next_contact_date|date:'Y/m/d' }} {{ item.contract.staff.next_contact_content }}"></i>
+                            {% endif %}
+                            {% if item.contract.staff.has_pending_connection_request %}
+                                <i class="bi bi-arrow-up-circle" style="color:#17a2b8;" title="接続申請中"></i>
+                            {% elif item.contract.staff.is_connected_approved %}
+                                {% if item.contract.staff.has_pending_profile_request or item.contract.staff.has_pending_mynumber_request or item.contract.staff.has_pending_bank_request or item.contract.staff.has_pending_contact_request or item.contract.staff.has_pending_international_request or item.contract.staff.has_pending_disability_request %}
+                                    <i class="bi bi-arrow-down-circle" style="color:#17a2b8;" title="変更あり"></i>
+                                {% else %}
+                                    <i class="bi bi-link" style="color:#17a2b8;" title="接続承認済み"></i>
+                                {% endif %}
+                            {% endif %}
                         </td>
                         <td>
-                            {{ item.contract.staff.name }}{% favorite_star item.contract.staff %}
+                            {{ item.contract.staff.name }}{% favorite_star item.contract.staff %}{% staff_status_markers item.contract.staff %}
                         </td>
                         <td>
                             {% if item.contract.employment_type %}
