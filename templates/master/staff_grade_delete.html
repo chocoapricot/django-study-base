@@ -1,0 +1,47 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block title %}スタッフ等級削除{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">スタッフ等級削除</div>
+    <div class="card-body">
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            スタッフ等級「{{ item.name }}」を削除しますか？ この操作は取り消せません。
+        </div>
+
+        <div class="mb-4">
+            <table class="table table-bordered table-sm" style="max-width: 600px;">
+                <tr>
+                    <th width="30%" class="bg-light text-end">コード</th>
+                    <td>{{ item.code }}</td>
+                </tr>
+                <tr>
+                    <th class="bg-light text-end">名称</th>
+                    <td>{{ item.name }}</td>
+                </tr>
+                <tr>
+                    <th class="bg-light text-end">給与種別</th>
+                    <td>{{ item.get_salary_type_display }}</td>
+                </tr>
+                <tr>
+                    <th class="bg-light text-end">金額</th>
+                    <td>{{ item.amount|floatformat:"0" }}円</td>
+                </tr>
+            </table>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <button type="submit" class="btn btn-sm btn-dark">削除</button>
+                    <a href="{% url 'master:staff_grade_list' %}" class="btn btn-sm btn-secondary ms-2">キャンセル</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

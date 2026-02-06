@@ -210,6 +210,15 @@ def get_notification_type_choices():
     ]
 
 
+def get_pay_unit_choices():
+    """支払単位の選択肢リストを返す"""
+    return [
+        (Constants.PAY_UNIT.HOURLY, '時給'),
+        (Constants.PAY_UNIT.DAILY, '日給'),
+        (Constants.PAY_UNIT.MONTHLY, '月給'),
+    ]
+
+
 def get_time_rounding_unit_choices():
     """時間丸め単位の選択肢リストを返す"""
     return [

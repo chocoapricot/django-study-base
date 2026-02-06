@@ -152,6 +152,13 @@ urlpatterns = [
     path('staff-tag/<int:pk>/delete/', views.staff_tag_delete, name='staff_tag_delete'),
     path('staff-tag/history/', views.staff_tag_change_history_list, name='staff_tag_change_history_list'),
 
+    # スタッフ等級管理
+    path('staff-grade/', views.staff_grade_list, name='staff_grade_list'),
+    path('staff-grade/create/', views.staff_grade_create, name='staff_grade_create'),
+    path('staff-grade/<int:pk>/update/', views.staff_grade_update, name='staff_grade_update'),
+    path('staff-grade/<int:pk>/delete/', views.staff_grade_delete, name='staff_grade_delete'),
+    path('staff-grade/history/', views.staff_grade_change_history_list, name='staff_grade_change_history_list'),
+
     # フラッグステータス管理
     path('flag-status/', views.flag_status_list, name='flag_status_list'),
     path('flag-status/create/', views.flag_status_create, name='flag_status_create'),

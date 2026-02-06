@@ -27,6 +27,7 @@ from .models import (
     StaffContactType,
     ClientContactType,
     StaffTag,
+    StaffGrade,
     ClientTag,
     TimePunch,
     FlagStatus,
@@ -124,6 +125,23 @@ class JobCategoryForm(forms.ModelForm):
             'is_manufacturing_dispatch': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'is_agriculture_fishery_dispatch': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'is_specified_skilled_worker': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+
+class StaffGradeForm(forms.ModelForm):
+    """スタッフ等級フォーム"""
+    class Meta:
+        model = StaffGrade
+        fields = ['code', 'name', 'salary_type', 'amount', 'start_date', 'end_date', 'display_order', 'is_active']
+        widgets = {
+            'code': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'salary_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'amount': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
