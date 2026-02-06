@@ -4,6 +4,7 @@ from apps.staff.models import Staff, StaffGrade
 from apps.company.models import Company
 from apps.common.middleware import set_current_tenant_id
 from datetime import date
+from dateutil.relativedelta import relativedelta
 
 class StaffGradeOverlapTest(TestCase):
     def setUp(self):
@@ -18,7 +19,7 @@ class StaffGradeOverlapTest(TestCase):
         from django.contrib.auth import get_user_model
         User = get_user_model()
         self.user = User.objects.create_user(username='testuser', password='password')
-        from django_currentuser.middleware import set_current_user
+        from django_currentuser.middleware import _set_current_user as set_current_user
         set_current_user(self.user)
 
         # スタッフデータの作成
@@ -137,7 +138,7 @@ class StaffGradeDurationTest(TestCase):
         from django.contrib.auth import get_user_model
         User = get_user_model()
         self.user = User.objects.create_user(username='testuser_duration', password='password')
-        from django_currentuser.middleware import set_current_user
+        from django_currentuser.middleware import _set_current_user as set_current_user
         set_current_user(self.user)
 
         self.staff = Staff.objects.create(
