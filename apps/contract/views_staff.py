@@ -21,10 +21,8 @@ from apps.system.logs.models import AppLog
 # # from apps.common.utils import fill_pdf_from_template
 from apps.client.models import Client, ClientUser
 from apps.staff.models import Staff
-from apps.master.models import ContractPattern, StaffAgreement, DefaultValue
+from apps.master.models import ContractPattern, StaffAgreement, DefaultValue, Grade
 from apps.connect.models import ConnectStaff, ConnectStaffAgree, ConnectClient, MynumberRequest, ProfileRequest, BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
-from apps.staff.models import Staff
-from apps.client.models import Client
 from apps.company.models import Company, CompanyDepartment
 from apps.system.settings.models import Dropdowns
 from reportlab.pdfgen import canvas
@@ -337,6 +335,20 @@ def staff_contract_detail(request, pk):
                 minimum_wage = minimum_wage_record.hourly_wage
                 minimum_wage_pref_name = found_prefecture.name
 
+    # 等級ベースの給与情報を取得
+    grade_master = None
+    ref_date = contract.start_date
+    staff_grade = contract.staff.get_current_grade(ref_date)
+    if staff_grade:
+        grade_master = Grade.objects.filter(
+            code=staff_grade.grade_code,
+            is_active=True
+        ).filter(
+            Q(start_date__isnull=True) | Q(start_date__lte=ref_date)
+        ).filter(
+            Q(end_date__isnull=True) | Q(end_date__gte=ref_date)
+        ).first()
+
     # TTPアサインメントの有無を確認
     has_ttp_assignment = False
     for assignment in contract.assigned_assignments:
@@ -388,6 +400,7 @@ def staff_contract_detail(request, pk):
         'assignment_pk': assignment_pk,
         'minimum_wage': minimum_wage,
         'minimum_wage_pref_name': minimum_wage_pref_name,
+        'grade_master': grade_master,
         'has_ttp_assignment': has_ttp_assignment,
         'CONTRACT_STATUS': Constants.CONTRACT_STATUS,
         'Constants': Constants,

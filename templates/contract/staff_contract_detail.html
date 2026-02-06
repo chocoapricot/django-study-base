@@ -127,6 +127,11 @@
                                     {% else %}
                                         -
                                     {% endif %}
+                                    {% if grade_master %}
+                                        <div class="small text-muted mt-1">
+                                            <i class="bi bi-award me-1"></i>等級給：{{ grade_master.name }} ({{ grade_master.get_salary_type_display }}) {{ grade_master.amount|intcomma }}円
+                                        </div>
+                                    {% endif %}
                                 </td>
                             </tr>
                             <tr>
