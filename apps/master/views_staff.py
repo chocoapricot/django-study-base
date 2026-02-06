@@ -1170,6 +1170,37 @@ def grade_change_history_list(request):
 
 
 @login_required
+@permission_required("master.view_grade", raise_exception=True)
+def grade_export(request):
+    """スタッフ等級データをCSVでエクスポート"""
+    # アクティブな等級データを取得
+    grades = Grade.objects.filter(is_active=True).order_by("display_order", "code")
+
+    # 給与種別のラベルマップを作成
+    pay_unit_map = {code: label for code, label in get_pay_unit_choices()}
+
+    # レスポンスの設定
+    response = HttpResponse(content_type="text/csv; charset=utf-8")
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    response["Content-Disposition"] = f'attachment; filename="grade_master_{timestamp}.csv"'
+
+    # BOMを追加
+    response.write("\ufeff".encode("utf-8"))
+
+    writer = csv.writer(response)
+    for grade in grades:
+        writer.writerow([
+            grade.start_date.strftime("%Y/%m/%d") if grade.start_date else "",
+            grade.code,
+            grade.name,
+            pay_unit_map.get(grade.salary_type, ""),
+            grade.amount,
+        ])
+
+    return response
+
+
+@login_required
 @permission_required("master.add_grade", raise_exception=True)
 def grade_import(request):
     """スタッフ等級CSV取込ページを表示"""
