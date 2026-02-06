@@ -5,6 +5,13 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
+<style>
+    /* salary_type のプルダウンを狭くする */
+    #id_salary_type {
+        width: 110px !important;
+        max-width: 110px !important;
+    }
+</style>
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">{{ title }}</div>
     <div class="card-body">
@@ -12,7 +19,7 @@
             {% csrf_token %}
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">コード</label>
+                <label for="{{ form.code.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">コード</label>
                 <div class="col-sm-3">
                     {{ form.code }}
                     {% if form.code.errors %}
@@ -22,7 +29,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">名称</label>
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">名称</label>
                 <div class="col-sm-6">
                     {{ form.name }}
                     {% if form.name.errors %}
@@ -32,22 +39,16 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.salary_type.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">給与種別</label>
-                <div class="col-sm-3">
-                    {{ form.salary_type }}
-                    {% if form.salary_type.errors %}
-                        <div class="text-danger small">{{ form.salary_type.errors.0 }}</div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.amount.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">金額</label>
-                <div class="col-sm-3">
+                <label for="{{ form.salary_type.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">給与種別・金額</label>
+                <div class="col-sm-4">
                     <div class="input-group input-group-sm">
+                        {{ form.salary_type }}
                         {{ form.amount }}
                         <span class="input-group-text">円</span>
                     </div>
+                    {% if form.salary_type.errors %}
+                        <div class="text-danger small">{{ form.salary_type.errors.0 }}</div>
+                    {% endif %}
                     {% if form.amount.errors %}
                         <div class="text-danger small">{{ form.amount.errors.0 }}</div>
                     {% endif %}
@@ -55,7 +56,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.start_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">有効期間</label>
+                <label for="{{ form.start_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">有効期間</label>
                 <div class="col-sm-8">
                     <div class="d-flex align-items-center">
                         <div style="width: 200px;">
@@ -77,7 +78,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">表示順</label>
+                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">表示順</label>
                 <div class="col-sm-3">
                     {{ form.display_order }}
                     {% if form.display_order.errors %}
