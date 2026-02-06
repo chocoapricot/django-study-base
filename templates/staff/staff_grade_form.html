@@ -1,0 +1,46 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block content %}
+{% include 'staff/_staff_info_card.html' with staff=staff %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        スタッフ等級 登録
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.grade_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">等級コード</label>
+                <div class="col-sm-6">
+                    {{ form.grade_code }}
+                    {{ form.grade_code.errors }}
+                </div>
+            </div>
+            
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.valid_from.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">有効期間開始</label>
+                <div class="col-sm-6">
+                    {{ form.valid_from }}
+                    {{ form.valid_from.errors }}
+                </div>
+            </div>
+            
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.valid_to.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">有効期間終了</label>
+                <div class="col-sm-6">
+                    {{ form.valid_to }}
+                    {{ form.valid_to.errors }}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
+                <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

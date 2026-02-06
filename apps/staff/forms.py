@@ -2,7 +2,7 @@
 import os
 from django import forms
 from django.forms import TextInput
-from .models import Staff, StaffContacted, StaffContactSchedule, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact, StaffFlag
+from .models import Staff, StaffContacted, StaffContactSchedule, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact, StaffFlag, StaffGrade
 from django.core.exceptions import ValidationError
 from apps.common.forms import MyRadioSelect, BadgeRadioSelect, BadgeCheckboxSelectMultiple
 
@@ -799,3 +799,29 @@ class StaffTagEditForm(forms.ModelForm):
         # バッジクラスマップを設定
         badge_class_map = {str(t.pk): badge_class(t.display_order) for t in qs}
         self.fields['tags'].widget.badge_class_map = badge_class_map
+
+
+class StaffGradeForm(forms.ModelForm):
+    """スタッフ等級フォーム"""
+    class Meta:
+        model = StaffGrade
+        fields = ['grade_code', 'valid_from', 'valid_to']
+        widgets = {
+            'grade_code': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'valid_from': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'valid_to': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from apps.master.models_staff import Grade
+        from apps.common.middleware import get_current_tenant_id
+        
+        tenant_id = get_current_tenant_id()
+        grades = Grade.objects.filter(is_active=True)
+        if tenant_id:
+            grades = grades.filter(tenant_id=tenant_id)
+        
+        self.fields['grade_code'].choices = [('', '選択してください')] + [
+            (g.code, f"{g.name} ({g.code})") for g in grades.order_by('display_order', 'code')
+        ]

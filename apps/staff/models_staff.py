@@ -444,3 +444,39 @@ class StaffSkill(MyTenantModel):
 
     def __str__(self):
         return f"{self.staff} - {self.skill}"
+
+
+class StaffGrade(MyTenantModel):
+    """
+    スタッフの等級情報を管理するモデル。
+    """
+    staff = models.ForeignKey(
+        Staff,
+        on_delete=models.CASCADE,
+        related_name='grades',
+        verbose_name='スタッフ'
+    )
+    grade_code = models.CharField(
+        '等級コード',
+        max_length=20,
+        help_text='スタッフ等級マスタのコード'
+    )
+    valid_from = models.DateField(
+        '有効期間開始',
+        blank=True,
+        null=True
+    )
+    valid_to = models.DateField(
+        '有効期間終了',
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        db_table = 'apps_staff_grade'
+        verbose_name = 'スタッフ等級'
+        verbose_name_plural = 'スタッフ等級'
+        ordering = ['-valid_from']
+
+    def __str__(self):
+        return f"{self.staff} - {self.grade_code}"

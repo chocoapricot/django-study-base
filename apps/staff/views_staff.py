@@ -123,6 +123,8 @@ def staff_change_history_list(request, pk):
     skill_ids = list(staff.skills.values_list('pk', flat=True))
     file_ids = list(staff.files.values_list('pk', flat=True))
 
+    grade_ids = list(staff.grades.values_list('pk', flat=True))
+
     # 1対1の関連オブジェクトのIDを取得（存在する場合）
     mynumber_id = getattr(staff, 'mynumber', None) and staff.mynumber.pk
     contact_id = getattr(staff, 'contact', None) and staff.contact.pk
@@ -133,7 +135,7 @@ def staff_change_history_list(request, pk):
 
     # 削除されたオブジェクトのIDを取得するために、スタッフ名を含む削除ログから object_id を抽出
     deleted_object_ids = {}
-    for model_name in ['StaffQualification', 'StaffSkill', 'StaffFile', 'StaffMynumber', 
+    for model_name in ['StaffQualification', 'StaffSkill', 'StaffFile', 'StaffGrade', 'StaffMynumber', 
                        'StaffContact', 'StaffBank', 'StaffInternational', 'StaffDisability', 'StaffPayroll']:
         deleted_logs = AppLog.objects.filter(
             model_name=model_name,
@@ -147,6 +149,7 @@ def staff_change_history_list(request, pk):
     all_qualification_ids = [str(pk) for pk in qualification_ids] + deleted_object_ids.get('StaffQualification', [])
     all_skill_ids = [str(pk) for pk in skill_ids] + deleted_object_ids.get('StaffSkill', [])
     all_file_ids = [str(pk) for pk in file_ids] + deleted_object_ids.get('StaffFile', [])
+    all_grade_ids = [str(pk) for pk in grade_ids] + deleted_object_ids.get('StaffGrade', [])
     all_mynumber_ids = ([str(mynumber_id)] if mynumber_id else []) + deleted_object_ids.get('StaffMynumber', [])
     all_contact_ids = ([str(contact_id)] if contact_id else []) + deleted_object_ids.get('StaffContact', [])
     all_bank_ids = ([str(bank_id)] if bank_id else []) + deleted_object_ids.get('StaffBank', [])
@@ -159,6 +162,7 @@ def staff_change_history_list(request, pk):
         django_models.Q(model_name='StaffQualification', object_id__in=all_qualification_ids) |
         django_models.Q(model_name='StaffSkill', object_id__in=all_skill_ids) |
         django_models.Q(model_name='StaffFile', object_id__in=all_file_ids) |
+        django_models.Q(model_name='StaffGrade', object_id__in=all_grade_ids) |
         django_models.Q(model_name='StaffMynumber', object_id__in=all_mynumber_ids) |
         django_models.Q(model_name='StaffContact', object_id__in=all_contact_ids) |
         django_models.Q(model_name='StaffBank', object_id__in=all_bank_ids) |
@@ -549,6 +553,7 @@ def staff_detail(request, pk):
     skill_ids = list(staff.skills.values_list('pk', flat=True))
     file_ids = list(staff.files.values_list('pk', flat=True))
     flag_ids = list(staff.flags.values_list('pk', flat=True))
+    grade_ids = list(staff.grades.values_list('pk', flat=True))
 
     # 1対1の関連オブジェクトのIDを取得（存在する場合）
     mynumber_id = getattr(staff, 'mynumber', None) and staff.mynumber.pk
@@ -562,7 +567,7 @@ def staff_detail(request, pk):
     
     # 削除されたオブジェクトのIDを取得するために、スタッフ名を含む削除ログから object_id を抽出
     deleted_object_ids = {}
-    for model_name in ['StaffQualification', 'StaffSkill', 'StaffFile', 'StaffFlag', 'StaffMynumber', 
+    for model_name in ['StaffQualification', 'StaffSkill', 'StaffFile', 'StaffFlag', 'StaffGrade', 'StaffMynumber', 
                        'StaffContact', 'StaffBank', 'StaffInternational', 'StaffDisability', 'StaffPayroll']:
         deleted_logs = AppLog.objects.filter(
             model_name=model_name,
@@ -577,6 +582,7 @@ def staff_detail(request, pk):
     all_skill_ids = [str(pk) for pk in skill_ids] + deleted_object_ids.get('StaffSkill', [])
     all_file_ids = [str(pk) for pk in file_ids] + deleted_object_ids.get('StaffFile', [])
     all_flag_ids = [str(pk) for pk in flag_ids] + deleted_object_ids.get('StaffFlag', [])
+    all_grade_ids = [str(pk) for pk in grade_ids] + deleted_object_ids.get('StaffGrade', [])
     all_mynumber_ids = ([str(mynumber_id)] if mynumber_id else []) + deleted_object_ids.get('StaffMynumber', [])
     all_contact_ids = ([str(contact_id)] if contact_id else []) + deleted_object_ids.get('StaffContact', [])
     all_bank_ids = ([str(bank_id)] if bank_id else []) + deleted_object_ids.get('StaffBank', [])
@@ -590,6 +596,7 @@ def staff_detail(request, pk):
         django_models.Q(model_name='StaffSkill', object_id__in=all_skill_ids) |
         django_models.Q(model_name='StaffFile', object_id__in=all_file_ids) |
         django_models.Q(model_name='StaffFlag', object_id__in=all_flag_ids) |
+        django_models.Q(model_name='StaffGrade', object_id__in=all_grade_ids) |
         django_models.Q(model_name='StaffMynumber', object_id__in=all_mynumber_ids) |
         django_models.Q(model_name='StaffContact', object_id__in=all_contact_ids) |
         django_models.Q(model_name='StaffBank', object_id__in=all_bank_ids) |
