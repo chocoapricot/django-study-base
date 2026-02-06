@@ -3,10 +3,17 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import HttpResponse
-from datetime import datetime
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.http import require_POST
+from django.core.cache import cache
+from django.conf import settings
+from django.db import transaction
+from datetime import datetime, timezone, timedelta
+import uuid
+import os
+import csv
 
-from apps.common.constants import Constants
+from apps.common.constants import Constants, get_pay_unit_choices
 from .models import (
     Qualification,
     Skill,
@@ -21,6 +28,7 @@ from .forms import (
     EmploymentTypeForm,
     StaffRegistStatusForm,
     GradeForm,
+    CSVImportForm,
     StaffContactTypeForm,
     StaffTagForm,
     QualificationForm,
@@ -1159,3 +1167,208 @@ def grade_change_history_list(request):
             "model_name": "Grade",
         },
     )
+
+
+@login_required
+@permission_required("master.add_grade", raise_exception=True)
+def grade_import(request):
+    """スタッフ等級CSV取込ページを表示"""
+    form = CSVImportForm()
+    context = {
+        "form": form,
+        "title": "スタッフ等級CSV取込",
+    }
+    return render(request, "master/grade_import.html", context)
+
+
+@login_required
+@permission_required("master.add_grade", raise_exception=True)
+@require_POST
+def grade_import_upload(request):
+    """CSVファイルをアップロードしてタスクIDを返す"""
+    form = CSVImportForm(request.POST, request.FILES)
+    if form.is_valid():
+        csv_file = request.FILES["csv_file"]
+
+        # 一時保存ディレクトリを作成
+        temp_dir = os.path.join(settings.MEDIA_ROOT, "temp_uploads")
+        os.makedirs(temp_dir, exist_ok=True)
+
+        # ユニークなファイル名を生成
+        task_id = str(uuid.uuid4())
+        temp_file_path = os.path.join(temp_dir, f"{task_id}.csv")
+
+        # ファイルを一時保存
+        with open(temp_file_path, "wb+") as f:
+            for chunk in csv_file.chunks():
+                f.write(chunk)
+
+        # キャッシュにタスク情報を保存
+        cache.set(
+            f"import_task_{task_id}",
+            {
+                "file_path": temp_file_path,
+                "status": "uploaded",
+                "progress": 0,
+                "total": 0,
+                "errors": [],
+                "start_time": datetime.now(timezone.utc).isoformat(),
+                "elapsed_time_seconds": 0,
+                "estimated_time_remaining_seconds": 0,
+            },
+            timeout=3600,
+        )
+
+        return JsonResponse({"task_id": task_id})
+
+    return JsonResponse(
+        {"error": "CSVファイルのアップロードに失敗しました。"}, status=400
+    )
+
+
+@login_required
+@permission_required("master.add_grade", raise_exception=True)
+@require_POST
+def grade_import_process(request, task_id):
+    """CSVファイルのインポート処理を実行"""
+    task_info = cache.get(f"import_task_{task_id}")
+    if not task_info or task_info["status"] != "uploaded":
+        return JsonResponse({"error": "無効なタスクIDです。"}, status=400)
+
+    file_path = task_info["file_path"]
+    start_time = datetime.fromisoformat(task_info["start_time"])
+
+    try:
+        # ファイルのエンコーディングを確認（BOM付きUTF-8に対応するため）
+        with open(file_path, "rb") as f:
+            content = f.read()
+            if content.startswith(b"\xef\xbb\xbf"):
+                decoded_content = content.decode("utf-8-sig")
+            else:
+                decoded_content = content.decode("utf-8")
+
+        reader = csv.reader(decoded_content.splitlines())
+        rows = [row for row in reader if row]
+        total_rows = len(rows)
+
+        task_info["total"] = total_rows
+        cache.set(f"import_task_{task_id}", task_info, timeout=3600)
+
+        imported_count = 0
+        errors = []
+
+        # 給与種別の逆引きマップ
+        pay_unit_map = {label: code for code, label in get_pay_unit_choices()}
+
+        for i, row in enumerate(rows):
+            progress = i + 1
+            try:
+                if len(row) < 5:
+                    raise ValueError("項目数が不足しています。")
+
+                start_date_str = row[0].strip()
+                code = row[1].strip()
+                name = row[2].strip()
+                salary_type_label = row[3].strip()
+                amount_str = row[4].strip()
+
+                if not start_date_str or not code or not name or not salary_type_label or not amount_str:
+                    raise ValueError("必須項目が空です。")
+
+                # バリデーションと変換
+                try:
+                    start_date = datetime.strptime(start_date_str, "%Y/%m/%d").date()
+                except ValueError:
+                    try:
+                        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+                    except ValueError:
+                        raise ValueError(f"有効期間開始日の形式が正しくありません: {start_date_str}")
+
+                salary_type = pay_unit_map.get(salary_type_label)
+                if not salary_type:
+                    raise ValueError(f"不正な給与種別です: {salary_type_label}")
+
+                try:
+                    amount = int(amount_str)
+                except ValueError:
+                    raise ValueError(f"金額が数値ではありません: {amount_str}")
+
+                with transaction.atomic():
+                    # 同じコードで、開始日時点で有効なデータがある場合、既存データの終了日を更新
+                    overlap_grades = Grade.objects.filter(
+                        code=code,
+                        is_active=True,
+                    ).filter(
+                        Q(end_date__isnull=True) | Q(end_date__gte=start_date)
+                    ).filter(start_date__lte=start_date)
+
+                    yesterday = start_date - timedelta(days=1)
+
+                    for old_grade in overlap_grades:
+                        old_grade.end_date = yesterday
+                        # もし開始日より前になってしまったら無効化すべきか？
+                        # とりあえず終了日を更新
+                        old_grade.save()
+
+                    # 新規登録
+                    Grade.objects.create(
+                        code=code,
+                        name=name,
+                        salary_type=salary_type,
+                        amount=amount,
+                        start_date=start_date,
+                        is_active=True,
+                    )
+                    imported_count += 1
+
+            except Exception as e:
+                errors.append(f"{progress}行目: {e}")
+
+            # 進捗と時間を更新
+            now = datetime.now(timezone.utc)
+            elapsed_time = now - start_time
+
+            if progress > 0 and total_rows > progress:
+                estimated_time_remaining = (elapsed_time / progress) * (
+                    total_rows - progress
+                )
+                task_info["estimated_time_remaining_seconds"] = int(
+                    estimated_time_remaining.total_seconds()
+                )
+            else:
+                task_info["estimated_time_remaining_seconds"] = 0
+
+            task_info["progress"] = progress
+            task_info["elapsed_time_seconds"] = int(elapsed_time.total_seconds())
+            cache.set(f"import_task_{task_id}", task_info, timeout=3600)
+
+        task_info["status"] = "completed"
+        task_info["errors"] = errors
+        task_info["imported_count"] = imported_count
+        cache.set(f"import_task_{task_id}", task_info, timeout=3600)
+
+        return JsonResponse(
+            {"status": "completed", "imported_count": imported_count, "errors": errors}
+        )
+
+    except Exception as e:
+        task_info = cache.get(f"import_task_{task_id}") or {}
+        task_info["status"] = "failed"
+        task_info["errors"] = [f"処理中に予期せぬエラーが発生しました: {e}"]
+        cache.set(f"import_task_{task_id}", task_info, timeout=3600)
+        return JsonResponse({"error": str(e)}, status=500)
+    finally:
+        # 一時ファイルを削除
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+
+@login_required
+@permission_required("master.add_grade", raise_exception=True)
+def grade_import_progress(request, task_id):
+    """インポートの進捗状況を返す"""
+    task_info = cache.get(f"import_task_{task_id}")
+    if not task_info:
+        return JsonResponse({"error": "無効なタスクIDです。"}, status=404)
+
+    return JsonResponse(task_info)
