@@ -207,6 +207,7 @@ def staff_contacted_delete(request, pk):
 @login_required
 @permission_required('staff.view_staff', raise_exception=True)
 def staff_list(request):
+    from .utils import get_annotated_staff_queryset, annotate_staff_connection_info
     staff_face_photo_style = get_staff_face_photo_style()
     sort = request.GET.get('sort', 'pk')  # デフォルトソートをpkに設定
     query = request.GET.get('q', '').strip()
@@ -220,22 +221,7 @@ def staff_list(request):
     is_registration_status_view = request.GET.get('registration_status', '') == 'true'
 
     # 基本のクエリセット
-    from django.db.models import OuterRef, Subquery, Exists
-    next_schedule = StaffContactSchedule.objects.filter(
-        staff=OuterRef('pk'),
-        contact_date__gte=timezone.localdate()
-    ).order_by('contact_date')
-
-    favorites = StaffFavorite.objects.filter(
-        staff=OuterRef('pk'),
-        user=request.user
-    )
-
-    staffs = Staff.objects.annotate(
-        next_contact_date=Subquery(next_schedule.values('contact_date')[:1]),
-        next_contact_content=Subquery(next_schedule.values('content')[:1]),
-        is_favorite=Exists(favorites)
-    ).prefetch_related('tags')
+    staffs = get_annotated_staff_queryset(request.user).prefetch_related('tags')
 
     # 社員登録状況一覧の場合
     if is_registration_status_view:
@@ -370,63 +356,7 @@ def staff_list(request):
     staffs_pages = paginator.get_page(page_number)
 
     # 各スタッフの接続情報などを効率的に取得
-    from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest, BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
-
-    staff_emails = [staff.email for staff in staffs_pages if staff.email]
-    connect_staff_map = {}
-    pending_requests = {}
-
-    if corporate_number and staff_emails:
-        connect_staff_qs = ConnectStaff.objects.filter(
-            corporate_number=corporate_number,
-            email__in=staff_emails
-        )
-        connect_staff_map = {cs.email: cs for cs in connect_staff_qs}
-
-        approved_connect_staff_ids = [
-            cs.id for cs in connect_staff_map.values() if cs.status == 'approved'
-        ]
-
-        if approved_connect_staff_ids:
-            pending_requests = {
-                'mynumber': set(MynumberRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
-                'profile': set(ProfileRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
-                'bank': set(BankRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
-                'contact': set(ContactRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
-                'international': set(ConnectInternationalRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
-                'disability': set(DisabilityRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
-            }
-
-    # 各スタッフに情報を付与
-    for staff in staffs_pages:
-        staff.is_connected_approved = False
-        staff.has_pending_connection_request = False
-        staff.has_pending_mynumber_request = False
-        staff.has_pending_profile_request = False
-        staff.has_pending_bank_request = False
-        staff.has_pending_contact_request = False
-        staff.has_pending_international_request = False
-        staff.has_pending_disability_request = False
-
-        connect_request = connect_staff_map.get(staff.email)
-        if connect_request:
-            staff.is_connected_approved = connect_request.status == 'approved'
-            staff.has_pending_connection_request = connect_request.status == 'pending'
-            if staff.is_connected_approved:
-                staff.has_pending_mynumber_request = staff.email in pending_requests.get('mynumber', set())
-                staff.has_pending_profile_request = staff.email in pending_requests.get('profile', set())
-                staff.has_pending_bank_request = staff.email in pending_requests.get('bank', set())
-                staff.has_pending_contact_request = staff.email in pending_requests.get('contact', set())
-                staff.has_pending_international_request = staff.email in pending_requests.get('international', set())
-                staff.has_pending_disability_request = staff.email in pending_requests.get('disability', set())
-
-    # 各スタッフの外国籍情報登録状況を判定
-    for staff in staffs_pages:
-        staff.has_international_info = hasattr(staff, 'international')
-
-    # 各スタッフの障害者情報登録状況を判定
-    for staff in staffs_pages:
-        staff.has_disability_info = hasattr(staff, 'disability')
+    annotate_staff_connection_info(staffs_pages)
 
     return render(request, 'staff/staff_list.html', {
         'staffs': staffs_pages,
