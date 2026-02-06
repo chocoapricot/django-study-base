@@ -77,6 +77,14 @@ MASTER_CONFIGS = [
         "permission": "master.view_stafftag",
     },
     {
+        "category": "スタッフ",
+        "name": "スタッフ等級管理",
+        "description": "スタッフの等級（給与単価）を管理",
+        "model": "master.StaffGrade",
+        "url_name": "master:staff_grade_list",
+        "permission": "master.view_staffgrade",
+    },
+    {
         "category": "クライアント",
         "name": "クライアント登録状況管理",
         "description": "クライアントの登録状況を管理",

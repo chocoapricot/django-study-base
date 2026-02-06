@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from apps.common.models import MyTenantModel
+from apps.common.constants import get_pay_unit_choices
 
 
 class Qualification(MyTenantModel):
@@ -308,6 +309,33 @@ class StaffRegistStatus(MyTenantModel):
 
     def __str__(self):
         return self.name
+
+class StaffGrade(MyTenantModel):
+    """
+    スタッフ等級マスタ
+    """
+    code = models.CharField('コード', max_length=20)
+    name = models.CharField('名称', max_length=100)
+    salary_type = models.CharField('給与種別', max_length=10, choices=get_pay_unit_choices())
+    amount = models.IntegerField('金額')
+    start_date = models.DateField('有効期間開始日', blank=True, null=True)
+    end_date = models.DateField('有効期間終了日', blank=True, null=True)
+    display_order = models.IntegerField('表示順', default=0)
+    is_active = models.BooleanField('有効', default=True)
+
+    class Meta:
+        db_table = 'apps_master_staff_grade'
+        verbose_name = 'スタッフ等級'
+        verbose_name_plural = 'スタッフ等級'
+        ordering = ['display_order', 'code']
+        indexes = [
+            models.Index(fields=['is_active']),
+            models.Index(fields=['display_order']),
+        ]
+
+    def __str__(self):
+        return self.name
+
 
 class StaffContactType(MyTenantModel):
     """

@@ -1,0 +1,141 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+{% load help_tags %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">{{ title }}</div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">コード</label>
+                <div class="col-sm-3">
+                    {{ form.code }}
+                    {% if form.code.errors %}
+                        <div class="text-danger small">{{ form.code.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">名称</label>
+                <div class="col-sm-6">
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.salary_type.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">給与種別</label>
+                <div class="col-sm-3">
+                    {{ form.salary_type }}
+                    {% if form.salary_type.errors %}
+                        <div class="text-danger small">{{ form.salary_type.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.amount.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">金額</label>
+                <div class="col-sm-3">
+                    <div class="input-group input-group-sm">
+                        {{ form.amount }}
+                        <span class="input-group-text">円</span>
+                    </div>
+                    {% if form.amount.errors %}
+                        <div class="text-danger small">{{ form.amount.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.start_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">有効期間</label>
+                <div class="col-sm-8">
+                    <div class="d-flex align-items-center">
+                        <div style="width: 200px;">
+                            {{ form.start_date }}
+                        </div>
+                        <span class="mx-2">～</span>
+                        <div style="width: 200px;">
+                            {{ form.end_date }}
+                        </div>
+                        <span class="ms-2 text-muted small">※任意</span>
+                    </div>
+                    {% if form.start_date.errors %}
+                        <div class="text-danger small">{{ form.start_date.errors.0 }}</div>
+                    {% endif %}
+                    {% if form.end_date.errors %}
+                        <div class="text-danger small">{{ form.end_date.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">表示順</label>
+                <div class="col-sm-3">
+                    {{ form.display_order }}
+                    {% if form.display_order.errors %}
+                        <div class="text-danger small">{{ form.display_order.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    <div class="form-check">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                            有効
+                        </label>
+                        {% if form.is_active.errors %}
+                            <div class="text-danger small">{{ form.is_active.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
+                    <a href="{% url 'master:staff_grade_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Notify that this page has logic information
+    document.body.setAttribute('data-has-logic', 'true');
+
+    const logicContent = document.getElementById('logic-info-content');
+    if (logicContent) {
+        logicContent.innerHTML = `
+            <div class="card mb-3 shadow-sm">
+                <div class="card-header bg-light">単項目チェック</div>
+                <div class="card-body">
+                    <ul>
+                        <li><strong>コード:</strong> 必須項目です。</li>
+                        <li><strong>名称:</strong> 必須項目です。</li>
+                        <li><strong>給与種別:</strong> プルダウンから選択してください（時給・日給・月給）。</li>
+                        <li><strong>金額:</strong> 必須項目です。数値で入力してください。</li>
+                        <li><strong>有効期間:</strong> 任意項目です。開始日と終了日を設定できます。</li>
+                    </ul>
+                </div>
+            </div>
+        `;
+    }
+
+    // Notify completion of logic information setup
+    document.dispatchEvent(new Event('logicInfoSet'));
+});
+</script>
+{% endblock %}
