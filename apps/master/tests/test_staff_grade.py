@@ -90,3 +90,15 @@ class GradeViewTest(TestCase):
         response = self.client.post(reverse('master:grade_delete', kwargs={'pk': self.grade.pk}))
         self.assertEqual(response.status_code, 302)
         self.assertFalse(Grade.objects.filter(pk=self.grade.pk).exists())
+
+    def test_export_view(self):
+        """エクスポートビューのテスト"""
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get(reverse('master:grade_export'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/csv; charset=utf-8')
+        content = response.content.decode('utf-8-sig')
+        self.assertIn('テスト等級', content)
+        self.assertIn('G1', content)
+        self.assertIn('時給', content)
+        self.assertIn('1000', content)

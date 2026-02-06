@@ -158,6 +158,7 @@ urlpatterns = [
     path('grade/<int:pk>/update/', views.grade_update, name='grade_update'),
     path('grade/<int:pk>/delete/', views.grade_delete, name='grade_delete'),
     path('grade/history/', views.grade_change_history_list, name='grade_change_history_list'),
+    path('grade/export/', views.grade_export, name='grade_export'),
     path('grade/import/', views.grade_import, name='grade_import'),
     path('grade/import/upload/', views.grade_import_upload, name='grade_import_upload'),
     path('grade/import/process/<str:task_id>/', views.grade_import_process, name='grade_import_process'),
