@@ -1,0 +1,302 @@
+[
+  {
+    "model": "staff.staffgrade",
+    "pk": 1,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 1,
+      "grade_code": "C-3",
+      "valid_from": "2020-04-01",
+      "valid_to": "2021-03-31"
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 2,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 1,
+      "grade_code": "B-2",
+      "valid_from": "2021-04-01",
+      "valid_to": "2022-03-31"
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 3,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 1,
+      "grade_code": "A-1",
+      "valid_from": "2022-04-01",
+      "valid_to": null
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 4,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 6,
+      "grade_code": "C-2",
+      "valid_from": "2021-03-01",
+      "valid_to": "2022-02-28"
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 5,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 6,
+      "grade_code": "C-3",
+      "valid_from": "2022-03-01",
+      "valid_to": "2023-02-28"
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 6,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 6,
+      "grade_code": "B-1",
+      "valid_from": "2023-03-01",
+      "valid_to": null
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 7,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 11,
+      "grade_code": "C-1",
+      "valid_from": "2019-05-01",
+      "valid_to": "2020-04-30"
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 8,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 11,
+      "grade_code": "C-2",
+      "valid_from": "2020-05-01",
+      "valid_to": "2021-04-30"
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 9,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 11,
+      "grade_code": "C-3",
+      "valid_from": "2021-05-01",
+      "valid_to": "2022-04-30"
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 10,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 11,
+      "grade_code": "B-1",
+      "valid_from": "2022-05-01",
+      "valid_to": "2023-12-31"
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 11,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 14,
+      "grade_code": "C-3",
+      "valid_from": "2022-04-01",
+      "valid_to": "2023-03-31"
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 12,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 14,
+      "grade_code": "B-2",
+      "valid_from": "2023-04-01",
+      "valid_to": null
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 13,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 21,
+      "grade_code": "C-3",
+      "valid_from": "2021-05-01",
+      "valid_to": "2022-04-30"
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 14,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 21,
+      "grade_code": "B-2",
+      "valid_from": "2022-05-01",
+      "valid_to": "2023-04-30"
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 15,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 21,
+      "grade_code": "B-3",
+      "valid_from": "2023-05-01",
+      "valid_to": null
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 16,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 26,
+      "grade_code": "C-1",
+      "valid_from": "2023-04-01",
+      "valid_to": "2024-03-31"
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 17,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 26,
+      "grade_code": "C-2",
+      "valid_from": "2024-04-01",
+      "valid_to": null
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 18,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 33,
+      "grade_code": "B-1",
+      "valid_from": "2020-05-01",
+      "valid_to": "2022-04-30"
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 19,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 33,
+      "grade_code": "B-2",
+      "valid_from": "2022-05-01",
+      "valid_to": "2023-10-31"
+    }
+  },
+  {
+    "model": "staff.staffgrade",
+    "pk": 20,
+    "fields": {
+      "tenant_id": 1,
+      "created_at": "2024-10-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-10-31T00:00:00Z",
+      "updated_by": 1,
+      "staff": 33,
+      "grade_code": "B-3",
+      "valid_from": "2023-11-01",
+      "valid_to": null
+    }
+  }
+]
