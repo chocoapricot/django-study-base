@@ -803,11 +803,15 @@ class StaffTagEditForm(forms.ModelForm):
 
 class StaffGradeForm(forms.ModelForm):
     """スタッフ等級フォーム"""
+    grade_code = forms.ChoiceField(
+        label='等級コード',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
+
     class Meta:
         model = StaffGrade
         fields = ['grade_code', 'valid_from', 'valid_to']
         widgets = {
-            'grade_code': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'valid_from': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'valid_to': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
         }
