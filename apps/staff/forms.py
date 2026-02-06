@@ -179,11 +179,19 @@ class StaffForm(forms.ModelForm):
         required=False,
     )
 
+    grade = forms.ChoiceField(
+        choices=[],
+        label='等級',
+        widget=forms.Select(attrs={'class':'form-select form-select-sm'}),
+        required=False,
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # ここでのみDropdownsをimport.そうしないとmigrateでエラーになる
         from apps.system.settings.models import Dropdowns
         from apps.company.models import CompanyDepartment
+        from apps.common.middleware import get_current_tenant_id
         from django.utils import timezone
         from django.db import models
 
@@ -203,6 +211,17 @@ class StaffForm(forms.ModelForm):
         self.fields['department_code'].choices = [('', '選択してください')] + [
             (dept.department_code, f"{dept.name} ({dept.department_code})")
             for dept in valid_departments
+        ]
+
+        from apps.master.models import StaffGrade
+        tenant_id = get_current_tenant_id()
+        if tenant_id:
+            grades = StaffGrade.objects.filter(tenant_id=tenant_id, is_active=True).order_by('display_order', 'code')
+        else:
+            grades = StaffGrade.objects.filter(is_active=True).order_by('display_order', 'code')
+        self.fields['grade'].choices = [('', '選択してください')] + [
+            (grade.code, grade.name)
+            for grade in grades
         ]
 
         # 初期値を保存して変更検知に使用
@@ -234,6 +253,7 @@ class StaffForm(forms.ModelForm):
             'regist_status',
             'employment_type',
             'employee_no',
+            'grade',
             'name_last','name_first','name_kana_last','name_kana_first',
             'birth_date','sex',
             # 'age', ← ここは除外

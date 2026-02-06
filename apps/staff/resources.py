@@ -28,12 +28,18 @@ class StaffResource(resources.ModelResource):
         attribute='sex',
         readonly=True
     )
+    grade_display = fields.Field(
+        column_name='等級',
+        attribute='grade',
+        readonly=True
+    )
 
     class Meta:
         model = Staff
         fields = (
             'id',
             'employee_no',
+            'grade_display',
             'name_last',
             'name_first',
             'name_kana_last',
@@ -95,4 +101,13 @@ class StaffResource(resources.ModelResource):
                 return dropdown.name
             except Dropdowns.DoesNotExist:
                 return str(staff.sex)
+        return ''
+
+    def dehydrate_grade_display(self, staff):
+        """等級の表示名を取得"""
+        if staff.grade:
+            grade_obj = staff.grade_object
+            if grade_obj:
+                return grade_obj.name
+            return staff.grade
         return ''
