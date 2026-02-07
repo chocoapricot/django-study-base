@@ -1180,12 +1180,9 @@ def grade_export(request):
     pay_unit_map = {code: label for code, label in get_pay_unit_choices()}
 
     # レスポンスの設定
-    response = HttpResponse(content_type="text/csv; charset=utf-8")
+    response = HttpResponse(content_type="text/csv; charset=ms932")
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     response["Content-Disposition"] = f'attachment; filename="grade_master_{timestamp}.csv"'
-
-    # BOMを追加
-    response.write("\ufeff".encode("utf-8"))
 
     writer = csv.writer(response)
     for grade in grades:
@@ -1270,13 +1267,17 @@ def grade_import_process(request, task_id):
     start_time = datetime.fromisoformat(task_info["start_time"])
 
     try:
-        # ファイルのエンコーディングを確認（BOM付きUTF-8に対応するため）
+        # ms932でデコードを試みる
         with open(file_path, "rb") as f:
             content = f.read()
-            if content.startswith(b"\xef\xbb\xbf"):
-                decoded_content = content.decode("utf-8-sig")
-            else:
-                decoded_content = content.decode("utf-8")
+            try:
+                decoded_content = content.decode("ms932")
+            except UnicodeDecodeError:
+                # 従来のUTF-8も念のためフォールバックとして残す
+                if content.startswith(b"\xef\xbb\xbf"):
+                    decoded_content = content.decode("utf-8-sig")
+                else:
+                    decoded_content = content.decode("utf-8")
 
         reader = csv.reader(decoded_content.splitlines())
         rows = [row for row in reader if row]
