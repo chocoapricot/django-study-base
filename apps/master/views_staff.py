@@ -1347,20 +1347,26 @@ def grade_import_process(request, task_id):
                     raise ValueError(f"金額が数値ではありません: {amount_str}")
 
                 with transaction.atomic():
-                    # 同じコードで、開始日時点で有効なデータがある場合、既存データの終了日を更新
+                    # 同じ等級コードで開始日が同じ既存データがあれば削除（上書きのため）
+                    Grade.objects.filter(
+                        code=code,
+                        start_date=start_date,
+                        is_active=True,
+                    ).delete()
+
+                    # 同じコードで、開始日が今回の開始日より前、かつ重なっているデータの終了日を更新
                     overlap_grades = Grade.objects.filter(
                         code=code,
                         is_active=True,
+                        start_date__lt=start_date,
                     ).filter(
                         Q(end_date__isnull=True) | Q(end_date__gte=start_date)
-                    ).filter(start_date__lte=start_date)
+                    )
 
                     yesterday = start_date - timedelta(days=1)
 
                     for old_grade in overlap_grades:
                         old_grade.end_date = yesterday
-                        # もし開始日より前になってしまったら無効化すべきか？
-                        # とりあえず終了日を更新
                         old_grade.save()
 
                     # 新規登録
