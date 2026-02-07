@@ -1,0 +1,88 @@
+{% extends 'common/_base.html' %}
+{% load staff_tags %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <i class="bi bi-person-gear"></i> スタッフ等級一括変更
+        </div>
+        <div>
+            <a href="{% url 'staff:staff_list' %}" class="btn btn-sm btn-secondary">スタッフ一覧へ戻る</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <label for="revision_date" class="form-label fw-bold">改定日 <span class="text-danger">*</span></label>
+                    <input type="date" name="revision_date" id="revision_date" class="form-control form-control-sm" required value="{{ today|date:'Y-m-d' }}">
+                    <div class="form-text text-muted small">新しく設定する等級の開始日を入力してください。</div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="width: 120px;">社員番号</th>
+                            <th>氏名</th>
+                            <th>所属</th>
+                            <th style="width: 80px;">年齢</th>
+                            <th>現状の等級</th>
+                            <th style="width: 250px;">新しい等級</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for staff in staff_list %}
+                        <tr>
+                            <td>{{ staff.employee_no|default:"" }}</td>
+                            <td>
+                                <a href="{% url 'staff:staff_detail' staff.pk %}" target="_blank">
+                                    {{ staff.name_last }} {{ staff.name_first }}
+                                    <i class="bi bi-box-arrow-up-right small"></i>
+                                </a>
+                            </td>
+                            <td>{{ staff.get_current_department_name|default:"-" }}</td>
+                            <td>{{ staff.age }}歳</td>
+                            <td>
+                                {% with current_grade=staff.get_current_grade %}
+                                    {% if current_grade %}
+                                        {{ current_grade.grade_name }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with current_grade=staff.get_current_grade %}
+                                <select name="grade_{{ staff.pk }}" class="form-select form-select-sm">
+                                    <option value="">(設定なし)</option>
+                                    {% for g in grade_master %}
+                                        <option value="{{ g.code }}" {% if current_grade and current_grade.grade_code == g.code %}selected{% endif %}>
+                                            {{ g.name }} ({{ g.code }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% endwith %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">対象のスタッフが見つかりません。</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 text-center">
+                <button type="submit" class="btn btn-primary px-5" onclick="return confirm('変更があったスタッフの等級を一括変更しますか？');">
+                    一括変更
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

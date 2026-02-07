@@ -27,6 +27,7 @@ from .views import (
     staff_flag_list, staff_flag_create, staff_flag_update, staff_flag_delete,
     staff_favorite_add, staff_favorite_remove,
     staff_grade_list, staff_grade_create, staff_grade_update, staff_grade_delete,
+    staff_grade_bulk_change,
 )
 from .views_inquiry import (
     staff_inquiry_list, staff_inquiry_create, staff_inquiry_detail, staff_inquiry_message_delete,
@@ -145,6 +146,7 @@ urlpatterns = [
     path('staff/<int:staff_pk>/grade/create/', staff_grade_create, name='staff_grade_create'),
     path('staff/grade/<int:pk>/update/', staff_grade_update, name='staff_grade_update'),
     path('staff/grade/<int:pk>/delete/', staff_grade_delete, name='staff_grade_delete'),
+    path('grade/bulk_change/', staff_grade_bulk_change, name='staff_grade_bulk_change'),
 
     # フラッグ管理
     path('staff/<int:staff_pk>/flag/', staff_flag_list, name='staff_flag_list'),
