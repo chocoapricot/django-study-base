@@ -810,9 +810,33 @@ def staff_flag_list(request, staff_pk):
     if not flags.exists():
         return redirect('staff:staff_flag_create', staff_pk=staff.pk)
 
+    # 変更履歴の取得
+    flag_ids = list(flags.values_list('pk', flat=True))
+
+    # 削除されたフラッグのログも取得するために、スタッフ名を含む削除ログから object_id を抽出
+    deleted_flag_ids = AppLog.objects.filter(
+        model_name='StaffFlag',
+        object_repr__icontains=str(staff),
+        action='delete'
+    ).values_list('object_id', flat=True)
+
+    all_flag_ids = [str(pk) for pk in flag_ids] + list(deleted_flag_ids)
+
+    change_logs_query = AppLog.objects.filter(
+        model_name='StaffFlag',
+        object_id__in=all_flag_ids,
+        action__in=['create', 'update', 'delete']
+    )
+
+    change_logs = change_logs_query.order_by('-timestamp')[:5]
+    change_logs_count = change_logs_query.count()
+
     context = {
         'staff': staff,
         'flags': flags,
+        'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
+        'history_url': f"/staff/staff/{staff.pk}/change_history/", # スタッフ全体の履歴へのリンク
     }
     return render(request, 'staff/staff_flag_list.html', context)
 
@@ -924,11 +948,24 @@ def staff_flag_update(request, pk):
         from .forms import StaffFlagForm
         form = StaffFlagForm(instance=flag)
 
+    # 変更履歴の取得 (このフラッグのみ)
+    change_logs_query = AppLog.objects.filter(
+        model_name='StaffFlag',
+        object_id=str(pk),
+        action__in=['create', 'update', 'delete']
+    )
+
+    change_logs = change_logs_query.order_by('-timestamp')[:5]
+    change_logs_count = change_logs_query.count()
+
     context = {
         'staff': staff,
         'form': form,
         'flag': flag,
         'is_new': False,
+        'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
+        'history_url': f"/staff/staff/{staff.pk}/change_history/", # スタッフ全体の履歴へのリンク
     }
     return render(request, 'staff/staff_flag_form.html', context)
 
