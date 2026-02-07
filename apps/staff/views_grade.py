@@ -153,6 +153,10 @@ def staff_grade_bulk_change(request):
             except Exception as e:
                 messages.error(request, f'エラーが発生しました: {e}')
 
+    from .utils import get_annotated_staff_queryset, annotate_staff_connection_info
+    staff_list = get_annotated_staff_queryset(request.user).filter(grades__isnull=False).distinct().order_by('employee_no')
+    annotate_staff_connection_info(staff_list)
+
     return render(request, 'staff/staff_grade_bulk_change.html', {
         'staff_list': staff_list,
         'grade_master': grade_master,
