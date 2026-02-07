@@ -8,26 +8,26 @@
     </div>
     <div class="card-body">
         <!-- 検索・フィルタフォーム -->
-        <form method="get" action="{% url 'logs:mail_log_list' %}" class="form-inline d-flex mb-3">
-            <div class="input-group me-2" style="width: 25em;">
-                <span class="input-group-text input-group-text-sm" >
+        <form method="get" action="{% url 'logs:mail_log_list' %}" class="form-inline d-flex flex-wrap mb-3">
+            <div class="input-group input-group-sm me-2 mb-2" style="width: 25em;">
+                <span class="input-group-text">
                     <i class="bi bi-search"></i>
                 </span>
-                <input type="text" name="q" value="{{ query }}" class="form-control form-control-sm" placeholder="メールアドレス、件名で検索" >
-                <span class="input-group-text" style="cursor: pointer; " onclick="document.querySelector('input[name=q]').value = '';">
+                <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="メールアドレス、件名で検索">
+                <span class="input-group-text" style="cursor: pointer;" onclick="document.querySelector('input[name=q]').value = '';">
                     <i class="bi bi-x"></i>
                 </span>
             </div>
-            <div class="input-group mb-2 me-2" style="width: 12em;">
-                <select name="mail_type" class="form-select form-select-sm">
+            <div class="input-group input-group-sm me-2 mb-2" style="width: 12em;">
+                <select name="mail_type" class="form-select">
                     <option value="">メール種別（全て）</option>
                     {% for value, label in mail_type_choices %}
                         <option value="{{ value }}" {% if mail_type == value %}selected{% endif %}>{{ label }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="input-group mb-2 me-2" style="width: 10em;">
-                <select name="status" class="form-select form-select-sm" >
+            <div class="input-group input-group-sm me-2 mb-2" style="width: 10em;">
+                <select name="status" class="form-select">
                     <option value="">送信状況（全て）</option>
                     {% for value, label in status_choices %}
                         <option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>
@@ -44,7 +44,7 @@
                     <li><a class="dropdown-item" href="#" onclick="exportData('excel')"><i class="bi bi-file-earmark-excel"></i> Excel出力</a></li>
                 </ul>
             </div>
-            <button class="btn btn-secondary btn-sm" type="button" onclick="resetForm()" >リセット</button>
+            <button class="btn btn-secondary btn-sm mb-2" type="button" onclick="resetForm()">リセット</button>
         </form>
 
         <script>
