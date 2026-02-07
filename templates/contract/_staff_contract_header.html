@@ -14,7 +14,7 @@
             <tr>
                 <th>スタッフ</th>
                 <td>
-                    <a href="{% url 'staff:staff_detail' contract.staff.pk %}" class="text-decoration-none">
+                    <a href="{% url 'staff:staff_detail' contract.staff.pk %}">
                         {{ contract.staff.name_last }} {{ contract.staff.name_first }}
                     </a>
                     {% favorite_star contract.staff %}

@@ -78,7 +78,7 @@
                                     </td>
                                     <td>
                                         <div>
-                                            <a href="{% url 'contract:contract_assignment_detail' assignment.pk %}?from=expire_list" class="text-decoration-none">
+                                            <a href="{% url 'contract:contract_assignment_detail' assignment.pk %}?from=expire_list">
                                                 {{ assignment.assignment_start_date|date:"Y/m/d" }} ～ {{ assignment.assignment_end_date|date:"Y/m/d" }}
                                             </a>
                                         </div>

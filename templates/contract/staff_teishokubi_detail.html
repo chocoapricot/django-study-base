@@ -21,7 +21,7 @@
                         <th>スタッフ</th>
                         <td>
                             {% if staff %}
-                                <a href="{% url 'staff:staff_detail' staff.pk %}" class="text-decoration-none">
+                                <a href="{% url 'staff:staff_detail' staff.pk %}">
                                     {{ staff.name }}
                                 </a>
                                 {% if staff.has_international %}
@@ -39,7 +39,7 @@
                         <th>クライアント</th>
                         <td>
                             {% if client %}
-                                <a href="{% url 'client:client_detail' client.pk %}" class="text-decoration-none">
+                                <a href="{% url 'client:client_detail' client.pk %}">
                                     {{ client.name }}
                                 </a>
                             {% else %}
