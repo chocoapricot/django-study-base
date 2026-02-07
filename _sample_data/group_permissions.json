@@ -363,7 +363,6 @@
     ],
     "staff_connected": [
         "contract.confirm_staffcontract",
-        "contract.view_staffcontract",
         "kintai.add_stafftimerecord",
         "kintai.change_stafftimerecord",
         "kintai.delete_stafftimerecord",

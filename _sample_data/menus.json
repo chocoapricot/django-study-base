@@ -612,10 +612,10 @@
     "model": "settings.menu",
     "pk": 31,
     "fields": {
-        "version": 1770468439052593,
+        "version": 1770475005542928,
         "created_at": "2025-11-25T11:34:45.985Z",
         "created_by": 1,
-        "updated_at": "2026-02-02T13:23:46.404Z",
+        "updated_at": "2026-02-07T14:52:32.195Z",
         "updated_by": 1,
         "name": "スタッフ検索",
         "url": "/kintai/staff/search/",
@@ -624,7 +624,7 @@
         "parent": 29,
         "level": 0,
         "exact_match": false,
-        "required_permission": null,
+        "required_permission": "kintai.view_stafftimesheet",
         "disp_seq": 72,
         "active": true
     }
