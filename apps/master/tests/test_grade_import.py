@@ -43,7 +43,7 @@ class GradeImportTest(TestCase):
     def test_upload_view(self):
         """ファイルのアップロードが成功し、タスクIDが返されるか"""
         csv_data = "2024/01/01,G01,Test,時給,1000\n"
-        csv_file = SimpleUploadedFile("test.csv", csv_data.encode('utf-8'), content_type="text/csv")
+        csv_file = SimpleUploadedFile("test.csv", csv_data.encode('ms932'), content_type="text/csv")
 
         response = self.client.post(reverse('master:grade_import_upload'), {'csv_file': csv_file})
 
@@ -75,7 +75,7 @@ class GradeImportTest(TestCase):
         temp_dir = os.path.join(TEST_MEDIA_ROOT, 'temp_uploads')
         os.makedirs(temp_dir, exist_ok=True)
         temp_file_path = os.path.join(temp_dir, f'{task_id}.csv')
-        with open(temp_file_path, 'w', encoding='utf-8') as f:
+        with open(temp_file_path, 'w', encoding='ms932') as f:
             f.write(csv_data)
 
         cache.set(f'import_task_{task_id}', {
@@ -116,7 +116,7 @@ class GradeImportTest(TestCase):
         temp_dir = os.path.join(TEST_MEDIA_ROOT, 'temp_uploads')
         os.makedirs(temp_dir, exist_ok=True)
         temp_file_path = os.path.join(temp_dir, f'{task_id}.csv')
-        with open(temp_file_path, 'w', encoding='utf-8') as f:
+        with open(temp_file_path, 'w', encoding='ms932') as f:
             f.write(csv_data)
 
         cache.set(f'import_task_{task_id}', {
