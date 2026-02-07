@@ -1083,9 +1083,29 @@ def staff_tag_change_history_list(request):
 def grade_list(request):
     """スタッフ等級一覧"""
     search_query = request.GET.get("search", "")
+    reference_date_str = request.GET.get("reference_date")
+
+    # 初期表示は当日
+    if reference_date_str is None:
+        reference_date = datetime.now().date()
+    elif reference_date_str == "":
+        reference_date = None
+    else:
+        try:
+            reference_date = datetime.strptime(reference_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            reference_date = None
+
     items = Grade.objects.all()
     if search_query:
         items = items.filter(Q(name__icontains=search_query) | Q(code__icontains=search_query))
+
+    if reference_date:
+        items = items.filter(
+            Q(start_date__lte=reference_date) | Q(start_date__isnull=True),
+            Q(end_date__gte=reference_date) | Q(end_date__isnull=True),
+        )
+
     items = items.order_by("display_order", "code")
     paginator = Paginator(items, 20)
     page = request.GET.get("page")
@@ -1095,6 +1115,7 @@ def grade_list(request):
     context = {
         "items": items_page,
         "search_query": search_query,
+        "reference_date": reference_date.isoformat() if reference_date else "",
         "change_logs": change_logs,
         "change_logs_count": change_logs_count,
         "history_url_name": "master:grade_change_history_list",
