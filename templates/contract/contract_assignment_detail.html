@@ -16,7 +16,7 @@
                 契約アサイン詳細
                 <div class="d-flex">
                     <div class="dropdown">
-                        <a class="text-decoration-none dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             その他情報
                         </a>
                         <ul class="dropdown-menu">
@@ -54,7 +54,7 @@
                     {% if is_dispatch_contract and staff_contract.contract_status == Constants.CONTRACT_STATUS.DRAFT or staff_contract.contract_status == Constants.CONTRACT_STATUS.PENDING %}
                     <div class="dropdown ms-2">
                         　
-                        <a class="text-decoration-none dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             印刷
                         </a>
                         <ul class="dropdown-menu">
@@ -147,11 +147,11 @@
                             <tr>
                                 <th class="w-25 bg-light">クライアント</th>
                                 <td>
-                                    <a href="{% url 'contract:client_contract_detail' client_contract.pk %}" class="text-decoration-none" target="_blank">
+                                    <a href="{% url 'contract:client_contract_detail' client_contract.pk %}" target="_blank">
                                         {{ client_contract.client.name }}
                                     </a>
                                     {% favorite_star client_contract.client size='1rem' as_link=False %}
-                                    <a href="{% url 'contract:client_contract_detail' client_contract.pk %}" class="text-decoration-none" target="_blank">
+                                    <a href="{% url 'contract:client_contract_detail' client_contract.pk %}" target="_blank">
                                         <i class="bi bi-box-arrow-up-right ms-1"></i>
                                     </a>
                                     {% if client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and haken_info and haken_info.haken_office %}
@@ -255,7 +255,7 @@
                             <tr>
                                 <th class="w-25 bg-light">スタッフ</th>
                                 <td>
-                                    <a href="{% url 'contract:staff_contract_detail' staff_contract.pk %}" class="text-decoration-none" target="_blank">
+                                    <a href="{% url 'contract:staff_contract_detail' staff_contract.pk %}" target="_blank">
                                         {{ staff_contract.staff.name_last }} {{ staff_contract.staff.name_first }}
                                         <i class="bi bi-box-arrow-up-right ms-1"></i>
                                     </a>

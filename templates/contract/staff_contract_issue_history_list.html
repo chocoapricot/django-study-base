@@ -49,17 +49,17 @@
                         <td>{% if item.contract_number %}{{ item.contract_number }}{% else %}-{% endif %}</td>
                         <td>
                             {% if item.type == 'staff_contract' %}
-                                <a href="{% url 'contract:view_staff_contract_pdf' item.pk %}" class="text-decoration-none" target="_blank" title="開く">
+                                <a href="{% url 'contract:view_staff_contract_pdf' item.pk %}" target="_blank" title="開く">
                                     {{ item.document_title }}
                                 </a>
-                                <a href="{% url 'contract:download_staff_contract_pdf' item.pk %}" class="text-decoration-none ms-2" title="ダウンロード">
+                                <a href="{% url 'contract:download_staff_contract_pdf' item.pk %}" class=" ms-2" title="ダウンロード">
                                     <i class="bi bi-download"></i>
                                 </a>
                             {% elif item.type == 'assignment_haken' %}
-                                <a href="{% url 'contract:view_assignment_haken_print_pdf' item.pk %}" class="text-decoration-none" target="_blank" title="開く">
+                                <a href="{% url 'contract:view_assignment_haken_print_pdf' item.pk %}" target="_blank" title="開く">
                                     {{ item.document_title }}
                                 </a>
-                                <a href="{% url 'contract:download_assignment_haken_print_pdf' item.pk %}" class="text-decoration-none ms-2" title="ダウンロード">
+                                <a href="{% url 'contract:download_assignment_haken_print_pdf' item.pk %}" class=" ms-2" title="ダウンロード">
                                     <i class="bi bi-download"></i>
                                 </a>
                             {% endif %}

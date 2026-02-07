@@ -49,12 +49,12 @@
                                 {% favorite_star department.client size='1rem' as_link=False %}
                             </td>
                             <td>
-                                <a href="{% url 'client:client_department_detail' department.id %}" class="text-decoration-none">
+                                <a href="{% url 'client:client_department_detail' department.id %}">
                                     {{ department.name }}
                                 </a>
                             </td>
                             <td>
-                                <a href="{% url 'client:client_department_detail' department.id %}" class="text-decoration-none">
+                                <a href="{% url 'client:client_department_detail' department.id %}">
                                     {{ department.haken_jigyosho_teishokubi|date:"Y/m/d" }}
                                 </a>
                                 {% if department.is_expired %}
@@ -78,7 +78,7 @@
                                         <div class="mt-1">
                                             {% for staff in department.current_staff_list %}
                                                 <small class="d-block text-muted">
-                                                    <a href="{% url 'staff:staff_detail' staff.staff_id %}" class="text-decoration-none">
+                                                    <a href="{% url 'staff:staff_detail' staff.staff_id %}">
                                                         {{ staff.staff_name }}
                                                     </a>
                                                     {% if staff.has_international %}

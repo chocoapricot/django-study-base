@@ -207,7 +207,7 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <a href="{% url 'contract:staff_contract_detail' contract.pk %}{% if staff_filter %}?staff={{ staff_filter }}{% endif %}" class="text-decoration-none">
+                                        <a href="{% url 'contract:staff_contract_detail' contract.pk %}{% if staff_filter %}?staff={{ staff_filter }}{% endif %}">
                                             {{ contract.start_date|date:"Y/m/d" }}
                                             {% if contract.end_date %}
                                                 ～ {{ contract.end_date|date:"Y/m/d" }}

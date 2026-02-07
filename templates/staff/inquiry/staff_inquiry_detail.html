@@ -110,7 +110,7 @@
                                 <div class="text-end">
                                     {% if msg.can_delete %}
                                         <a href="{% url 'staff:staff_inquiry_message_delete' msg.pk %}" 
-                                           class="text-danger text-decoration-none small"
+                                           class="text-danger small"
                                            onclick="return confirm('このメッセージを削除しますか？\n（投稿後5分以内のみ削除可能です）');">
                                             <i class="bi bi-trash"></i> 削除
                                         </a>

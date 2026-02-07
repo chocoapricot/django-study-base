@@ -51,7 +51,7 @@
                 <tr>
                     <td>{{ inquiry.created_at|date:"Y/m/d H:i:s" }}</td>
                     <td>
-                        <a href="{% url 'staff:staff_inquiry_detail' inquiry.pk %}" class="text-decoration-none">
+                        <a href="{% url 'staff:staff_inquiry_detail' inquiry.pk %}">
                             {{ inquiry.subject }}
                             {% if not is_company_or_admin and inquiry.has_unread_message %}
                                 <span class="badge bg-danger ms-2">未読</span>
@@ -61,7 +61,7 @@
                     {% if is_company_or_admin %}
                     <td>
                         {% if inquiry.staff %}
-                            <a href="{% url 'staff:staff_detail' inquiry.staff.pk %}" class="text-decoration-none">
+                            <a href="{% url 'staff:staff_detail' inquiry.staff.pk %}">
                                 {{ inquiry.user_full_name }}
                             </a>
                             {% favorite_star inquiry.staff %}

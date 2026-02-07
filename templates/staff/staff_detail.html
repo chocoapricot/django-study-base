@@ -223,7 +223,7 @@
                             {{ staff.address3 }}
                             {% parameter 'GOOGLE_MAPS_URL_BASE' as map_url_base %}
                             {% if staff.full_address and map_url_base %}
-                            <a href="{{ map_url_base }}{{ staff.full_address|urlencode }}" target="_blank" class="text-decoration-none" style="color:green;margin-left: 5px;" aria-label="Googleマップで開く">
+                            <a href="{{ map_url_base }}{{ staff.full_address|urlencode }}" target="_blank" style="color:green;margin-left: 5px;" aria-label="Googleマップで開く">
                                 <i class="bi bi-box-arrow-up-right"></i>
                             </a>
                             {% endif %}
@@ -316,7 +316,7 @@
                                         {% else %}
                                             <i class="bi bi-file"></i>
                                         {% endif %}
-                                        <a href="{% url 'staff:staff_file_download' pk=f.pk %}" class="text-white text-decoration-none">{{ f.original_filename|truncatechars:20 }}</a>
+                                        <a href="{% url 'staff:staff_file_download' pk=f.pk %}" class="text-white">{{ f.original_filename|truncatechars:20 }}</a>
                                     </span>
                                 {% endfor %}
                             {% else %}
@@ -733,7 +733,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 {% for contract in staff_contracts %}
                 <tr>
                     <td>
-                        <a href="{% url 'contract:staff_contract_detail' contract.pk %}?staff={{ staff.pk }}" class="text-decoration-none">
+                        <a href="{% url 'contract:staff_contract_detail' contract.pk %}?staff={{ staff.pk }}">
                             {{ contract.contract_name|truncatechars:30 }}
                         </a>
                     </td>

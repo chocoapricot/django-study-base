@@ -60,7 +60,7 @@
                                 <th class="w-25">スタッフ</th>
                                 <td>
                                     {% if staff_contract.pk %}
-                                        <a href="{% url 'contract:staff_contract_detail' staff_contract.pk %}" class="text-decoration-none">
+                                        <a href="{% url 'contract:staff_contract_detail' staff_contract.pk %}">
                                             {{ staff_contract.staff.name_last }} {{ staff_contract.staff.name_first }} {% favorite_star staff_contract.staff %}
                                         </a>
                                     {% else %}

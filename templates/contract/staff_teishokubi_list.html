@@ -69,12 +69,12 @@
                         {% endif %}
                     </td>
                     <td>
-                        <a href="{% url 'contract:staff_contract_teishokubi_detail' item.pk %}" class="text-decoration-none">
+                        <a href="{% url 'contract:staff_contract_teishokubi_detail' item.pk %}">
                             {{ item.organization_name }}
                         </a>
                     </td>
                     <td>
-                        <a href="{% url 'contract:staff_contract_teishokubi_detail' item.pk %}" class="text-decoration-none">
+                        <a href="{% url 'contract:staff_contract_teishokubi_detail' item.pk %}">
                             {{ item.conflict_date|date:"Y/m/d" }}
                         </a>
                         {% if item.is_expired %}
