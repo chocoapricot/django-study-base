@@ -1,6 +1,6 @@
 # Django Study Base
 
-Django学習用のプロジェクトです。スタッフ管理とクライアント管理機能を持つビジネス管理システムを通じて、Djangoの基本的な機能から応用まで学習することを目的としています。Django 5.2.5をベースに構築され、日本語環境に最適化されています。
+Django学習用のプロジェクトです。スタッフ管理とクライアント管理機能を持つビジネス管理システムを通じて、Djangoの基本的な機能から応用まで学習することを目的としています。Django 5.2.8をベースに構築され、日本語環境に最適化されています。
 
 > **注意**: このプロジェクトは個人の学習目的で作成されており、実際のビジネス用途での使用は想定していません。
 
@@ -37,19 +37,37 @@ Django学習用のプロジェクトです。スタッフ管理とクライア�
 ## 🛠️ 技術スタック
 
 ### フレームワーク & コア
-- **Django 5.2.5**: メインWebフレームワーク
+- **Django 5.2.8**: メインWebフレームワーク
 - **Python 3.12**: バックエンド言語
 - **SQLite**: デフォルトデータベース（MySQL対応可能）
 
 ### 主要な依存関係
-- `django-allauth`: 認証システム
-- `django-import-export`: データインポート/エクスポート
-- `django-currentuser`: 現在のユーザー追跡
-- `pillow`: 画像処理
-- `openpyxl`: Excelファイル処理
-- `reportlab`: PDF処理
-- `requests`: HTTP通信
-- `python-stdnum`: 各種標準番号の検証
+- `django-allauth==65.14.0`: 認証システム
+- `django-import-export==4.4.0`: データインポート/エクスポート
+- `django-currentuser==0.10.0`: 現在のユーザー追跡
+- `django-concurrency==2.7`: 楽観的ロック機能
+- `django-storages==1.14.6`: ファイルストレージ抽象化
+- `pillow==12.1.0`: 画像処理
+- `openpyxl==3.1.5`: Excelファイル処理
+- `reportlab==4.4.9`: PDF処理
+- `requests==2.32.5`: HTTP通信
+- `python-stdnum==2.2`: 各種標準番号の検証
+- `jpholiday==1.0.3`: 日本の祝日判定
+
+### ミドルウェア
+| ミドルウェア | パッケージ | バージョン | 説明 |
+| --- | --- | --- | --- |
+| `ThreadLocalUserMiddleware` | `django-currentuser` | 0.10.0 | 現在のユーザーをスレッドローカルで保持 |
+| `SecurityMiddleware` | `django` | 5.2.8 | セキュリティ対策（HTTPSリダイレクトなど） |
+| `SessionMiddleware` | `django` | 5.2.8 | セッション管理 |
+| `CommonMiddleware` | `django` | 5.2.8 | 一般的なURL処理、ユーザーエージェント判定など |
+| `CsrfViewMiddleware` | `django` | 5.2.8 | CSRF保護 |
+| `AuthenticationMiddleware` | `django` | 5.2.8 | ユーザー認証 |
+| `TenantMiddleware` | 自作 (apps.common) | - | マルチテナント制御 |
+| `AccessLogMiddleware` | 自作 (apps.system.logs) | - | アクセスログ記録 |
+| `MessageMiddleware` | `django` | 5.2.8 | フラッシュメッセージ管理 |
+| `XFrameOptionsMiddleware` | `django` | 5.2.8 | クリックジャッキング対策 |
+| `AccountMiddleware` | `django-allauth` | 65.14.0 | allauth認証管理 |
 
 ### フロントエンド
 - **Bootstrap 5**: UIフレームワーク
@@ -79,7 +97,10 @@ django-study-base/
 │   ├── profile/            # プロフィール管理
 │   ├── staff/              # スタッフ管理
 │   └── system/             # システム管理
+│       ├── apicache/       # APIキャッシュ
+│       ├── flags/          # フラグ管理
 │       ├── logs/           # ログ管理 (アプリログ、メールログ)
+│       ├── notifications/  # 通知管理
 │       ├── settings/       # 設定管理 (ドロップダウン、メニュー、パラメータ)
 │       └── tables/         # テーブル管理
 ├── config/                 # プロジェクト設定
