@@ -1,6 +1,6 @@
 # Django Study Base
 
-Django学習用のプロジェクトです。スタッフ管理とクライアント管理機能を持つビジネス管理システムを通じて、Djangoの基本的な機能から応用まで学習することを目的としています。Django 5.2.5をベースに構築され、日本語環境に最適化されています。
+Django学習用のプロジェクトです。スタッフ管理とクライアント管理機能を持つビジネス管理システムを通じて、Djangoの基本的な機能から応用まで学習することを目的としています。Django 5.2.8をベースに構築され、日本語環境に最適化されています。
 
 > **注意**: このプロジェクトは個人の学習目的で作成されており、実際のビジネス用途での使用は想定していません。
 
@@ -37,19 +37,26 @@ Django学習用のプロジェクトです。スタッフ管理とクライア�
 ## 🛠️ 技術スタック
 
 ### フレームワーク & コア
-- **Django 5.2.5**: メインWebフレームワーク
+- **Django 5.2.8**: メインWebフレームワーク
 - **Python 3.12**: バックエンド言語
 - **SQLite**: デフォルトデータベース（MySQL対応可能）
 
 ### 主要な依存関係
-- `django-allauth`: 認証システム
-- `django-import-export`: データインポート/エクスポート
-- `django-currentuser`: 現在のユーザー追跡
-- `pillow`: 画像処理
-- `openpyxl`: Excelファイル処理
-- `reportlab`: PDF処理
-- `requests`: HTTP通信
-- `python-stdnum`: 各種標準番号の検証
+- `django-allauth 65.14.0`: 認証システム
+- `django-import-export 4.4.0`: データインポート/エクスポート
+- `django-currentuser 0.10.0`: 現在のユーザー追跡
+- `django-concurrency 2.7`: 楽観ロック
+- `django-storages 1.14.6`: ファイルストレージ抽象化
+- `pillow 12.1.0`: 画像処理
+- `openpyxl 3.1.5`: Excelファイル処理
+- `reportlab 4.4.9`: PDF処理
+- `pypdfium2 5.3.0`: PDFドキュメント操作
+- `requests 2.32.5`: HTTP通信
+- `python-stdnum 2.2`: 各種標準番号の検証
+- `jpholiday 1.0.3`: 祝日判定
+- `python-dateutil 2.9.0.post0`: 日付処理
+- `whitenoise 6.11.0`: 静的ファイル配信
+- `markdown`: テキスト解析
 
 ### フロントエンド
 - **Bootstrap 5**: UIフレームワーク
@@ -79,9 +86,12 @@ django-study-base/
 │   ├── profile/            # プロフィール管理
 │   ├── staff/              # スタッフ管理
 │   └── system/             # システム管理
-│       ├── logs/           # ログ管理 (アプリログ、メールログ)
+│       ├── logs/           # ログ管理 (アプリログ、アクセスログ、メールログ)
 │       ├── settings/       # 設定管理 (ドロップダウン、メニュー、パラメータ)
-│       └── tables/         # テーブル管理
+│       ├── notifications/  # 通知管理
+│       ├── flags/          # フラッグ管理
+│       ├── apicache/       # APIキャッシュ
+│       └── tables/         # テーブル表示管理
 ├── config/                 # プロジェクト設定
 ├── media/                  # アップロードされたファイル
 │   ├── client_files/       # クライアントアップロードファイル
