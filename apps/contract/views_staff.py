@@ -949,7 +949,7 @@ def staff_contract_confirm_list(request):
     confirm_items = []
     
     # 1. スタッフ契約書の確認対象を取得
-    staff_contracts = StaffContract.objects.filter(
+    staff_contracts = StaffContract.objects.unfiltered().filter(
         staff=staff,
         corporate_number=company.corporate_number,
         contract_status__in=[Constants.CONTRACT_STATUS.ISSUED, Constants.CONTRACT_STATUS.CONFIRMED]
@@ -968,7 +968,7 @@ def staff_contract_confirm_list(request):
         })
     
     # 2. 就業条件明示書の確認対象を取得
-    assignments = ContractAssignment.objects.filter(
+    assignments = ContractAssignment.objects.unfiltered().filter(
         staff_contract__staff=staff,
         staff_contract__contract_status__in=[Constants.CONTRACT_STATUS.ISSUED, Constants.CONTRACT_STATUS.CONFIRMED],  # スタッフ契約が発行済みまたは確認済み
         client_contract__client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH
