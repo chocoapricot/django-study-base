@@ -153,12 +153,56 @@ def staff_grade_bulk_change(request):
             except Exception as e:
                 messages.error(request, f'エラーが発生しました: {e}')
 
-    from .utils import get_annotated_staff_queryset, annotate_staff_connection_info
-    staff_list = get_annotated_staff_queryset(request.user).filter(grades__isnull=False).distinct().order_by('employee_no')
+    from .utils import get_annotated_staff_queryset, annotate_staff_connection_info, get_staff_face_photo_style
+    from apps.master.models_staff import StaffTag
+    from apps.company.models import CompanyDepartment
+    
+    # Query parameters
+    query = request.GET.get('q', '')
+    tag_filter = request.GET.get('tag', '')
+    department_filter = request.GET.get('department', '')
+
+    staff_qs = get_annotated_staff_queryset(request.user).filter(grades__isnull=False).distinct()
+
+    # Apply filters
+    if query:
+        staff_qs = staff_qs.filter(
+            Q(name__icontains=query) | 
+            Q(name_kana_last__icontains=query) | 
+            Q(name_kana_first__icontains=query) | 
+            Q(employee_no__icontains=query)
+        )
+    
+    if tag_filter:
+        staff_qs = staff_qs.filter(tags__pk=tag_filter)
+        
+    if department_filter:
+        staff_qs = staff_qs.filter(department_code=department_filter)
+
+    # Prefetch related fields for display
+    staff_qs = staff_qs.order_by('employee_no').prefetch_related(
+        'tags', 
+        'flags', 
+        'flags__flag_status'
+    ).select_related('employment_type')
+
+    staff_list = list(staff_qs)
     annotate_staff_connection_info(staff_list)
+
+    # Get filter options
+    staff_tag_options = StaffTag.objects.filter(is_active=True).order_by('display_order')
+    department_options = CompanyDepartment.get_valid_departments().order_by('display_order')
+
+    staff_face_photo_style = get_staff_face_photo_style()
 
     return render(request, 'staff/staff_grade_bulk_change.html', {
         'staff_list': staff_list,
         'grade_master': grade_master,
         'today': datetime.now().date(),
+        'query': query,
+        'tag_filter': int(tag_filter) if tag_filter else '',
+        'department_filter': department_filter,
+        'staff_tag_options': staff_tag_options,
+        'department_options': department_options,
+        'staff_face_photo_style': staff_face_photo_style,
     })
