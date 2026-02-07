@@ -531,7 +531,7 @@
                             {% for g in staff.grades.all|slice:":5" %}
                             <div class="small mb-1">
                                 <span class="text-muted">{{ g.valid_from|date:"Y/m/d"|default:"無期限" }}～</span>
-                                <span class="ms-1">{{ g.grade_code }}{% if g.duration %} ({{ g.duration }}){% endif %}</span>
+                                <span class="ms-1 {% if g == current_grade %}fw-bold{% endif %}">{{ g.grade_code }}{% if g.duration %} ({{ g.duration }}){% endif %}</span>
                             </div>
                             {% endfor %}
                         </div>
