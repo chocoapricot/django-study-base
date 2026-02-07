@@ -49,7 +49,7 @@ class StaffGradeBulkChangeTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '山田 太郎')
         self.assertContains(response, '佐藤 花子')
-        self.assertContains(response, 'Grade A (A)')
+        self.assertContains(response, 'A (Grade A)')
 
     def test_bulk_change_apply(self):
         """一括変更の実行テスト"""
