@@ -140,7 +140,7 @@
                             <td class="text-nowrap">
                                 {% with current_grade=staff.get_current_grade %}
                                     {% if current_grade %}
-                                        {{ current_grade.grade_name }} ({{ current_grade.grade_code }})
+                                        {{ current_grade.grade_code }} ({{ current_grade.grade_name }})
                                     {% else %}
                                         <span class="text-muted">-</span>
                                     {% endif %}
@@ -170,7 +170,7 @@
                                     <option value="">(設定なし)</option>
                                     {% for g in grade_master %}
                                         <option value="{{ g.code }}" {% if current_grade and current_grade.grade_code == g.code %}selected{% endif %}>
-                                            {{ g.name }} ({{ g.code }})
+                                            {{ g.code }} ({{ g.name }})
                                         </option>
                                     {% endfor %}
                                 </select>

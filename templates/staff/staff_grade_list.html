@@ -15,7 +15,7 @@
         <table class="table table-hover me-2 mt-2" style="border-top: 1px solid #ddd;">
             <thead>
                 <tr>
-                    <th>等級（コード）</th>
+                    <th>等級</th>
                     <th>有効期間</th>
                     <th>操作</th>
                 </tr>
@@ -23,7 +23,7 @@
             <tbody>
                 {% for grade in grades %}
                 <tr{% if not grade.is_valid_on_date %} style="opacity: 0.6;"{% endif %}>
-                    <td>{{ grade.grade_name }} <span class="text-muted small">({{ grade.grade_code }})</span></td>
+                    <td>{{ grade.grade_code }} <span class="text-muted small">({{ grade.grade_name }})</span></td>
                     <td>
                         {{ grade.valid_from|date:"Y/m/d"|default:"無期限" }} ～ 
                         {{ grade.valid_to|date:"Y/m/d"|default:"" }}

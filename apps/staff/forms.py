@@ -825,7 +825,6 @@ class StaffGradeForm(forms.ModelForm):
         grades = Grade.objects.filter(is_active=True)
         if tenant_id:
             grades = grades.filter(tenant_id=tenant_id)
-        
         self.fields['grade_code'].choices = [('', '選択してください')] + [
-            (g.code, f"{g.name} ({g.code})") for g in grades.order_by('display_order', 'code')
+            (g.code, f"{g.code} ({g.name})") for g in grades.order_by('display_order', 'code')
         ]
