@@ -41,7 +41,7 @@
               {% endif %}
             </div>
           </div>
-          <button type="submit" class="btn btn-primary w-100">ログイン</button>
+          <button type="submit" class="btn btn-sm btn-primary w-100">ログイン</button>
         </form>
         <div class="text-center mt-3">
           <a href="{% url 'account_reset_password' %}" class="text-decoration-none me-3">パスワードを忘れた方はこちら</a>
@@ -49,6 +49,77 @@
         <div class="text-center mt-3">
           <a href="{% url 'account_signup' %}" class="text-decoration-none">アカウントをお持ちでない方はこちら</a>
         </div>
+{% endblock %}
+
+{% block extra_content %}
+<div class="login-card card mt-4">
+  <div class="card-body">
+    <h5 class="fw-bold mb-3">サンプルアカウント情報</h5>
+    <p class="small text-muted mb-3">以下のアカウントでログインできます。</p>
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm small mb-0 credentials-table">
+        <tbody>
+          <tr>
+            <th class="align-middle" rowspan="3">スタッフ</th>
+            <td>
+              <div>oda-nobunaga@staff.jp</div>
+              <div class="text-muted">passwordforstudybase!</div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div>hojo-uji@staff.jp</div>
+              <div class="text-muted">passwordforstudybase!</div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div>toyotomi-hideyoshi@staff.jp</div>
+              <div class="text-muted">passwordforstudybase!</div>
+            </td>
+          </tr>
+          <tr>
+            <th class="align-middle" rowspan="2">クライアント</th>
+            <td>
+              <div>isami.kondo@soumu.go.jp</div>
+              <div class="text-muted">passwordforstudybase!</div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div>soji.okita@soumu.go.jp</div>
+              <div class="text-muted">passwordforstudybase!</div>
+            </td>
+          </tr>
+          <tr>
+            <th class="align-middle" rowspan="2">会社</th>
+            <td>
+              <div>soseki.natsume@example.com</div>
+              <div class="text-muted">passwordforstudybase!</div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div>ogai.mori@example.com</div>
+              <div class="text-muted">passwordforstudybase!</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  .credentials-table th {
+    background-color: var(--bs-gray-100);
+    font-weight: 600;
+    width: 35%;
+  }
+  .credentials-table td {
+    vertical-align: middle;
+  }
+</style>
 {% endblock %}
 
 {% block extra_js %}
