@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -116,6 +118,61 @@ def timerecord_detail(request, pk):
         'breaks': breaks,
     }
     return render(request, 'kintai/timerecord_detail.html', context)
+
+
+@login_required
+@require_POST
+def timerecord_reverse_geocode(request):
+    """緯度経度から住所を取得し、DBに保存するAPI"""
+    model_name = request.POST.get('model_name')
+    object_id = request.POST.get('object_id')
+    location_type = request.POST.get('type')  # 'start' or 'end'
+
+    if not all([model_name, object_id, location_type]):
+        return JsonResponse({'error': 'Missing parameters'}, status=400)
+
+    if model_name == 'timerecord':
+        obj = get_object_or_404(StaffTimerecord, pk=object_id)
+    elif model_name == 'break':
+        obj = get_object_or_404(StaffTimerecordBreak, pk=object_id)
+    else:
+        return JsonResponse({'error': 'Invalid model_name'}, status=400)
+
+    # 権限チェック（スタッフは自分のデータのみ）
+    staff = Staff.objects.filter(email=request.user.email).first()
+    if staff:
+        if model_name == 'timerecord' and obj.staff != staff:
+            return JsonResponse({'error': 'Permission denied'}, status=403)
+        elif model_name == 'break' and obj.timerecord.staff != staff:
+            return JsonResponse({'error': 'Permission denied'}, status=403)
+
+    if location_type == 'start':
+        lat = obj.start_latitude
+        lng = obj.start_longitude
+        address_field = 'start_address'
+    elif location_type == 'end':
+        lat = obj.end_latitude
+        lng = obj.end_longitude
+        address_field = 'end_address'
+    else:
+        return JsonResponse({'error': 'Invalid type'}, status=400)
+
+    if not lat or not lng:
+        return JsonResponse({'error': 'No location data'}, status=400)
+
+    # 既に住所がある場合はそれを返す
+    existing_address = getattr(obj, address_field)
+    if existing_address:
+        return JsonResponse({'address': existing_address})
+
+    # 住所取得
+    address = fetch_gsi_address(lat, lng)
+    if address:
+        setattr(obj, address_field, address)
+        obj.save(update_fields=[address_field])
+        return JsonResponse({'address': address})
+
+    return JsonResponse({'error': 'Address not found'}, status=404)
 
 
 @login_required
