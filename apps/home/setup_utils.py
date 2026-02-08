@@ -328,6 +328,28 @@ def copy_company_seals(task: SetupTask) -> bool:
         return False
 
 
+def preload_municipality_data(task: SetupTask) -> bool:
+    """市区町村マスタデータ(muni.js)を事前にキャッシュ"""
+    task.current_step = '市区町村マスタデータをプリロード中...'
+    
+    try:
+        from apps.api.helpers import preload_municipality_data as preload_func
+        if preload_func():
+            task.progress += 1  # 進捗追加
+            return True
+        else:
+            # エラーが発生してもセットアップ全体は継続させる
+            task.progress += 1
+            return True
+    except Exception as e:
+        error_msg = f"市区町村マスタデータのプリロード中にエラーが発生しました: {e}"
+        print(f"⚠️ {error_msg}")
+        task.errors.append(error_msg)
+        # エラーが発生してもセットアップ全体は継続させる
+        task.progress += 1
+        return True
+
+
 def execute_setup(task_id: str):
     """セットアップ処理を実行（別スレッドで実行される）"""
     task = get_setup_task(task_id)
@@ -345,7 +367,8 @@ def execute_setup(task_id: str):
     # 4. load_sample_data: len(SAMPLE_DATA_FILES) + 1 (import_sample_users)
     # 5. copy_sample_photos: 1
     # 6. copy_company_seals: 1
-    task.total = 3 + 1 + 1 + len(SAMPLE_DATA_FILES) + 1 + 1 + 1
+    # 7. preload_municipality_data: 1
+    task.total = 3 + 1 + 1 + len(SAMPLE_DATA_FILES) + 1 + 1 + 1 + 1
     
     try:
         # 1. データベースリセット
@@ -382,6 +405,12 @@ def execute_setup(task_id: str):
 
         # 6. 会社印サンプルファイルのコピー
         if not copy_company_seals(task):
+            task.status = 'failed'
+            task.end_time = datetime.now()
+            return
+        
+        # 7. 市区町村マスタデータのプリロード
+        if not preload_municipality_data(task):
             task.status = 'failed'
             task.end_time = datetime.now()
             return

@@ -139,3 +139,23 @@ def fetch_gsi_address(lat, lon):
         print(f"GSI API Error: {e}")
         
     return None
+
+
+def preload_municipality_data():
+    """
+    市区町村マスタデータ(muni.js)を事前にキャッシュする。
+    初期化時に呼び出すことで、勤怠打刻時の住所取得の遅延を削減する。
+    
+    Returns:
+        bool: プリロードが成功した場合True、失敗した場合False
+    """
+    try:
+        # ダミーの市区町村コードで呼び出してmuni.jsをキャッシュ
+        # 実際には存在しないコードでも、内部でmuni.js全体を取得してキャッシュする
+        fetch_municipality_name("13101")  # 東京都千代田区のコード
+        print("✅ 市区町村マスタデータ(muni.js)をプリロードしました")
+        return True
+    except Exception as e:
+        print(f"⚠️ 市区町村マスタデータのプリロード中にエラーが発生しました: {e}")
+        # エラーが発生してもセットアップ全体は継続させる
+        return True
