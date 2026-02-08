@@ -43,6 +43,7 @@ urlpatterns = [
     path('timerecord/', views_timerecord.timerecord_list, name='timerecord_list'),
     path('timerecord/punch/', views_timerecord.timerecord_punch, name='timerecord_punch'),
     path('timerecord/action/', views_timerecord.timerecord_action, name='timerecord_action'),
+    path('timerecord/reverse_geocode/', views_timerecord.timerecord_reverse_geocode, name='timerecord_reverse_geocode'),
     path('timerecord/create/', views_timerecord.timerecord_create, name='timerecord_create'),
     path('timerecord/<int:pk>/', views_timerecord.timerecord_detail, name='timerecord_detail'),
     path('timerecord/<int:pk>/update/', views_timerecord.timerecord_update, name='timerecord_update'),

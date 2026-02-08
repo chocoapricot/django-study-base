@@ -140,8 +140,8 @@ class StaffTimerecordViewTests(TestCase):
         data = {
             'staff_contract': self.contract.id,
             'work_date': '2025-04-02',
-            'start_time': '2025-04-02T09:00',
-            'end_time': '2025-04-02T18:00',
+            'rounded_start_time': '2025-04-02T09:00',
+            'rounded_end_time': '2025-04-02T18:00',
             'start_latitude': '35.6895',
             'start_longitude': '139.6917',
             'end_latitude': '35.6895',
@@ -154,4 +154,4 @@ class StaffTimerecordViewTests(TestCase):
         self.assertTrue(StaffTimerecord.objects.filter(work_date='2025-04-02').exists())
         record = StaffTimerecord.objects.get(work_date='2025-04-02')
         self.assertEqual(record.staff, self.staff)  # スタッフが自動設定されていること
-        self.assertEqual(str(record.start_latitude), '35.689500000000000')
+        self.assertEqual(str(record.start_latitude), '35.68950')
