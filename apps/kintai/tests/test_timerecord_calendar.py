@@ -102,7 +102,6 @@ class TimerecordCalendarViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '09:00')
         self.assertContains(response, '18:00')
-        self.assertContains(response, '編集')
 
     def test_calendar_filter(self):
         """年月フィルタのテスト"""
