@@ -10,16 +10,11 @@
     }
     .clock-display {
         font-family: 'Roboto Mono', monospace;
-        font-size: 4rem;
+        font-size: 3.75rem;
         font-weight: 700;
         color: #333;
         margin: 0.5rem 0;
         white-space: nowrap;
-    }
-    .clock-display small {
-        font-size: 2.5rem;
-        margin-left: 0.2rem;
-        vertical-align: baseline;
     }
     .clock-date {
         font-size: 1.2rem;
@@ -436,7 +431,7 @@
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
-        document.getElementById('current-time').innerHTML = `${hours}:${minutes}<small>:${seconds}</small>`;
+        document.getElementById('current-time').innerHTML = `${hours}:${minutes}:${seconds}`;
     }
     setInterval(updateClock, 1000);
     updateClock();
