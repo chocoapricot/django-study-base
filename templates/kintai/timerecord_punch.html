@@ -306,8 +306,10 @@
                                     {% if timerecord.start_address %}
                                         {{ timerecord.start_address }}
                                     {% else %}
-                                        <i class="bi bi-geo-alt"></i> 
-                                        {{ timerecord.start_latitude|floatformat:4 }}, {{ timerecord.start_longitude|floatformat:4 }}
+                                        <span class="reverse-geocode" data-model="timerecord" data-id="{{ timerecord.pk }}" data-type="start">
+                                            <i class="bi bi-geo-alt"></i>
+                                            {{ timerecord.start_latitude|floatformat:4 }}, {{ timerecord.start_longitude|floatformat:4 }}
+                                        </span>
                                     {% endif %}
                                     <a href="{% parameter 'GOOGLE_MAPS_URL_BASE' %}{{ timerecord.start_latitude }},{{ timerecord.start_longitude }}" target="_blank" class="ms-1" style="color:green;" title="Google Mapで開く">
                                         <i class="bi bi-box-arrow-up-right"></i>
@@ -347,8 +349,10 @@
                                         {% if break.start_address %}
                                             {{ break.start_address }}
                                         {% else %}
-                                            <i class="bi bi-geo-alt"></i> 
-                                            {{ break.start_latitude|floatformat:4 }}, {{ break.start_longitude|floatformat:4 }}
+                                            <span class="reverse-geocode" data-model="break" data-id="{{ break.pk }}" data-type="start">
+                                                <i class="bi bi-geo-alt"></i>
+                                                {{ break.start_latitude|floatformat:4 }}, {{ break.start_longitude|floatformat:4 }}
+                                            </span>
                                         {% endif %}
                                         <a href="{% parameter 'GOOGLE_MAPS_URL_BASE' %}{{ break.start_latitude }},{{ break.start_longitude }}" target="_blank" class="ms-1" style="color:green;" title="Google Mapで開く">
                                             <i class="bi bi-box-arrow-up-right"></i>
@@ -362,8 +366,10 @@
                                             {% if break.end_address %}
                                                 {{ break.end_address }}
                                             {% else %}
-                                                <i class="bi bi-geo-alt"></i> 
-                                                {{ break.end_latitude|floatformat:4 }}, {{ break.end_longitude|floatformat:4 }}
+                                                <span class="reverse-geocode" data-model="break" data-id="{{ break.pk }}" data-type="end">
+                                                    <i class="bi bi-geo-alt"></i>
+                                                    {{ break.end_latitude|floatformat:4 }}, {{ break.end_longitude|floatformat:4 }}
+                                                </span>
                                             {% endif %}
                                             <a href="{% parameter 'GOOGLE_MAPS_URL_BASE' %}{{ break.end_latitude }},{{ break.end_longitude }}" target="_blank" class="ms-1" style="color:green;" title="Google Mapで開く">
                                                 <i class="bi bi-box-arrow-up-right"></i>
@@ -398,8 +404,10 @@
                                     {% if timerecord.end_address %}
                                         {{ timerecord.end_address }}
                                     {% else %}
-                                        <i class="bi bi-geo-alt"></i> 
-                                        {{ timerecord.end_latitude|floatformat:4 }}, {{ timerecord.end_longitude|floatformat:4 }}
+                                        <span class="reverse-geocode" data-model="timerecord" data-id="{{ timerecord.pk }}" data-type="end">
+                                            <i class="bi bi-geo-alt"></i>
+                                            {{ timerecord.end_latitude|floatformat:4 }}, {{ timerecord.end_longitude|floatformat:4 }}
+                                        </span>
                                     {% endif %}
                                     <a href="{% parameter 'GOOGLE_MAPS_URL_BASE' %}{{ timerecord.end_latitude }},{{ timerecord.end_longitude }}" target="_blank" class="ms-1" style="color:green;" title="Google Mapで開く">
                                         <i class="bi bi-box-arrow-up-right"></i>
@@ -424,20 +432,61 @@
 {% endif %}
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    {% if available_contracts.count > 0 %}
     function updateClock() {
+        const clockEl = document.getElementById('current-time');
+        if (!clockEl) return;
         const now = new Date();
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
-        document.getElementById('current-time').innerHTML = `${hours}:${minutes}:${seconds}`;
+        clockEl.innerHTML = `${hours}:${minutes}:${seconds}`;
     }
-    setInterval(updateClock, 1000);
-    updateClock();
-    {% endif %}
+    if (document.getElementById('current-time')) {
+        setInterval(updateClock, 1000);
+        updateClock();
+    }
 
-    // 打刻ボタン押下時の処理（このタイミングでのみ位置情報を取得）
+    // 既存レコードの住所取得（AJAX）
+    function initExistingRecordsGeocoding() {
+        const $targets = $('.reverse-geocode');
+        if ($targets.length === 0) return;
+
+        $targets.each(function() {
+            var $el = $(this);
+            var model = $el.data('model');
+            var id = $el.data('id');
+            var type = $el.data('type');
+
+            $.ajax({
+                url: '{% url "kintai:timerecord_reverse_geocode" %}',
+                type: 'POST',
+                data: {
+                    'model_name': model,
+                    'object_id': id,
+                    'type': type,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(data) {
+                    if (data.address) {
+                        $el.fadeOut(200, function() {
+                            $(this).text(data.address).fadeIn(200);
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Reverse geocoding failed:', xhr.responseText);
+                }
+            });
+        });
+    }
+
+    $(document).ready(function() {
+        initExistingRecordsGeocoding();
+    });
+
+    // 打刻ボタン押下時の処理
     const punchForm = document.getElementById('punch-form');
     {% if available_contracts.count > 0 %}
     if (punchForm) {

@@ -122,6 +122,7 @@ def timerecord_detail(request, pk):
 
 @login_required
 @require_POST
+@permission_required('kintai.view_stafftimerecord', raise_exception=True)
 def timerecord_reverse_geocode(request):
     """緯度経度から住所を取得し、DBに保存するAPI"""
     model_name = request.POST.get('model_name')
@@ -484,6 +485,7 @@ def timerecord_action(request):
     # 位置情報
     lat = request.POST.get('latitude')
     lng = request.POST.get('longitude')
+    address = request.POST.get('address')
     
     if action == 'start':
         # 出勤打刻
@@ -530,7 +532,8 @@ def timerecord_action(request):
                     work_date=today,
                     start_time=now,
                     start_latitude=lat if lat else None,
-                    start_longitude=lng if lng else None
+                    start_longitude=lng if lng else None,
+                    start_address=address if address else None
                 )
                 messages.success(request, f'{timezone.localtime(now).strftime("%H:%M")} に出勤打刻しました。')
             
@@ -546,6 +549,7 @@ def timerecord_action(request):
                 timerecord.end_time = now
                 timerecord.end_latitude = lat if lat else None
                 timerecord.end_longitude = lng if lng else None
+                timerecord.end_address = address if address else None
                 timerecord.save()
                 messages.success(request, f'{timezone.localtime(now).strftime("%H:%M")} に退勤打刻しました。')
         else:
@@ -563,7 +567,8 @@ def timerecord_action(request):
                     timerecord=timerecord,
                     break_start=now,
                     start_latitude=lat if lat else None,
-                    start_longitude=lng if lng else None
+                    start_longitude=lng if lng else None,
+                    start_address=address if address else None
                 )
                 messages.success(request, f'{timezone.localtime(now).strftime("%H:%M")} に休憩開始しました。')
         else:
@@ -579,6 +584,7 @@ def timerecord_action(request):
                 current_break.break_end = now
                 current_break.end_latitude = lat if lat else None
                 current_break.end_longitude = lng if lng else None
+                current_break.end_address = address if address else None
                 current_break.save()
                 messages.success(request, f'{timezone.localtime(now).strftime("%H:%M")} に休憩終了しました。')
             else:
