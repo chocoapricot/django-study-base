@@ -173,6 +173,9 @@ class StaffTimerecordForm(forms.ModelForm):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         
+        # 登録・編集を確実にするため契約を必須にする
+        self.fields['staff_contract'].required = True
+
         # ユーザーがスタッフの場合、自分の有効な契約のみ選択可能
         if self.user and self.user.email:
             from apps.staff.models import Staff
@@ -199,6 +202,16 @@ class StaffTimerecordForm(forms.ModelForm):
              from apps.contract.models import StaffContract
              self.fields['staff_contract'].queryset = StaffContract.objects.none()
 
+    def clean(self):
+        cleaned_data = super().clean()
+        start = cleaned_data.get('rounded_start_time')
+        end = cleaned_data.get('rounded_end_time')
+
+        if start and end and end <= start:
+            raise forms.ValidationError('終了時刻は開始時刻より後の時刻を入力してください。')
+
+        return cleaned_data
+
 
 class StaffTimerecordBreakForm(forms.ModelForm):
     """休憩時間フォーム"""
@@ -217,3 +230,12 @@ class StaffTimerecordBreakForm(forms.ModelForm):
             'end_longitude': forms.HiddenInput(),
         }
 
+    def clean(self):
+        cleaned_data = super().clean()
+        start = cleaned_data.get('break_start')
+        end = cleaned_data.get('break_end')
+
+        if start and end and end <= start:
+            raise forms.ValidationError('休憩終了時刻は休憩開始時刻より後の時刻を入力してください。')
+
+        return cleaned_data
