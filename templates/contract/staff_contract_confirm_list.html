@@ -57,6 +57,26 @@
         スタッフ契約確認
     </div>
     <div class="card-body">
+        <!-- 検索フォーム -->
+        <form method="get" class="row g-3 mb-4">
+            <div class="col-12 col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="q" class="form-control" placeholder="契約名、クライアント名などで検索" value="{{ search_query }}">
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <select name="status" class="form-select">
+                    <option value="">全てのステータス</option>
+                    <option value="unconfirmed" {% if status_filter == 'unconfirmed' %}selected{% endif %}>未確認</option>
+                    <option value="confirmed" {% if status_filter == 'confirmed' %}selected{% endif %}>確認済み</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-2">
+                <button type="submit" class="btn btn-primary w-100">検索</button>
+            </div>
+        </form>
+
         <!-- 契約確認カード一覧 -->
         {% if confirm_items %}
         <div class="row g-4">
