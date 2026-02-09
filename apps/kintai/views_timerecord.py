@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from datetime import date, datetime, timedelta
 from calendar import monthrange
+import jpholiday
 from django.utils import timezone
 from .models import StaffTimerecord, StaffTimerecordBreak
 from .forms import StaffTimerecordForm, StaffTimerecordBreakForm
@@ -165,6 +166,7 @@ def timerecord_calender(request):
         calendar_data.append({
             'date': work_date,
             'weekday': work_date.weekday(), # 0:Mon, 5:Sat, 6:Sun
+            'is_holiday': jpholiday.is_holiday(work_date),
             'timerecord': timerecord,
             'contract': active_contract,
         })

@@ -9,6 +9,12 @@
     .table-sunday {
         background-color: #ffe6e6 !important;
     }
+    .text-saturday {
+        color: #0066cc !important;
+    }
+    .text-sunday {
+        color: #cc0000 !important;
+    }
     /* ホバー時のスタイル */
     .table-hover > .table-saturday:hover {
         background-color: #d0e8ff !important;
@@ -49,13 +55,13 @@
                         <th style="width: 15%;" class="text-center">終了時刻</th>
                         <th style="width: 15%;" class="text-center">休憩合計</th>
                         <th style="width: 15%;" class="text-center">勤務時間</th>
-                        <th style="width: 25%;" class="text-center">アクション</th>
+                        <th style="width: 25%;" class="text-center">処理</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for data in calendar_data %}
-                    <tr class="{% if data.weekday == 5 %}table-saturday{% elif data.weekday == 6 %}table-sunday{% endif %}">
-                        <td class="align-middle">
+                    <tr class="{% if data.weekday == 5 %}table-saturday{% elif data.weekday == 6 or data.is_holiday %}table-sunday{% endif %}">
+                        <td class="align-middle {% if data.weekday == 5 %}text-saturday{% elif data.weekday == 6 or data.is_holiday %}text-sunday{% endif %} fw-bold">
                             {{ data.date|date:"m/d" }} ({{ data.date|date:"D" }})
                         </td>
                         <td class="align-middle text-center">
@@ -88,15 +94,15 @@
                         </td>
                         <td class="align-middle text-center">
                             {% if data.timerecord %}
-                                <a href="{% url 'kintai:timerecord_update' data.timerecord.pk %}" class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-pencil"></i> 編集
+                                <a href="{% url 'kintai:timerecord_update' data.timerecord.pk %}" class="btn btn-sm btn-outline-primary" title="編集">
+                                    <i class="bi bi-pencil"></i>
                                 </a>
-                                <a href="{% url 'kintai:timerecord_detail' data.timerecord.pk %}" class="btn btn-sm btn-outline-secondary ms-1">
-                                    詳細
+                                <a href="{% url 'kintai:timerecord_detail' data.timerecord.pk %}" class="btn btn-sm btn-outline-secondary ms-1" title="詳細">
+                                    <i class="bi bi-eye"></i>
                                 </a>
                             {% else %}
-                                <a href="{% url 'kintai:timerecord_create' %}?work_date={{ data.date|date:'Y-m-d' }}&staff_contract={{ data.contract.pk }}" class="btn btn-sm btn-success">
-                                    <i class="bi bi-plus-lg"></i> 新規登録
+                                <a href="{% url 'kintai:timerecord_create' %}?work_date={{ data.date|date:'Y-m-d' }}&staff_contract={{ data.contract.pk }}" class="btn btn-sm btn-outline-success" title="新規登録">
+                                    <i class="bi bi-pencil"></i>
                                 </a>
                             {% endif %}
                         </td>
