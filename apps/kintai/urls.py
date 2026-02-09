@@ -41,6 +41,7 @@ urlpatterns = [
     
     # 勤怠打刻
     path('timerecord/', views_timerecord.timerecord_list, name='timerecord_list'),
+    path('timerecord/calender/', views_timerecord.timerecord_calender, name='timerecord_calender'),
     path('timerecord/punch/', views_timerecord.timerecord_punch, name='timerecord_punch'),
     path('timerecord/action/', views_timerecord.timerecord_action, name='timerecord_action'),
     path('timerecord/reverse_geocode/', views_timerecord.timerecord_reverse_geocode, name='timerecord_reverse_geocode'),

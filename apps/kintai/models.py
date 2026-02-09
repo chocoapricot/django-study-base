@@ -791,9 +791,7 @@ class StaffTimerecord(MyModel):
             return 0
         
         # 休憩時間の合計を計算（丸め時刻を使用）
-        total_break_minutes = sum(
-            break_record.break_minutes for break_record in self.breaks.all()
-        )
+        total_break_minutes = self.total_break_minutes
         
         # 労働時間を計算
         work_duration = end_time - start_time
@@ -804,28 +802,21 @@ class StaffTimerecord(MyModel):
         return net_work_minutes if net_work_minutes > 0 else 0
     
     @property
-    def rounded_work_minutes(self):
-        """丸め時刻を使った総労働時間（分）を計算"""
-        # 丸め時刻がある場合はそれを使用、ない場合は元の時刻を使用
-        start_time = self.rounded_start_time if self.rounded_start_time else self.start_time
-        end_time = self.rounded_end_time if self.rounded_end_time else self.end_time
-        
-        if not start_time or not end_time:
-            return 0
-        
-        # 休憩時間の合計を計算（丸め時刻を使用）
-        total_break_minutes = sum(
+    def total_break_minutes(self):
+        """休憩時間の合計（分）を計算（丸め時刻を使用）"""
+        return sum(
             break_record.break_minutes for break_record in self.breaks.all()
         )
-        
-        # 労働時間を計算
-        work_duration = end_time - start_time
-        work_minutes = int(work_duration.total_seconds() / 60)
-        
-        # 休憩時間を引く
-        net_work_minutes = work_minutes - total_break_minutes
-        return net_work_minutes if net_work_minutes > 0 else 0
-    
+
+    @property
+    def break_hours_display(self):
+        """休憩時間の表示用文字列"""
+        minutes = self.total_break_minutes
+        if minutes:
+            hours, mins = divmod(minutes, 60)
+            return f"{hours}時間{mins:02d}分"
+        return "-"
+
     @property
     def work_hours_display(self):
         """労働時間の表示用文字列（丸め時刻を使用）"""

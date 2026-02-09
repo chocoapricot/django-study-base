@@ -5,7 +5,8 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
+from calendar import monthrange
 from django.utils import timezone
 from .models import StaffTimerecord, StaffTimerecordBreak
 from .forms import StaffTimerecordForm, StaffTimerecordBreakForm
@@ -82,12 +83,98 @@ def timerecord_create(request):
     else:
         # 初期値として今日の日付を設定
         initial = {'work_date': date.today()}
+        # GETパラメータがあれば上書き
+        if request.GET.get('work_date'):
+            initial['work_date'] = request.GET.get('work_date')
+        if request.GET.get('staff_contract'):
+            initial['staff_contract'] = request.GET.get('staff_contract')
+
         form = StaffTimerecordForm(initial=initial, user=request.user)
     
     context = {
         'form': form,
     }
     return render(request, 'kintai/timerecord_form.html', context)
+
+
+@login_required
+@check_staff_agreement
+@permission_required('kintai.view_stafftimerecord', raise_exception=True)
+def timerecord_calender(request):
+    """勤怠打刻カレンダー表示"""
+    # スタッフ特定
+    staff = None
+    if request.user.email:
+        staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
+
+    if not staff:
+        messages.error(request, 'スタッフ情報が見つかりません。')
+        return redirect('/')
+
+    # 対象年月
+    target_month_str = request.GET.get('target_month', '')
+    if target_month_str:
+        try:
+            target_month = datetime.strptime(target_month_str, '%Y-%m').date().replace(day=1)
+        except ValueError:
+            target_month = date.today().replace(day=1)
+    else:
+        target_month = date.today().replace(day=1)
+
+    year = target_month.year
+    month = target_month.month
+    _, last_day_num = monthrange(year, month)
+    first_day = date(year, month, 1)
+    last_day = date(year, month, last_day_num)
+
+    # 契約取得
+    contracts = StaffContract.objects.filter(
+        staff=staff,
+        start_date__lte=last_day,
+        contract_status=Constants.CONTRACT_STATUS.CONFIRMED,
+    ).filter(
+        Q(end_date__gte=first_day) | Q(end_date__isnull=True)
+    ).order_by('start_date')
+
+    # 打刻データ取得
+    timerecords = StaffTimerecord.objects.filter(
+        staff=staff,
+        work_date__range=(first_day, last_day)
+    ).select_related('staff_contract').prefetch_related('breaks')
+
+    timerecord_map = {tr.work_date: tr for tr in timerecords}
+
+    # カレンダーデータ作成
+    calendar_data = []
+    for d_num in range(1, last_day_num + 1):
+        work_date = date(year, month, d_num)
+
+        # 該当日の有効な契約があるか確認
+        active_contract = None
+        for c in contracts:
+            if c.start_date <= work_date and (c.end_date is None or c.end_date >= work_date):
+                active_contract = c
+                break
+
+        # 契約がない期間は対象外
+        if not active_contract:
+            continue
+
+        timerecord = timerecord_map.get(work_date)
+
+        calendar_data.append({
+            'date': work_date,
+            'weekday': work_date.weekday(), # 0:Mon, 5:Sat, 6:Sun
+            'timerecord': timerecord,
+            'contract': active_contract,
+        })
+
+    context = {
+        'staff': staff,
+        'target_month': target_month,
+        'calendar_data': calendar_data,
+    }
+    return render(request, 'kintai/timerecord_calender.html', context)
 
 
 @login_required
