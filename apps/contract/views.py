@@ -1019,6 +1019,8 @@ def client_contract_confirm(request, pk):
 def client_contract_confirm_list(request):
     """クライアント契約確認一覧"""
     user = request.user
+    search_query = request.GET.get('q', '')
+    status_filter = request.GET.get('status', '')
 
     try:
         client_user = ClientUser.objects.get(email=user.email)
@@ -1075,7 +1077,21 @@ def client_contract_confirm_list(request):
             Constants.CONTRACT_STATUS.ISSUED,
             Constants.CONTRACT_STATUS.CONFIRMED
         ]
-    ).select_related('client', 'confirmed_by').prefetch_related(prefetch_prints).order_by('-start_date')
+    ).select_related('client', 'confirmed_by').prefetch_related(prefetch_prints)
+
+    # 検索フィルタ
+    if search_query:
+        contracts_query = contracts_query.filter(
+            Q(contract_name__icontains=search_query) |
+            Q(contract_number__icontains=search_query)
+        )
+
+
+    # ステータスフィルタ
+    if status_filter:
+        contracts_query = contracts_query.filter(contract_status=status_filter)
+
+    contracts_query = contracts_query.order_by('-start_date')
 
     # ページネーション
     paginator = Paginator(contracts_query, 20)
@@ -1104,9 +1120,26 @@ def client_contract_confirm_list(request):
             'dispatch_ledger_pdf': dispatch_ledger_pdf,
         })
 
+    # 契約状況のドロップダウンリストを取得（承認済、発行済、確認済のみ）
+    contract_status_list = [
+        {'value': d.value, 'name': d.name}
+        for d in Dropdowns.objects.filter(
+            category='contract_status',
+            active=True,
+            value__in=[
+                Constants.CONTRACT_STATUS.APPROVED,
+                Constants.CONTRACT_STATUS.ISSUED,
+                Constants.CONTRACT_STATUS.CONFIRMED
+            ]
+        ).order_by('disp_seq')
+    ]
+
     context = {
         'contracts_with_status': contracts_with_status,
         'page_obj': page_obj,
+        'search_query': search_query,
+        'status_filter': status_filter,
+        'contract_status_list': contract_status_list,
         'title': 'クライアント契約確認',
     }
     return render(request, 'contract/client_contract_confirm_list.html', context)

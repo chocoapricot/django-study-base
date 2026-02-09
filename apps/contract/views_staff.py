@@ -861,6 +861,8 @@ def staff_contract_confirm_list(request):
     from .models import ContractAssignmentHakenPrint
     
     user = request.user
+    search_query = request.GET.get('q', '')
+    status_filter = request.GET.get('status', '')
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -953,7 +955,20 @@ def staff_contract_confirm_list(request):
         staff=staff,
         corporate_number=company.corporate_number,
         contract_status__in=[Constants.CONTRACT_STATUS.ISSUED, Constants.CONTRACT_STATUS.CONFIRMED]
-    ).order_by('-start_date')
+    )
+
+    if search_query:
+        staff_contracts = staff_contracts.filter(
+            Q(contract_name__icontains=search_query) |
+            Q(contract_number__icontains=search_query)
+        )
+
+    if status_filter == 'confirmed':
+        staff_contracts = staff_contracts.filter(contract_status=Constants.CONTRACT_STATUS.CONFIRMED)
+    elif status_filter == 'unconfirmed':
+        staff_contracts = staff_contracts.filter(contract_status=Constants.CONTRACT_STATUS.ISSUED)
+
+    staff_contracts = staff_contracts.order_by('-start_date')
     
     for contract in staff_contracts:
         latest_pdf = StaffContractPrint.objects.filter(staff_contract=contract).order_by('-printed_at').first()
@@ -975,7 +990,20 @@ def staff_contract_confirm_list(request):
     ).select_related(
         'client_contract__client',
         'staff_contract'
-    ).order_by('-assigned_at')
+    )
+
+    if search_query:
+        assignments = assignments.filter(
+            Q(staff_contract__contract_name__icontains=search_query) |
+            Q(client_contract__client__name__icontains=search_query)
+        )
+
+    if status_filter == 'confirmed':
+        assignments = assignments.filter(confirmed_at__isnull=False)
+    elif status_filter == 'unconfirmed':
+        assignments = assignments.filter(confirmed_at__isnull=True)
+
+    assignments = assignments.order_by('-assigned_at')
     
     for assignment in assignments:
         # スタッフ契約の法人番号が自社と一致するかチェック
@@ -1010,6 +1038,8 @@ def staff_contract_confirm_list(request):
     context = {
         'confirm_items': page_obj,
         'page_obj': page_obj,
+        'search_query': search_query,
+        'status_filter': status_filter,
         'title': 'スタッフ契約確認',
         'CONTRACT_STATUS': Constants.CONTRACT_STATUS,
     }
