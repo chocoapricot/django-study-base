@@ -62,46 +62,95 @@
           <tr>
             <th class="align-middle" rowspan="3">スタッフ</th>
             <td>
-              <div>oda-nobunaga@staff.jp</div>
-              <div class="text-muted">passwordforstudybase!</div>
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="sample-login">oda-nobunaga@staff.jp</div>
+                  <div class="sample-password text-muted">passwordforstudybase!</div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary border-0 py-0 px-1 fill-sample" title="入力する">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+              </div>
             </td>
           </tr>
           <tr>
             <td>
-              <div>hojo-uji@staff.jp</div>
-              <div class="text-muted">passwordforstudybase!</div>
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="sample-login">hojo-uji@staff.jp</div>
+                  <div class="sample-password text-muted">passwordforstudybase!</div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary border-0 py-0 px-1 fill-sample" title="入力する">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+              </div>
             </td>
           </tr>
           <tr>
             <td>
-              <div>toyotomi-hideyoshi@staff.jp</div>
-              <div class="text-muted">passwordforstudybase!</div>
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="sample-login">toyotomi-hideyoshi@staff.jp</div>
+                  <div class="sample-password text-muted">passwordforstudybase!</div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary border-0 py-0 px-1 fill-sample" title="入力する">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+              </div>
             </td>
           </tr>
           <tr>
             <th class="align-middle" rowspan="2">クライアント</th>
             <td>
-              <div>isami.kondo@soumu.go.jp</div>
-              <div class="text-muted">passwordforstudybase!</div>
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="sample-login">isami.kondo@soumu.go.jp</div>
+                  <div class="sample-password text-muted">passwordforstudybase!</div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary border-0 py-0 px-1 fill-sample" title="入力する">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+              </div>
             </td>
           </tr>
           <tr>
             <td>
-              <div>soji.okita@soumu.go.jp</div>
-              <div class="text-muted">passwordforstudybase!</div>
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="sample-login">soji.okita@soumu.go.jp</div>
+                  <div class="sample-password text-muted">passwordforstudybase!</div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary border-0 py-0 px-1 fill-sample" title="入力する">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+              </div>
             </td>
           </tr>
           <tr>
             <th class="align-middle" rowspan="2">会社</th>
             <td>
-              <div>soseki.natsume@example.com</div>
-              <div class="text-muted">passwordforstudybase!</div>
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="sample-login">soseki.natsume@example.com</div>
+                  <div class="sample-password text-muted">passwordforstudybase!</div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary border-0 py-0 px-1 fill-sample" title="入力する">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+              </div>
             </td>
           </tr>
           <tr>
             <td>
-              <div>ogai.mori@example.com</div>
-              <div class="text-muted">passwordforstudybase!</div>
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="sample-login">ogai.mori@example.com</div>
+                  <div class="sample-password text-muted">passwordforstudybase!</div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary border-0 py-0 px-1 fill-sample" title="入力する">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -141,6 +190,20 @@
         }
       });
     }
+
+    document.querySelectorAll('.fill-sample').forEach(function(button) {
+      button.addEventListener('click', function() {
+        var row = this.closest('td');
+        var login = row.querySelector('.sample-login').textContent.trim();
+        var password = row.querySelector('.sample-password').textContent.trim();
+        var loginInput = document.getElementById('id_login');
+        var passwordInput = document.getElementById('id_password');
+        if (loginInput && passwordInput) {
+          loginInput.value = login;
+          passwordInput.value = password;
+        }
+      });
+    });
   });
 </script>
 {% endblock %}
