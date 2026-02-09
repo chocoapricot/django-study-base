@@ -12,6 +12,23 @@
         
         <form method="post">
             {% csrf_token %}
+
+            {% if form.errors %}
+            <div class="alert alert-dismissible alert-warning">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+                {# 他のエラーも表示 #}
+                {% for field_name, errors in form.errors.items %}
+                    {% if field_name != '__all__' and field_name != 'break_start' and field_name != 'break_end' and field_name != 'start_latitude' and field_name != 'start_longitude' and field_name != 'end_latitude' and field_name != 'end_longitude' %}
+                        {% for error in errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
             
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.break_start.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">休憩開始時刻</label>
@@ -41,12 +58,6 @@
             {{ form.start_longitude }}
             {{ form.end_latitude }}
             {{ form.end_longitude }}
-
-            {% if form.non_field_errors %}
-                <div class="alert alert-danger">
-                    {{ form.non_field_errors }}
-                </div>
-            {% endif %}
 
             <div class="d-flex justify-content-start">
                 <button type="submit" class="btn btn-sm btn-primary me-2">{% if break_record %}更新{% else %}登録{% endif %}</button>

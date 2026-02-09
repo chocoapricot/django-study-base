@@ -7,6 +7,23 @@
     <div class="card-body">
         <form method="post">
             {% csrf_token %}
+
+            {% if form.errors %}
+            <div class="alert alert-dismissible alert-warning">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+                {# フォームに含まれないがモデルでバリデーションエラーになったフィールド（staff等）を表示 #}
+                {% for field_name, errors in form.errors.items %}
+                    {% if field_name != '__all__' and field_name != 'staff_contract' and field_name != 'work_date' and field_name != 'rounded_start_time' and field_name != 'rounded_end_time' and field_name != 'memo' and field_name != 'start_latitude' and field_name != 'start_longitude' and field_name != 'end_latitude' and field_name != 'end_longitude' %}
+                        {% for error in errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
             
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.staff_contract.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">契約</label>
@@ -85,12 +102,6 @@
                     {% endif %}
                 </div>
             </div>
-
-            {% if form.non_field_errors %}
-                <div class="alert alert-danger">
-                    {{ form.non_field_errors }}
-                </div>
-            {% endif %}
 
             <div class="d-flex justify-content-start">
                 <button type="submit" class="btn btn-sm btn-primary me-2">{% if timerecord %}更新{% else %}登録{% endif %}</button>
