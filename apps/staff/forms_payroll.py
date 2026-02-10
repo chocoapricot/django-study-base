@@ -5,6 +5,7 @@ class StaffPayrollForm(forms.ModelForm):
     class Meta:
         model = StaffPayroll
         fields = [
+            'basic_pension_number',
             'health_insurance_join_date',
             'health_insurance_non_enrollment_reason',
             'welfare_pension_join_date',
@@ -13,6 +14,7 @@ class StaffPayrollForm(forms.ModelForm):
             'employment_insurance_non_enrollment_reason',
         ]
         widgets = {
+            'basic_pension_number': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': '例: 1234-567890'}),
             'health_insurance_join_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control form-control-sm'}),
             'health_insurance_non_enrollment_reason': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'welfare_pension_join_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control form-control-sm'}),

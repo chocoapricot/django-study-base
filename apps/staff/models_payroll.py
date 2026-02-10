@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import RegexValidator
 from ..common.models import MyTenantModel, TenantManager
 from .models_staff import Staff
 
@@ -11,6 +12,19 @@ class StaffPayroll(MyTenantModel):
         on_delete=models.CASCADE,
         related_name='payroll',
         verbose_name='スタッフ'
+    )
+    basic_pension_number = models.CharField(
+        '基礎年金番号',
+        max_length=12,
+        blank=True,
+        null=True,
+        validators=[
+            RegexValidator(
+                regex=r'^[\d-]{10,12}$',
+                message='基礎年金番号は10桁の数字（ハイフン可）で入力してください'
+            )
+        ],
+        help_text='10桁の数字で入力してください（ハイフンも含められます）'
     )
     health_insurance_join_date = models.DateField('健康保険加入日', blank=True, null=True)
     health_insurance_non_enrollment_reason = models.TextField(

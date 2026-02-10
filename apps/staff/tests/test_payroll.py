@@ -45,19 +45,22 @@ class StaffPayrollViewsTest(TestCase):
 
     def test_staff_payroll_create_view_post(self):
         data = {
+            'basic_pension_number': '1234-567890',
             'health_insurance_join_date': '2022-01-01',
             'welfare_pension_join_date': '2022-01-01',
             'employment_insurance_join_date': '2022-01-01',
         }
         response = self.client.post(reverse('staff:staff_payroll_create', args=[self.staff.pk]), data)
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(StaffPayroll.objects.filter(staff=self.staff).exists())
+        payroll = StaffPayroll.objects.get(staff=self.staff)
+        self.assertEqual(payroll.basic_pension_number, '1234-567890')
 
     def test_staff_payroll_detail_view(self):
-        payroll = StaffPayroll.objects.create(staff=self.staff)
+        payroll = StaffPayroll.objects.create(staff=self.staff, basic_pension_number='1234-567890')
         response = self.client.get(reverse('staff:staff_payroll_detail', args=[self.staff.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_payroll_detail.html')
+        self.assertContains(response, '1234-567890')
         self.assertContains(response, reverse('staff:staff_payroll_edit', args=[self.staff.pk]))
 
     def test_staff_payroll_edit_view_get(self):
@@ -193,6 +196,18 @@ class StaffPayrollFormTest(TestCase):
         }
         form = StaffPayrollForm(data=form_data)
         self.assertTrue(form.is_valid())
+
+    def test_form_validation_pension_number_invalid(self):
+        """基礎年金番号の不正形式バリデーションテスト"""
+        form_data = {
+            'basic_pension_number': 'invalid',
+            'health_insurance_join_date': '2022-01-01',
+            'welfare_pension_join_date': '2022-01-01',
+            'employment_insurance_join_date': '2022-01-01',
+        }
+        form = StaffPayrollForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('basic_pension_number', form.errors)
 
     def test_form_validation_valid_reason_only(self):
         """非加入理由のみ入力された場合の正常ケーステスト"""
