@@ -1,7 +1,9 @@
 from django import forms
-from .models import StaffTimesheet, StaffTimecard
+from .models import StaffTimesheet, StaffTimecard, StaffTimerecord, StaffTimerecordBreak
 from apps.contract.models import StaffContract
-from datetime import datetime
+from apps.staff.models import Staff
+from django.utils import timezone
+from datetime import datetime, timedelta
 
 
 class StaffTimesheetForm(forms.ModelForm):
@@ -173,7 +175,6 @@ class StaffTimerecordForm(forms.ModelForm):
     )
     
     class Meta:
-        from .models import StaffTimerecord
         model = StaffTimerecord
         fields = ['staff_contract', 'work_date', 'rounded_start_time', 'rounded_end_time',
                   'start_latitude', 'start_longitude', 'end_latitude', 'end_longitude', 'memo']
@@ -196,7 +197,6 @@ class StaffTimerecordForm(forms.ModelForm):
 
         # インスタンスがある場合、DateTimeFieldをTimeと翌日フラグに変換
         if self.instance and self.instance.pk:
-            from django.utils import timezone
             if self.instance.rounded_start_time:
                 local_start = timezone.localtime(self.instance.rounded_start_time)
                 self.initial['rounded_start_time'] = local_start.time()
@@ -213,8 +213,6 @@ class StaffTimerecordForm(forms.ModelForm):
 
         # ユーザーがスタッフの場合、自分の有効な契約のみ選択可能
         if self.user and self.user.email:
-            from apps.staff.models import Staff
-            from apps.contract.models import StaffContract
             try:
                 # メールアドレスでスタッフを特定
                 staff = Staff.objects.get(email=self.user.email)
@@ -234,14 +232,11 @@ class StaffTimerecordForm(forms.ModelForm):
                 self.fields['staff_contract'].queryset = StaffContract.objects.none()
         elif self.user:
              # メールアドレスがない場合なども空にする
-             from apps.contract.models import StaffContract
              self.fields['staff_contract'].queryset = StaffContract.objects.none()
 
     def clean(self):
         cleaned_data = super().clean()
         work_date = cleaned_data.get('work_date')
-        from django.utils import timezone
-        from datetime import datetime, timedelta
 
         # 開始時刻の処理
         start_time = cleaned_data.get('rounded_start_time')
@@ -272,25 +267,90 @@ class StaffTimerecordForm(forms.ModelForm):
 
 class StaffTimerecordBreakForm(forms.ModelForm):
     """休憩時間フォーム"""
+    rounded_break_start = forms.TimeField(
+        label='休憩開始時刻',
+        widget=forms.TimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'time'}),
+        required=True
+    )
+    break_start_next_day = forms.BooleanField(
+        label='翌日',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        required=False
+    )
+    rounded_break_end = forms.TimeField(
+        label='休憩終了時刻',
+        widget=forms.TimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'time'}),
+        required=False
+    )
+    break_end_next_day = forms.BooleanField(
+        label='翌日',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        required=False
+    )
     
     class Meta:
-        from .models import StaffTimerecordBreak
         model = StaffTimerecordBreak
-        fields = ['break_start', 'break_end', 
+        fields = ['rounded_break_start', 'rounded_break_end',
                   'start_latitude', 'start_longitude', 'end_latitude', 'end_longitude']
         widgets = {
-            'break_start': forms.DateTimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'datetime-local'}),
-            'break_end': forms.DateTimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'datetime-local'}),
             'start_latitude': forms.HiddenInput(),
             'start_longitude': forms.HiddenInput(),
             'end_latitude': forms.HiddenInput(),
             'end_longitude': forms.HiddenInput(),
         }
 
+    def __init__(self, *args, **kwargs):
+        self.timerecord = kwargs.pop('timerecord', None)
+        super().__init__(*args, **kwargs)
+
+        # インスタンスがある場合、DateTimeFieldをTimeと翌日フラグに変換
+        if self.instance and self.instance.pk:
+            work_date = self.instance.timerecord.work_date if self.instance.timerecord else None
+
+            if self.instance.rounded_break_start:
+                local_start = timezone.localtime(self.instance.rounded_break_start)
+                self.initial['rounded_break_start'] = local_start.time()
+                self.initial['break_start_next_day'] = (
+                    work_date and local_start.date() > work_date
+                )
+
+            if self.instance.rounded_break_end:
+                local_end = timezone.localtime(self.instance.rounded_break_end)
+                self.initial['rounded_break_end'] = local_end.time()
+                self.initial['break_end_next_day'] = (
+                    work_date and local_end.date() > work_date
+                )
+
     def clean(self):
         cleaned_data = super().clean()
-        start = cleaned_data.get('break_start')
-        end = cleaned_data.get('break_end')
+
+        # timerecord がない場合は instance から取得を試みる
+        timerecord = self.timerecord or (self.instance.timerecord if self.instance.pk else None)
+        if not timerecord:
+            return cleaned_data
+
+        work_date = timerecord.work_date
+
+        # 開始時刻の処理
+        start_time = cleaned_data.get('rounded_break_start')
+        start_next_day = cleaned_data.get('break_start_next_day')
+        if work_date and start_time:
+            dt = datetime.combine(work_date, start_time)
+            if start_next_day:
+                dt += timedelta(days=1)
+            cleaned_data['rounded_break_start'] = timezone.make_aware(dt)
+
+        # 終了時刻の処理
+        end_time = cleaned_data.get('rounded_break_end')
+        end_next_day = cleaned_data.get('break_end_next_day')
+        if work_date and end_time:
+            dt = datetime.combine(work_date, end_time)
+            if end_next_day:
+                dt += timedelta(days=1)
+            cleaned_data['rounded_break_end'] = timezone.make_aware(dt)
+
+        start = cleaned_data.get('rounded_break_start')
+        end = cleaned_data.get('rounded_break_end')
 
         if start and end and end <= start:
             raise forms.ValidationError('休憩終了時刻は休憩開始時刻より後の時刻を入力してください。')

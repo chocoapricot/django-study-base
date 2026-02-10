@@ -21,7 +21,7 @@
                 {% endfor %}
                 {# 他のエラーも表示 #}
                 {% for field_name, errors in form.errors.items %}
-                    {% if field_name != '__all__' and field_name != 'break_start' and field_name != 'break_end' and field_name != 'start_latitude' and field_name != 'start_longitude' and field_name != 'end_latitude' and field_name != 'end_longitude' %}
+                    {% if field_name != '__all__' and field_name != 'rounded_break_start' and field_name != 'rounded_break_end' and field_name != 'break_start_next_day' and field_name != 'break_end_next_day' and field_name != 'start_latitude' and field_name != 'start_longitude' and field_name != 'end_latitude' and field_name != 'end_longitude' %}
                         {% for error in errors %}
                             <div>{{ error }}</div>
                         {% endfor %}
@@ -31,24 +31,30 @@
             {% endif %}
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.break_start.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">休憩開始時刻</label>
+                <label for="{{ form.rounded_break_start.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">休憩開始時刻</label>
                 <div class="col-sm-4">
-                    <div class="input-group">
-                        {{ form.break_start }}
-                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setNow('id_break_start', 'start')">現在時刻</button>
+                    <div class="d-flex align-items-center">
+                        {{ form.rounded_break_start }}
+                        <div class="form-check ms-2">
+                            {{ form.break_start_next_day }}
+                            <label class="form-check-label" for="{{ form.break_start_next_day.id_for_label }}">翌日</label>
+                        </div>
                     </div>
-                    {% if form.break_start.errors %}
-                        <div class="text-danger">{{ form.break_start.errors }}</div>
+                    {% if form.rounded_break_start.errors %}
+                        <div class="text-danger">{{ form.rounded_break_start.errors }}</div>
                     {% endif %}
                 </div>
-                <label for="{{ form.break_end.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">休憩終了時刻</label>
+                <label for="{{ form.rounded_break_end.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">休憩終了時刻</label>
                 <div class="col-sm-4">
-                    <div class="input-group">
-                        {{ form.break_end }}
-                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setNow('id_break_end', 'end')">現在時刻</button>
+                    <div class="d-flex align-items-center">
+                        {{ form.rounded_break_end }}
+                        <div class="form-check ms-2">
+                            {{ form.break_end_next_day }}
+                            <label class="form-check-label" for="{{ form.break_end_next_day.id_for_label }}">翌日</label>
+                        </div>
                     </div>
-                    {% if form.break_end.errors %}
-                        <div class="text-danger">{{ form.break_end.errors }}</div>
+                    {% if form.rounded_break_end.errors %}
+                        <div class="text-danger">{{ form.rounded_break_end.errors }}</div>
                     {% endif %}
                 </div>
             </div>
@@ -67,37 +73,4 @@
     </div>
 </div>
 
-<script>
-function setNow(fieldId, type) {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    
-    document.getElementById(fieldId).value = `${year}-${month}-${day}T${hours}:${minutes}`;
-    
-    // 位置情報取得
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                if (type === 'start') {
-                    document.getElementById('id_start_latitude').value = lat;
-                    document.getElementById('id_start_longitude').value = lng;
-                } else if (type === 'end') {
-                    document.getElementById('id_end_latitude').value = lat;
-                    document.getElementById('id_end_longitude').value = lng;
-                }
-            },
-            (error) => {
-                console.error("位置情報の取得に失敗しました: ", error);
-                // 休憩の場合はアラートうるさいかもしれないのでコンソールのみ
-            }
-        );
-    }
-}
-</script>
 {% endblock %}

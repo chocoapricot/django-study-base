@@ -344,7 +344,7 @@ def timerecord_break_create(request, timerecord_pk):
         return redirect('kintai:timerecord_list')
     
     if request.method == 'POST':
-        form = StaffTimerecordBreakForm(request.POST)
+        form = StaffTimerecordBreakForm(request.POST, timerecord=timerecord)
         if form.is_valid():
             break_record = form.save(commit=False)
             break_record.timerecord = timerecord
@@ -352,7 +352,7 @@ def timerecord_break_create(request, timerecord_pk):
             messages.success(request, '休憩時間を登録しました。')
             return redirect('kintai:timerecord_detail', pk=timerecord.pk)
     else:
-        form = StaffTimerecordBreakForm()
+        form = StaffTimerecordBreakForm(timerecord=timerecord)
     
     context = {
         'form': form,
@@ -380,13 +380,13 @@ def timerecord_break_update(request, pk):
         return redirect('kintai:timerecord_list')
     
     if request.method == 'POST':
-        form = StaffTimerecordBreakForm(request.POST, instance=break_record)
+        form = StaffTimerecordBreakForm(request.POST, instance=break_record, timerecord=timerecord)
         if form.is_valid():
             form.save()
             messages.success(request, '休憩時間を更新しました。')
             return redirect('kintai:timerecord_detail', pk=timerecord.pk)
     else:
-        form = StaffTimerecordBreakForm(instance=break_record)
+        form = StaffTimerecordBreakForm(instance=break_record, timerecord=timerecord)
     
     context = {
         'form': form,
@@ -728,6 +728,7 @@ def timerecord_action(request):
         # 1. 退勤の取り消し
         if timerecord.end_time and (now - timerecord.end_time).total_seconds() < 300:
             timerecord.end_time = None
+            timerecord.rounded_end_time = None
             timerecord.save()
             cancelled = True
             msg = "退勤打刻を取り消しました。"
@@ -739,6 +740,7 @@ def timerecord_action(request):
             if last_break:
                 if last_break.break_end and (now - last_break.break_end).total_seconds() < 300:
                     last_break.break_end = None
+                    last_break.rounded_break_end = None
                     last_break.save()
                     cancelled = True
                     msg = "休憩終了を取り消しました。"

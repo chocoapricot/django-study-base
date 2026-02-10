@@ -66,10 +66,7 @@
                 </label>
                 <div class="col-sm-4">
                     <div class="d-flex align-items-center">
-                        <div class="input-group" style="width: auto;">
-                            {{ form.rounded_start_time }}
-                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setNow('id_rounded_start_time', 'start')">現在時刻</button>
-                        </div>
+                        {{ form.rounded_start_time }}
                         <div class="form-check ms-2">
                             {{ form.rounded_start_time_next_day }}
                             <label class="form-check-label" for="{{ form.rounded_start_time_next_day.id_for_label }}">翌日</label>
@@ -84,10 +81,7 @@
                 </label>
                 <div class="col-sm-4">
                     <div class="d-flex align-items-center">
-                        <div class="input-group" style="width: auto;">
-                            {{ form.rounded_end_time }}
-                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setNow('id_rounded_end_time', 'end')">現在時刻</button>
-                        </div>
+                        {{ form.rounded_end_time }}
                         <div class="form-check ms-2">
                             {{ form.rounded_end_time_next_day }}
                             <label class="form-check-label" for="{{ form.rounded_end_time_next_day.id_for_label }}">翌日</label>
@@ -123,49 +117,4 @@
     </div>
 </div>
 
-<script>
-function setNow(fieldId, type) {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    
-    document.getElementById(fieldId).value = `${hours}:${minutes}`;
-
-    // 翌日フラグの判定
-    const workDateVal = document.getElementById('id_work_date').value;
-    if (workDateVal) {
-        const [year, month, day] = workDateVal.split('-').map(Number);
-        const workDay = new Date(year, month - 1, day);
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-        const nextDayCheckbox = document.getElementById(fieldId + '_next_day');
-        if (nextDayCheckbox) {
-            nextDayCheckbox.checked = (today > workDay);
-        }
-    }
-    
-    // 位置情報取得
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                if (type === 'start') {
-                    document.getElementById('id_start_latitude').value = lat;
-                    document.getElementById('id_start_longitude').value = lng;
-                } else if (type === 'end') {
-                    document.getElementById('id_end_latitude').value = lat;
-                    document.getElementById('id_end_longitude').value = lng;
-                }
-            },
-            (error) => {
-                console.error("位置情報の取得に失敗しました: ", error);
-                alert("位置情報の取得に失敗しました。");
-            }
-        );
-    } else {
-        alert("ブラウザが位置情報に対応していません。");
-    }
-}
-</script>
 {% endblock %}
