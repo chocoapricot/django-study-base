@@ -3,10 +3,12 @@
 
 {% block extra_css %}
 <style>
-    .table-saturday {
+    .table-saturday,
+    .table-saturday > td {
         background-color: #e6f2ff !important;
     }
-    .table-sunday {
+    .table-sunday,
+    .table-sunday > td {
         background-color: #ffe6e6 !important;
     }
     .text-saturday {
@@ -16,10 +18,12 @@
         color: #cc0000 !important;
     }
     /* ホバー時のスタイル */
-    .table-hover > .table-saturday:hover {
+    .table-hover > .table-saturday:hover,
+    .table-hover > .table-saturday:hover > td {
         background-color: #d0e8ff !important;
     }
-    .table-hover > .table-sunday:hover {
+    .table-hover > .table-sunday:hover,
+    .table-hover > .table-sunday:hover > td {
         background-color: #ffdde0 !important;
     }
 </style>
