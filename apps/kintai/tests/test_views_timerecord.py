@@ -479,11 +479,16 @@ class TimerecordCRUDViewTest(TestCase):
         """休憩作成の権限テスト"""
         url = reverse('kintai:timerecord_break_create', kwargs={'timerecord_pk': self.timerecord.pk})
 
-        # 正しいフォーマットのdatetime文字列を生成
-        now = timezone.now()
-        start_time_str = now.strftime('%Y-%m-%dT%H:%M')
-        end_time_str = (now + timezone.timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M')
-        data = {'break_start': start_time_str, 'break_end': end_time_str}
+        # 正しいフォーマットの文字列を生成
+        now = timezone.localtime(timezone.now())
+        start_time_str = now.strftime('%H:%M')
+        end_time_str = (now + timezone.timedelta(hours=1)).strftime('%H:%M')
+        data = {
+            'rounded_break_start': start_time_str,
+            'break_start_next_day': False,
+            'rounded_break_end': end_time_str,
+            'break_end_next_day': False
+        }
 
         # 権限のないユーザー
         self.client.login(username='no_perm_user', password='password')
@@ -508,13 +513,18 @@ class TimerecordCRUDViewTest(TestCase):
         """休憩編集の権限テスト"""
         url = reverse('kintai:timerecord_break_update', kwargs={'pk': self.break_record.pk})
 
-        # 正しいフォーマットのdatetime文字列を生成
+        # 正しいフォーマットの文字列を生成
         # 休憩時間を勤務開始2時間後から3時間後に変更する
-        new_break_start = self.timerecord.start_time + timezone.timedelta(hours=2)
+        new_break_start = timezone.localtime(self.timerecord.start_time) + timezone.timedelta(hours=2)
         new_break_end = new_break_start + timezone.timedelta(hours=1)
-        start_time_str = new_break_start.strftime('%Y-%m-%dT%H:%M')
-        end_time_str = new_break_end.strftime('%Y-%m-%dT%H:%M')
-        data = {'break_start': start_time_str, 'break_end': end_time_str}
+        start_time_str = new_break_start.strftime('%H:%M')
+        end_time_str = new_break_end.strftime('%H:%M')
+        data = {
+            'rounded_break_start': start_time_str,
+            'break_start_next_day': new_break_start.date() > self.timerecord.work_date,
+            'rounded_break_end': end_time_str,
+            'break_end_next_day': new_break_end.date() > self.timerecord.work_date
+        }
 
         # 権限のないユーザー
         self.client.login(username='no_perm_user', password='password')
@@ -532,7 +542,7 @@ class TimerecordCRUDViewTest(TestCase):
         response_post_perm = self.client.post(url, data)
         self.assertRedirects(response_post_perm, reverse('kintai:timerecord_detail', kwargs={'pk': self.timerecord.pk}))
         self.break_record.refresh_from_db()
-        self.assertIsNotNone(self.break_record.break_end)
+        self.assertIsNotNone(self.break_record.rounded_break_end)
 
     def test_break_delete_permission(self):
         """休憩削除の権限テスト"""
