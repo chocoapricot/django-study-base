@@ -232,7 +232,6 @@ class StaffTimerecordForm(forms.ModelForm):
                 self.fields['staff_contract'].queryset = StaffContract.objects.none()
         elif self.user:
              # メールアドレスがない場合なども空にする
-             from apps.contract.models import StaffContract
              self.fields['staff_contract'].queryset = StaffContract.objects.none()
 
     def clean(self):
