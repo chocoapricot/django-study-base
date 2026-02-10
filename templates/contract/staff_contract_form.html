@@ -371,14 +371,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ツールチップを初期化
-    if (typeof bootstrap !== 'undefined') {
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-    }
-    
     // 編集時の既存データ表示
     const staffField = document.getElementById('{{ form.staff.id_for_label }}');
     const staffDisplayText = document.getElementById('staff-display-text');

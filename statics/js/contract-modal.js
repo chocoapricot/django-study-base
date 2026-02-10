@@ -43,6 +43,10 @@ async function fetchModalContent(url, modalSelector) {
         const modalBody = document.querySelector(modalSelector);
         if (modalBody) {
             modalBody.innerHTML = html;
+            // ツールチップの再初期化
+            if (typeof window.initializeTooltips === 'function') {
+                window.initializeTooltips();
+            }
         }
         return html;
     } catch (error) {

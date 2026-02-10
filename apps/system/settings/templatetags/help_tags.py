@@ -18,7 +18,9 @@ def my_help_icon(text, placement='top'):
     {% my_help_icon "半角数字13桁ハイフンなし" "right" %}
     """
     html = f'''<i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
+               tabindex="0"
                data-bs-toggle="tooltip" data-bs-placement="{placement}" 
+               data-bs-trigger="hover focus click"
                title="{text}"></i>'''
     return mark_safe(html)
 
@@ -95,7 +97,9 @@ def my_help_preset(key, placement='top'):
     """
     text = HELP_TEXTS.get(key, key)
     html = f'''<i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
+               tabindex="0"
                data-bs-toggle="tooltip" data-bs-placement="{placement}" 
+               data-bs-trigger="hover focus click"
                title="{text}"></i>'''
     return mark_safe(html)
 
@@ -106,7 +110,9 @@ def my_note_icon(text, placement='top'):
     補足アイコンを表示するテンプレートタグ
     """
     html = f'''<i class="bi bi-book" style="color: #66bbff; cursor: pointer;"
+               tabindex="0"
                data-bs-toggle="tooltip" data-bs-placement="{placement}"
+               data-bs-trigger="hover focus click"
                title="{text}"></i>'''
     return mark_safe(html)
 
@@ -123,7 +129,9 @@ def my_note_preset(key, placement='top'):
     """
     text = NOTE_TEXTS.get(key, key)
     html = f'''<i class="bi bi-book" style="color: #66bbff; cursor: pointer;"
+               tabindex="0"
                data-bs-toggle="tooltip" data-bs-placement="{placement}"
+               data-bs-trigger="hover focus click"
                title="{text}"></i>'''
     return mark_safe(html)
 
