@@ -531,10 +531,10 @@ def timerecord_punch(request):
                 if last_break.break_end:
                     if (now - last_break.break_end).total_seconds() < 300:
                         can_cancel = True
-                elif (now - last_break.break_start).total_seconds() < 300:
+                elif last_break.break_start and (now - last_break.break_start).total_seconds() < 300:
                     can_cancel = True
             
-            if not can_cancel and (now - timerecord.start_time).total_seconds() < 300:
+            if not can_cancel and timerecord.start_time and (now - timerecord.start_time).total_seconds() < 300:
                 can_cancel = True
 
     context = {
