@@ -827,6 +827,38 @@ class StaffTimerecord(MyModel):
         return "-"
     
     @property
+    def work_hours_int(self):
+        """労働時間の時間部分（整数）"""
+        if self.total_work_minutes:
+            hours, _ = divmod(self.total_work_minutes, 60)
+            return hours
+        return 0
+
+    @property
+    def work_minutes_int(self):
+        """労働時間の分部分（整数）"""
+        if self.total_work_minutes:
+            _, minutes = divmod(self.total_work_minutes, 60)
+            return minutes
+        return 0
+    
+    @property
+    def break_hours_int(self):
+        """休憩時間の時間部分（整数）"""
+        if self.total_break_minutes:
+            hours, _ = divmod(self.total_break_minutes, 60)
+            return hours
+        return 0
+
+    @property
+    def break_minutes_int(self):
+        """休憩時間の分部分（整数）"""
+        if self.total_break_minutes:
+            _, minutes = divmod(self.total_break_minutes, 60)
+            return minutes
+        return 0
+    
+    @property
     def rounded_start_time_display(self):
         """丸め開始時刻の表示用文字列"""
         if self.rounded_start_time:

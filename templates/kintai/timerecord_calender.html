@@ -26,6 +26,36 @@
     .table-hover > .table-sunday:hover > td {
         background-color: #ffdde0 !important;
     }
+
+    /* 通常時はコロンを非表示 */
+    .work-hours-cell .work-minutes-separator {
+        display: none;
+    }
+
+    @media (max-width: 575.98px) { /* Bootstrap XS breakpoint */
+        .work-hours-cell .work-hours-unit-hour,
+        .work-hours-cell .work-hours-unit-minute {
+            display: none; /* 時間と分を非表示 */
+        }
+        .work-hours-cell .work-minutes-separator {
+            display: inline; /* コロンを表示 */
+        }
+    }
+
+    /* 通常時はコロンを非表示 */
+    .break-hours-cell .break-minutes-separator {
+        display: none;
+    }
+
+    @media (max-width: 575.98px) { /* Bootstrap XS breakpoint */
+        .break-hours-cell .break-hours-unit-hour,
+        .break-hours-cell .break-hours-unit-minute {
+            display: none; /* 時間と分を非表示 */
+        }
+        .break-hours-cell .break-minutes-separator {
+            display: inline; /* コロンを表示 */
+        }
+    }
 </style>
 {% endblock %}
 
@@ -82,20 +112,21 @@
                                 -
                             {% endif %}
                         </td>
-                        <td class="align-middle text-center">
-                            {% if data.timerecord %}
-                                {{ data.timerecord.break_hours_display }}
+                        <td class="align-middle text-center break-hours-cell">
+                            {% if data.timerecord and data.timerecord.total_break_minutes > 0 %}
+                                <span class="break-hours-value">{{ data.timerecord.break_hours_int }}</span><span class="break-hours-unit-hour">時間</span><span class="break-minutes-separator">:</span><span class="break-minutes-value">{{ data.timerecord.break_minutes_int|stringformat:"02d" }}</span><span class="break-hours-unit-minute">分</span>
                             {% else %}
                                 -
                             {% endif %}
                         </td>
-                        <td class="align-middle text-center">
-                            {% if data.timerecord %}
-                                {{ data.timerecord.work_hours_display }}
+                        <td class="align-middle text-center work-hours-cell">
+                            {% if data.timerecord and data.timerecord.total_work_minutes > 0 %}
+                                <span class="work-hours-value">{{ data.timerecord.work_hours_int }}</span><span class="work-hours-unit-hour">時間</span><span class="work-minutes-separator">:</span><span class="work-minutes-value">{{ data.timerecord.work_minutes_int|stringformat:"02d" }}</span><span class="work-hours-unit-minute">分</span>
                             {% else %}
                                 -
                             {% endif %}
                         </td>
+
                         <td class="align-middle text-center">
                             {% if data.timerecord %}
                                 <a href="{% url 'kintai:timerecord_update' data.timerecord.pk %}" class="btn btn-sm btn-outline-primary" title="編集">
