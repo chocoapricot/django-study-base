@@ -12,6 +12,13 @@
     <div class="card-body">
 
         <div class="row mb-3 mt-3">
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>基礎年金番号</strong></label>
+            <div class="col-sm-2">
+                <p class="form-control-plaintext">{{ payroll.basic_pension_number|default:"-" }}</p>
+            </div>
+        </div>
+
+        <div class="row mb-3 mt-3">
             <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>健康保険加入日</strong></label>
             <div class="col-sm-2">
                 <p class="form-control-plaintext">{{ payroll.health_insurance_join_date|date:"Y/m/d"|default:"-" }}</p>

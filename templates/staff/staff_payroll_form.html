@@ -34,6 +34,16 @@
             {% endif %}
 
             <div class="row mb-3 align-items-center">
+                <label for="{{ form.basic_pension_number.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">基礎年金番号</label>
+                <div class="col-sm-2">
+                    {{ form.basic_pension_number }}
+                    {% if form.basic_pension_number.errors %}
+                        <div class="text-danger small">{{ form.basic_pension_number.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
                 <label for="{{ form.health_insurance_join_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">健康保険加入日</label>
                 <div class="col-sm-2">
                     {{ form.health_insurance_join_date }}
