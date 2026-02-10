@@ -443,6 +443,7 @@ def timerecord_punch(request):
     # 日本時間の今日を取得
     now_jst = timezone.localtime(timezone.now())
     today = now_jst.date()
+    yesterday = today - timedelta(days=1)
     
     # 今日の有効かつ確認済みの契約を取得（複数の場合もある）
     # ※勤怠打刻マスタの打刻方法が「打刻」のもののみ対象とする
@@ -484,9 +485,9 @@ def timerecord_punch(request):
     # 今日の打刻を優先取得（進行中・完了問わず、最新のもの）
     timerecord = StaffTimerecord.objects.filter(staff=staff, work_date=today).order_by('-start_time').first()
 
-    # 今日のものがなければ、進行中の打刻（退勤していないもの、昨日の深夜勤務など）を優先的に取得
+    # 今日のものがなければ、昨日の進行中の打刻（退勤していないもの、深夜勤務など）を優先的に取得
     if not timerecord:
-        timerecord = StaffTimerecord.objects.filter(staff=staff, end_time__isnull=True).order_by('-work_date', '-start_time').first()
+        timerecord = StaffTimerecord.objects.filter(staff=staff, work_date=yesterday, end_time__isnull=True).order_by('-start_time').first()
     
     # 状態判定
     status = 'not_started'  # 未出勤
@@ -564,6 +565,7 @@ def timerecord_action(request):
     now = timezone.now()
     now_jst = timezone.localtime(now)
     today = now_jst.date()
+    yesterday = today - timedelta(days=1)
     
     # スタッフ特定
     staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
@@ -635,6 +637,10 @@ def timerecord_action(request):
             timerecord = StaffTimerecord.objects.filter(staff=staff, end_time__isnull=True).order_by('-work_date', '-start_time').first()
 
         if timerecord:
+            # 一昨日以前の打刻は操作不可
+            if timerecord.work_date < yesterday:
+                messages.error(request, f'{timerecord.work_date.strftime("%Y/%m/%d")} の打刻は一昨日以前のため操作できません。')
+                return redirect('kintai:timerecord_punch')
             if timerecord.end_time:
                 messages.warning(request, '本日は既に退勤打刻済みです。')
             elif timerecord.breaks.filter(break_end__isnull=True).exists():
@@ -659,6 +665,10 @@ def timerecord_action(request):
             timerecord = StaffTimerecord.objects.filter(staff=staff, end_time__isnull=True).order_by('-work_date', '-start_time').first()
 
         if timerecord:
+            # 一昨日以前の打刻は操作不可
+            if timerecord.work_date < yesterday:
+                messages.error(request, f'{timerecord.work_date.strftime("%Y/%m/%d")} の打刻は一昨日以前のため操作できません。')
+                return redirect('kintai:timerecord_punch')
             if timerecord.end_time:
                 messages.warning(request, '本日は既に退勤打刻済みです。')
             elif timerecord.breaks.filter(break_end__isnull=True).exists():
@@ -684,6 +694,10 @@ def timerecord_action(request):
             timerecord = StaffTimerecord.objects.filter(staff=staff, end_time__isnull=True).order_by('-work_date', '-start_time').first()
 
         if timerecord:
+            # 一昨日以前の打刻は操作不可
+            if timerecord.work_date < yesterday:
+                messages.error(request, f'{timerecord.work_date.strftime("%Y/%m/%d")} の打刻は一昨日以前のため操作できません。')
+                return redirect('kintai:timerecord_punch')
             if timerecord.end_time:
                 messages.warning(request, '本日は既に退勤打刻済みです。')
                 return redirect('kintai:timerecord_punch')
