@@ -151,6 +151,26 @@ class StaffTimecardForm(forms.ModelForm):
 
 class StaffTimerecordForm(forms.ModelForm):
     """勤怠打刻フォーム"""
+    rounded_start_time = forms.TimeField(
+        label='開始時刻',
+        widget=forms.TimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'time'}),
+        required=False
+    )
+    rounded_start_time_next_day = forms.BooleanField(
+        label='翌日',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        required=False
+    )
+    rounded_end_time = forms.TimeField(
+        label='終了時刻',
+        widget=forms.TimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'time'}),
+        required=False
+    )
+    rounded_end_time_next_day = forms.BooleanField(
+        label='翌日',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        required=False
+    )
     
     class Meta:
         from .models import StaffTimerecord
@@ -160,8 +180,6 @@ class StaffTimerecordForm(forms.ModelForm):
         widgets = {
             'staff_contract': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'work_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
-            'rounded_start_time': forms.DateTimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'datetime-local'}),
-            'rounded_end_time': forms.DateTimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'datetime-local'}),
             'start_latitude': forms.HiddenInput(),
             'start_longitude': forms.HiddenInput(),
             'end_latitude': forms.HiddenInput(),
@@ -175,6 +193,23 @@ class StaffTimerecordForm(forms.ModelForm):
         
         # 登録・編集を確実にするため契約を必須にする
         self.fields['staff_contract'].required = True
+
+        # インスタンスがある場合、DateTimeFieldをTimeと翌日フラグに変換
+        if self.instance and self.instance.pk:
+            from django.utils import timezone
+            if self.instance.rounded_start_time:
+                local_start = timezone.localtime(self.instance.rounded_start_time)
+                self.initial['rounded_start_time'] = local_start.time()
+                self.initial['rounded_start_time_next_day'] = (
+                    self.instance.work_date and local_start.date() > self.instance.work_date
+                )
+
+            if self.instance.rounded_end_time:
+                local_end = timezone.localtime(self.instance.rounded_end_time)
+                self.initial['rounded_end_time'] = local_end.time()
+                self.initial['rounded_end_time_next_day'] = (
+                    self.instance.work_date and local_end.date() > self.instance.work_date
+                )
 
         # ユーザーがスタッフの場合、自分の有効な契約のみ選択可能
         if self.user and self.user.email:
@@ -204,6 +239,28 @@ class StaffTimerecordForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        work_date = cleaned_data.get('work_date')
+        from django.utils import timezone
+        from datetime import datetime, timedelta
+
+        # 開始時刻の処理
+        start_time = cleaned_data.get('rounded_start_time')
+        start_next_day = cleaned_data.get('rounded_start_time_next_day')
+        if work_date and start_time:
+            dt = datetime.combine(work_date, start_time)
+            if start_next_day:
+                dt += timedelta(days=1)
+            cleaned_data['rounded_start_time'] = timezone.make_aware(dt)
+
+        # 終了時刻の処理
+        end_time = cleaned_data.get('rounded_end_time')
+        end_next_day = cleaned_data.get('rounded_end_time_next_day')
+        if work_date and end_time:
+            dt = datetime.combine(work_date, end_time)
+            if end_next_day:
+                dt += timedelta(days=1)
+            cleaned_data['rounded_end_time'] = timezone.make_aware(dt)
+
         start = cleaned_data.get('rounded_start_time')
         end = cleaned_data.get('rounded_end_time')
 

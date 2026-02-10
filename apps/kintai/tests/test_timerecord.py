@@ -140,8 +140,10 @@ class StaffTimerecordViewTests(TestCase):
         data = {
             'staff_contract': self.contract.id,
             'work_date': '2025-04-02',
-            'rounded_start_time': '2025-04-02T09:00',
-            'rounded_end_time': '2025-04-02T18:00',
+            'rounded_start_time': '09:00',
+            'rounded_start_time_next_day': False,
+            'rounded_end_time': '18:00',
+            'rounded_end_time_next_day': False,
             'start_latitude': '35.6895',
             'start_longitude': '139.6917',
             'end_latitude': '35.6895',

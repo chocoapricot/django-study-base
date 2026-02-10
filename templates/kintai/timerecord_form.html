@@ -16,7 +16,7 @@
                 {% endfor %}
                 {# フォームに含まれないがモデルでバリデーションエラーになったフィールド（staff等）を表示 #}
                 {% for field_name, errors in form.errors.items %}
-                    {% if field_name != '__all__' and field_name != 'staff_contract' and field_name != 'work_date' and field_name != 'rounded_start_time' and field_name != 'rounded_end_time' and field_name != 'memo' and field_name != 'start_latitude' and field_name != 'start_longitude' and field_name != 'end_latitude' and field_name != 'end_longitude' %}
+                    {% if field_name != '__all__' and field_name != 'staff_contract' and field_name != 'work_date' and field_name != 'rounded_start_time' and field_name != 'rounded_end_time' and field_name != 'rounded_start_time_next_day' and field_name != 'rounded_end_time_next_day' and field_name != 'memo' and field_name != 'start_latitude' and field_name != 'start_longitude' and field_name != 'end_latitude' and field_name != 'end_longitude' %}
                         {% for error in errors %}
                             <div>{{ error }}</div>
                         {% endfor %}
@@ -65,9 +65,15 @@
                     {% if timerecord %}修正 開始時刻{% else %}開始時刻{% endif %}
                 </label>
                 <div class="col-sm-4">
-                    <div class="input-group">
-                        {{ form.rounded_start_time }}
-                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setNow('id_rounded_start_time', 'start')">現在時刻</button>
+                    <div class="d-flex align-items-center">
+                        <div class="input-group" style="width: auto;">
+                            {{ form.rounded_start_time }}
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setNow('id_rounded_start_time', 'start')">現在時刻</button>
+                        </div>
+                        <div class="form-check ms-2">
+                            {{ form.rounded_start_time_next_day }}
+                            <label class="form-check-label" for="{{ form.rounded_start_time_next_day.id_for_label }}">翌日</label>
+                        </div>
                     </div>
                     {% if form.rounded_start_time.errors %}
                         <div class="text-danger">{{ form.rounded_start_time.errors }}</div>
@@ -77,9 +83,15 @@
                     {% if timerecord %}修正 終了時刻{% else %}終了時刻{% endif %}
                 </label>
                 <div class="col-sm-4">
-                    <div class="input-group">
-                        {{ form.rounded_end_time }}
-                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setNow('id_rounded_end_time', 'end')">現在時刻</button>
+                    <div class="d-flex align-items-center">
+                        <div class="input-group" style="width: auto;">
+                            {{ form.rounded_end_time }}
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setNow('id_rounded_end_time', 'end')">現在時刻</button>
+                        </div>
+                        <div class="form-check ms-2">
+                            {{ form.rounded_end_time_next_day }}
+                            <label class="form-check-label" for="{{ form.rounded_end_time_next_day.id_for_label }}">翌日</label>
+                        </div>
                     </div>
                     {% if form.rounded_end_time.errors %}
                         <div class="text-danger">{{ form.rounded_end_time.errors }}</div>
@@ -114,14 +126,23 @@
 <script>
 function setNow(fieldId, type) {
     const now = new Date();
-    // YYYY-MM-DDThh:mm 形式に変換（ローカル時間）
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     
-    document.getElementById(fieldId).value = `${year}-${month}-${day}T${hours}:${minutes}`;
+    document.getElementById(fieldId).value = `${hours}:${minutes}`;
+
+    // 翌日フラグの判定
+    const workDateVal = document.getElementById('id_work_date').value;
+    if (workDateVal) {
+        const [year, month, day] = workDateVal.split('-').map(Number);
+        const workDay = new Date(year, month - 1, day);
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        const nextDayCheckbox = document.getElementById(fieldId + '_next_day');
+        if (nextDayCheckbox) {
+            nextDayCheckbox.checked = (today > workDay);
+        }
+    }
     
     // 位置情報取得
     if (navigator.geolocation) {
