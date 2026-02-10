@@ -20,7 +20,7 @@ def my_help_icon(text, placement='top'):
     html = f'''<i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
                tabindex="0"
                data-bs-toggle="tooltip" data-bs-placement="{placement}" 
-               data-bs-trigger="hover focus click"
+               data-bs-trigger="hover focus"
                title="{text}"></i>'''
     return mark_safe(html)
 
@@ -99,7 +99,7 @@ def my_help_preset(key, placement='top'):
     html = f'''<i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
                tabindex="0"
                data-bs-toggle="tooltip" data-bs-placement="{placement}" 
-               data-bs-trigger="hover focus click"
+               data-bs-trigger="hover focus"
                title="{text}"></i>'''
     return mark_safe(html)
 
@@ -112,7 +112,7 @@ def my_note_icon(text, placement='top'):
     html = f'''<i class="bi bi-book" style="color: #66bbff; cursor: pointer;"
                tabindex="0"
                data-bs-toggle="tooltip" data-bs-placement="{placement}"
-               data-bs-trigger="hover focus click"
+               data-bs-trigger="hover focus"
                title="{text}"></i>'''
     return mark_safe(html)
 
@@ -131,7 +131,7 @@ def my_note_preset(key, placement='top'):
     html = f'''<i class="bi bi-book" style="color: #66bbff; cursor: pointer;"
                tabindex="0"
                data-bs-toggle="tooltip" data-bs-placement="{placement}"
-               data-bs-trigger="hover focus click"
+               data-bs-trigger="hover focus"
                title="{text}"></i>'''
     return mark_safe(html)
 
