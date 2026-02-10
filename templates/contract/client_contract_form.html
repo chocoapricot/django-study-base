@@ -543,14 +543,6 @@ document.addEventListener('DOMContentLoaded', function() {
             loadMasterModal('{% url "common:master_select" %}', masterType, targetId, modalTitle);
         }
     });
-
-    // ツールチップを初期化
-    if (typeof bootstrap !== 'undefined') {
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-    }
     
     const clientField = document.getElementById('{{ form.client.id_for_label }}');
     const clientDisplayText = document.getElementById('client-display-text');
