@@ -89,7 +89,7 @@
                         <th style="width: 15%;" class="text-center">終了時刻</th>
                         <th style="width: 15%;" class="text-center">休憩合計</th>
                         <th style="width: 15%;" class="text-center">勤務時間</th>
-                        <th style="width: 25%;" class="text-center">処理</th>
+                        <th style="width: 15%;" class="text-center">処理</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -129,14 +129,11 @@
 
                         <td class="align-middle text-center">
                             {% if data.timerecord %}
-                                <a href="{% url 'kintai:timerecord_update' data.timerecord.pk %}" class="btn btn-sm btn-outline-primary" title="編集">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                                <a href="{% url 'kintai:timerecord_detail' data.timerecord.pk %}" class="btn btn-sm btn-outline-secondary ms-1" title="詳細">
+                                <a href="{% url 'kintai:timerecord_detail' data.timerecord.pk %}" class="btn btn-sm btn-secondary ms-1" title="詳細">
                                     <i class="bi bi-eye"></i>
                                 </a>
                             {% else %}
-                                <a href="{% url 'kintai:timerecord_create' %}?work_date={{ data.date|date:'Y-m-d' }}&staff_contract={{ data.contract.pk }}" class="btn btn-sm btn-outline-success" title="新規登録">
+                                <a href="{% url 'kintai:timerecord_create' %}?work_date={{ data.date|date:'Y-m-d' }}&staff_contract={{ data.contract.pk }}" class="btn btn-sm btn-primary" title="新規登録">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                             {% endif %}
