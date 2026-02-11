@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.utils import timezone
 from .models import StaffTimesheet, StaffTimecard
 from .forms import StaffTimesheetForm, StaffTimecardForm
+from .utils import is_timerecord_locked
 from apps.profile.decorators import check_staff_agreement
 from apps.common.constants import Constants
 
@@ -197,7 +198,7 @@ def staff_search(request):
     for staff in staff_with_contracts:
         # このスタッフの指定月に有効な契約を取得
         contracts = StaffContract.objects.filter(
-            staff=staff,
+            staff_id=staff.id,
             start_date__lte=month_end
         ).filter(
             Q(end_date__gte=target_date) | Q(end_date__isnull=True)
@@ -207,7 +208,7 @@ def staff_search(request):
         
         # このスタッフの指定月の日次勤怠を取得（全契約分）
         timecards = StaffTimecard.objects.filter(
-            staff_contract__staff=staff,
+            staff_contract__staff_id=staff.id,
             work_date__year=year,
             work_date__month=month
         )
@@ -255,13 +256,27 @@ def staff_timecard_calendar(request, staff_pk, target_month):
 
     # このスタッフの指定月に有効な契約を取得
     contracts = StaffContract.objects.filter(
-        staff=staff,
+        staff_id=staff.id,
         start_date__lte=month_end
     ).filter(
         Q(end_date__gte=target_date) | Q(end_date__isnull=True)
     ).select_related('employment_type', 'worktime_pattern')
 
+    # 打刻申請によるロックの確認
+    is_locked = False
+    from .models import StaffTimerecordApproval
+    if StaffTimerecordApproval.objects.unfiltered().filter(
+        staff_id=staff.id,
+        closing_date=month_end,
+        status__in=['20', '30']
+    ).exists():
+        is_locked = True
+
     if request.method == 'POST':
+        if is_locked:
+            messages.error(request, '勤怠申請済みのため、保存できません。')
+            return redirect('kintai:staff_timecard_calendar', staff_pk=staff_pk, target_month=target_month)
+
         # フォームデータから日次勤怠を一括保存
         updated_timesheets = set()  # 更新された月次勤怠を記録
         
@@ -284,7 +299,7 @@ def staff_timecard_calendar(request, staff_pk, target_month):
                 # 勤務区分が空の場合、既存のデータがあれば削除する
                 # このスタッフのこの日のデータを全て削除（契約に関わらず）
                 deleted_timecards = StaffTimecard.objects.filter(
-                    staff_contract__staff=staff,
+                    staff_contract__staff_id=staff.id,
                     work_date=work_date
                 )
                 # 削除前に影響を受ける月次勤怠を記録
@@ -301,7 +316,7 @@ def staff_timecard_calendar(request, staff_pk, target_month):
 
             # 契約を取得
             try:
-                contract = StaffContract.objects.get(pk=contract_id, staff=staff)
+                contract = StaffContract.objects.get(pk=contract_id, staff_id=staff.id)
             except StaffContract.DoesNotExist:
                 messages.error(request, f'{work_date.day}日: 選択されたスタッフ契約が見つかりません。')
                 continue
@@ -389,7 +404,7 @@ def staff_timecard_calendar(request, staff_pk, target_month):
     # 既存の日次勤怠データを取得
     timecards_dict = {}
     for timecard in StaffTimecard.objects.filter(
-        staff_contract__staff=staff,
+        staff_contract__staff_id=staff.id,
         work_date__year=year,
         work_date__month=month
     ).select_related('staff_contract'):
@@ -443,6 +458,7 @@ def staff_timecard_calendar(request, staff_pk, target_month):
     context = {
         'staff': staff,
         'calendar_data': calendar_data,
+        'is_locked': is_locked,
         'year': year,
         'month': month,
         'target_date': target_date,
@@ -497,7 +513,7 @@ def timesheet_detail(request, pk):
     """月次勤怠詳細"""
     import jpholiday
     
-    timesheet = get_object_or_404(StaffTimesheet.objects.select_related(
+    timesheet = get_object_or_404(StaffTimesheet.objects.unfiltered().select_related(
         'staff', 'staff__international', 'staff__disability', 'staff_contract'
     ), pk=pk)
     timecards = timesheet.timecards.all().order_by('work_date')
@@ -574,7 +590,7 @@ def timesheet_preview(request, contract_pk, target_month):
     # 仮想的なTimesheetオブジェクトを作成（DBには保存しない）
     timesheet = StaffTimesheet(
         staff_contract=contract,
-        staff=contract.staff,
+        staff_id=contract.staff_id,
         target_month=target_date,
         status='00' # 未作成
     )
@@ -602,12 +618,32 @@ def timesheet_preview(request, contract_pk, target_month):
 @permission_required('kintai.add_stafftimecard', raise_exception=True)
 def timecard_create(request, timesheet_pk):
     """日次勤怠作成"""
-    timesheet = get_object_or_404(StaffTimesheet, pk=timesheet_pk)
+    timesheet = get_object_or_404(StaffTimesheet.objects.unfiltered(), pk=timesheet_pk)
     
     if not timesheet.is_editable:
         messages.error(request, 'この月次勤怠は編集できません。')
         return redirect('kintai:timesheet_detail', pk=timesheet_pk)
+
+    # 打刻申請によるロックの確認
+    is_locked = is_timerecord_locked(timesheet.staff_id, timesheet.target_month)
+
+    if is_locked:
+        messages.error(request, '勤怠申請済みのため、編集できません。')
+        return redirect('kintai:timesheet_detail', pk=timesheet_pk)
     
+    # 打刻申請によるロックの確認
+    import calendar as py_calendar
+    _, last_day_num = py_calendar.monthrange(timesheet.target_month.year, timesheet.target_month.month)
+    last_day = timesheet.target_month.replace(day=last_day_num)
+    from .models import StaffTimerecordApproval
+    if StaffTimerecordApproval.objects.unfiltered().filter(
+        staff_id=timesheet.staff_id,
+        closing_date=last_day,
+        status__in=['20', '30']
+    ).exists():
+        messages.error(request, '勤怠申請済みのため、登録できません。')
+        return redirect('kintai:timesheet_detail', pk=timesheet_pk)
+
     if request.method == 'POST':
         # pass timesheet to the form so form-level validation can check contract period
         form = StaffTimecardForm(request.POST, timesheet=timesheet)
@@ -662,9 +698,22 @@ def timecard_create_initial(request, contract_pk, target_month):
     # 仮想Timesheetを作成してフォームに渡す（バリデーション用）
     virtual_timesheet = StaffTimesheet(
         staff_contract=contract,
-        staff=contract.staff,
+        staff_id=contract.staff_id,
         target_month=target_date
     )
+
+    # 打刻申請によるロックの確認
+    import calendar as py_calendar
+    _, last_day_num = py_calendar.monthrange(target_date.year, target_date.month)
+    last_day = target_date.replace(day=last_day_num)
+    from .models import StaffTimerecordApproval
+    if StaffTimerecordApproval.objects.unfiltered().filter(
+        staff_id=contract.staff_id,
+        closing_date=last_day,
+        status__in=['20', '30']
+    ).exists():
+        messages.error(request, '勤怠申請済みのため、登録できません。')
+        return redirect('kintai:contract_search')
 
     if request.method == 'POST':
         form = StaffTimecardForm(request.POST, timesheet=virtual_timesheet)
@@ -705,11 +754,16 @@ def timecard_create_initial(request, contract_pk, target_month):
 @permission_required('kintai.change_stafftimecard', raise_exception=True)
 def timecard_edit(request, pk):
     """日次勤怠編集"""
-    timecard = get_object_or_404(StaffTimecard, pk=pk)
+    timecard = get_object_or_404(StaffTimecard.objects.unfiltered(), pk=pk)
     timesheet = timecard.timesheet
     
     if not timesheet.is_editable:
         messages.error(request, 'この月次勤怠は編集できません。')
+        return redirect('kintai:timesheet_detail', pk=timesheet.pk)
+
+    # 打刻申請によるロックの確認
+    if is_timerecord_locked(timesheet.staff_id, timecard.work_date):
+        messages.error(request, '勤怠申請済みのため、編集できません。')
         return redirect('kintai:timesheet_detail', pk=timesheet.pk)
     
     if request.method == 'POST':
@@ -742,11 +796,16 @@ def timecard_edit(request, pk):
 @permission_required('kintai.delete_stafftimecard', raise_exception=True)
 def timecard_delete(request, pk):
     """日次勤怠削除"""
-    timecard = get_object_or_404(StaffTimecard, pk=pk)
+    timecard = get_object_or_404(StaffTimecard.objects.unfiltered(), pk=pk)
     timesheet = timecard.timesheet
     
     if not timesheet.is_editable:
         messages.error(request, 'この月次勤怠は編集できません。')
+        return redirect('kintai:timesheet_detail', pk=timesheet.pk)
+
+    # 打刻申請によるロックの確認
+    if is_timerecord_locked(timesheet.staff_id, timecard.work_date):
+        messages.error(request, '勤怠申請済みのため、削除できません。')
         return redirect('kintai:timesheet_detail', pk=timesheet.pk)
     
     if request.method == 'POST':
@@ -772,7 +831,7 @@ def timecard_calendar(request, timesheet_pk):
     import jpholiday
     from django.core.exceptions import ValidationError
     
-    timesheet = get_object_or_404(StaffTimesheet, pk=timesheet_pk)
+    timesheet = get_object_or_404(StaffTimesheet.objects.unfiltered(), pk=timesheet_pk)
     
     # スタッフの場合、確認済みの契約のみ編集可能
     if not request.user.is_staff:
@@ -1004,9 +1063,22 @@ def timecard_calendar_initial(request, contract_pk, target_month):
     # 仮想Timesheetを作成
     virtual_timesheet = StaffTimesheet(
         staff_contract=contract,
-        staff=contract.staff,
+        staff_id=contract.staff_id,
         target_month=target_date
     )
+
+    # 打刻申請によるロックの確認
+    import calendar as py_calendar
+    _, last_day_num = py_calendar.monthrange(target_date.year, target_date.month)
+    last_day = target_date.replace(day=last_day_num)
+    from .models import StaffTimerecordApproval
+    if StaffTimerecordApproval.objects.unfiltered().filter(
+        staff_id=contract.staff_id,
+        closing_date=last_day,
+        status__in=['20', '30']
+    ).exists():
+        messages.error(request, '勤怠申請済みのため、登録できません。')
+        return redirect('kintai:contract_search')
 
     if request.method == 'POST':
         # 月次勤怠を保存
@@ -1403,7 +1475,7 @@ def timecard_import_process(request, task_id):
                     try:
                         staff_contract = StaffContract.objects.get(
                             contract_number=contract_number,
-                            staff=staff
+                            staff_id=staff.id
                         )
                     except StaffContract.DoesNotExist:
                         errors.append(f'{progress}行目: 契約番号 {contract_number} が見つかりません。')
@@ -1587,7 +1659,7 @@ def staff_timecard_register(request):
     
     # ログインユーザーに紐づくスタッフを取得
     try:
-        staff = Staff.objects.select_related('international', 'disability').get(email=request.user.email)
+        staff = Staff.objects.unfiltered().select_related('international', 'disability').get(email=request.user.email)
     except Staff.DoesNotExist:
         messages.error(request, 'スタッフ情報が見つかりません。管理者にお問い合わせください。')
         return redirect('/')
@@ -1616,7 +1688,7 @@ def staff_timecard_register(request):
     
     # 指定月に有効な契約を取得
     contracts = StaffContract.objects.filter(
-        staff=staff,
+        staff_id=staff.id,
         contract_status=Constants.CONTRACT_STATUS.CONFIRMED,
         start_date__lte=month_end
     ).filter(
@@ -1683,13 +1755,13 @@ def staff_timecard_register_detail(request, contract_pk, target_month):
     
     # ログインユーザーに紐づくスタッフを取得
     try:
-        staff = Staff.objects.select_related('international', 'disability').get(email=request.user.email)
+        staff = Staff.objects.unfiltered().select_related('international', 'disability').get(email=request.user.email)
     except Staff.DoesNotExist:
         messages.error(request, 'スタッフ情報が見つかりません。管理者にお問い合わせください。')
         return redirect('/')
     
     # 契約を取得（自分の契約かつ確認済みのみ）
-    contract = get_object_or_404(StaffContract, pk=contract_pk, staff=staff, contract_status=Constants.CONTRACT_STATUS.CONFIRMED)
+    contract = get_object_or_404(StaffContract, pk=contract_pk, staff_id=staff.id, contract_status=Constants.CONTRACT_STATUS.CONFIRMED)
     
     # 対象年月をパース
     try:
@@ -1699,6 +1771,19 @@ def staff_timecard_register_detail(request, contract_pk, target_month):
         messages.error(request, '無効な年月形式です。')
         return redirect('kintai:staff_timecard_register')
     
+    # 打刻申請によるロックの確認
+    import calendar as py_calendar
+    _, last_day_num = py_calendar.monthrange(target_date.year, target_date.month)
+    last_day = target_date.replace(day=last_day_num)
+    from .models import StaffTimerecordApproval
+    if StaffTimerecordApproval.objects.unfiltered().filter(
+        staff_id=staff.id,
+        closing_date=last_day,
+        status__in=['20', '30']
+    ).exists():
+        messages.error(request, '勤怠申請済みのため、編集できません。')
+        return redirect('kintai:staff_timecard_register')
+
     # 月次勤怠を取得または作成
     timesheet, created = StaffTimesheet.objects.get_or_create(
         staff_contract=contract,

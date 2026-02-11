@@ -100,6 +100,26 @@ def apply_time_rounding(start_time, end_time, time_punch):
     return rounded_start, rounded_end
 
 
+def is_timerecord_locked(staff, work_date):
+    """
+    指定された日の勤怠がロックされているか（申請済みまたは承認済み）を確認する
+    """
+    from .models import StaffTimerecordApproval
+    if not staff or not work_date:
+        return False
+
+    # staffオブジェクトまたはIDを受け入れる
+    staff_id = staff.id if hasattr(staff, 'id') else staff
+
+    # 勤務日が締期間内に含まれ、かつステータスが提出済み(20)または承認済み(30)のレコードを検索
+    return StaffTimerecordApproval.objects.unfiltered().filter(
+        staff_id=staff_id,
+        period_start__lte=work_date,
+        period_end__gte=work_date,
+        status__in=['20', '30']
+    ).exists()
+
+
 def apply_break_time_rounding(break_start, break_end, time_punch):
     """
     休憩時刻に丸め設定を適用する
