@@ -483,22 +483,30 @@ def timerecord_punch(request):
         )
     
     # 今日の打刻を優先取得（進行中・完了問わず、最新のもの）
-    timerecord = StaffTimerecord.objects.filter(staff=staff, work_date=today).order_by('-start_time').first()
+    timerecord = StaffTimerecord.objects.filter(staff=staff, work_date=today).order_by('-start_time', '-id').first()
 
     # 今日のものがなければ、昨日の進行中の打刻（退勤していないもの、深夜勤務など）を優先的に取得
     if not timerecord:
-        timerecord = StaffTimerecord.objects.filter(staff=staff, work_date=yesterday, end_time__isnull=True).order_by('-start_time').first()
+        timerecord = StaffTimerecord.objects.filter(
+            staff=staff,
+            work_date=yesterday,
+            end_time__isnull=True,
+            rounded_end_time__isnull=True
+        ).order_by('-start_time', '-id').first()
     
     # 状態判定
     status = 'not_started'  # 未出勤
     current_break = None
     
     if timerecord:
-        if timerecord.end_time:
+        if timerecord.end_time or timerecord.rounded_end_time:
             status = 'finished'  # 退勤済み
         else:
             # 休憩中かどうか確認
-            current_break = timerecord.breaks.filter(break_end__isnull=True).first()
+            current_break = timerecord.breaks.filter(
+                break_end__isnull=True,
+                rounded_break_end__isnull=True
+            ).first()
             if current_break:
                 status = 'on_break'  # 休憩中
             else:
@@ -581,7 +589,11 @@ def timerecord_action(request):
     if action == 'start':
         # 出勤打刻
         # 進行中の打刻があるかチェック
-        if StaffTimerecord.objects.filter(staff=staff, end_time__isnull=True).exists():
+        if StaffTimerecord.objects.filter(
+            staff=staff,
+            end_time__isnull=True,
+            rounded_end_time__isnull=True
+        ).exists():
             messages.warning(request, '既に勤務中（出勤打刻済み）です。')
         elif StaffTimerecord.objects.filter(staff=staff, work_date=today).exists():
             messages.warning(request, '本日は既に打刻（勤務完了）されています。')
@@ -631,19 +643,23 @@ def timerecord_action(request):
     elif action == 'end':
         # 退勤打刻
         # 今日の打刻を優先取得
-        timerecord = StaffTimerecord.objects.filter(staff=staff, work_date=today).order_by('-start_time').first()
+        timerecord = StaffTimerecord.objects.filter(staff=staff, work_date=today).order_by('-start_time', '-id').first()
         # 今日のがなければ進行中を取得
         if not timerecord:
-            timerecord = StaffTimerecord.objects.filter(staff=staff, end_time__isnull=True).order_by('-work_date', '-start_time').first()
+            timerecord = StaffTimerecord.objects.filter(
+                staff=staff,
+                end_time__isnull=True,
+                rounded_end_time__isnull=True
+            ).order_by('-work_date', '-start_time', '-id').first()
 
         if timerecord:
             # 一昨日以前の打刻は操作不可
             if timerecord.work_date < yesterday:
                 messages.error(request, f'{timerecord.work_date.strftime("%Y/%m/%d")} の打刻は一昨日以前のため操作できません。')
                 return redirect('kintai:timerecord_punch')
-            if timerecord.end_time:
+            if timerecord.end_time or timerecord.rounded_end_time:
                 messages.warning(request, '本日は既に退勤打刻済みです。')
-            elif timerecord.breaks.filter(break_end__isnull=True).exists():
+            elif timerecord.breaks.filter(break_end__isnull=True, rounded_break_end__isnull=True).exists():
                 # 休憩中の場合はエラー
                 messages.error(request, '休憩を終了してから退勤打刻してください。')
             else:
@@ -659,19 +675,23 @@ def timerecord_action(request):
     elif action == 'break_start':
         # 休憩開始
         # 今日の打刻を優先取得
-        timerecord = StaffTimerecord.objects.filter(staff=staff, work_date=today).order_by('-start_time').first()
+        timerecord = StaffTimerecord.objects.filter(staff=staff, work_date=today).order_by('-start_time', '-id').first()
         # 今日のがなければ進行中を取得
         if not timerecord:
-            timerecord = StaffTimerecord.objects.filter(staff=staff, end_time__isnull=True).order_by('-work_date', '-start_time').first()
+            timerecord = StaffTimerecord.objects.filter(
+                staff=staff,
+                end_time__isnull=True,
+                rounded_end_time__isnull=True
+            ).order_by('-work_date', '-start_time', '-id').first()
 
         if timerecord:
             # 一昨日以前の打刻は操作不可
             if timerecord.work_date < yesterday:
                 messages.error(request, f'{timerecord.work_date.strftime("%Y/%m/%d")} の打刻は一昨日以前のため操作できません。')
                 return redirect('kintai:timerecord_punch')
-            if timerecord.end_time:
+            if timerecord.end_time or timerecord.rounded_end_time:
                 messages.warning(request, '本日は既に退勤打刻済みです。')
-            elif timerecord.breaks.filter(break_end__isnull=True).exists():
+            elif timerecord.breaks.filter(break_end__isnull=True, rounded_break_end__isnull=True).exists():
                 messages.warning(request, '既に休憩中です。')
             else:
                 StaffTimerecordBreak.objects.create(
@@ -688,21 +708,28 @@ def timerecord_action(request):
     elif action == 'break_end':
         # 休憩終了
         # 今日の打刻を優先取得
-        timerecord = StaffTimerecord.objects.filter(staff=staff, work_date=today).order_by('-start_time').first()
+        timerecord = StaffTimerecord.objects.filter(staff=staff, work_date=today).order_by('-start_time', '-id').first()
         # 今日のがなければ進行中を取得
         if not timerecord:
-            timerecord = StaffTimerecord.objects.filter(staff=staff, end_time__isnull=True).order_by('-work_date', '-start_time').first()
+            timerecord = StaffTimerecord.objects.filter(
+                staff=staff,
+                end_time__isnull=True,
+                rounded_end_time__isnull=True
+            ).order_by('-work_date', '-start_time', '-id').first()
 
         if timerecord:
             # 一昨日以前の打刻は操作不可
             if timerecord.work_date < yesterday:
                 messages.error(request, f'{timerecord.work_date.strftime("%Y/%m/%d")} の打刻は一昨日以前のため操作できません。')
                 return redirect('kintai:timerecord_punch')
-            if timerecord.end_time:
+            if timerecord.end_time or timerecord.rounded_end_time:
                 messages.warning(request, '本日は既に退勤打刻済みです。')
                 return redirect('kintai:timerecord_punch')
 
-            current_break = timerecord.breaks.filter(break_end__isnull=True).first()
+            current_break = timerecord.breaks.filter(
+                break_end__isnull=True,
+                rounded_break_end__isnull=True
+            ).first()
             if current_break:
                 current_break.break_end = now
                 current_break.end_latitude = lat if lat else None
@@ -717,7 +744,7 @@ def timerecord_action(request):
             
     elif action == 'cancel':
         # 打刻の取り消し（5分以内）
-        timerecord = StaffTimerecord.objects.filter(staff=staff).order_by('-work_date', '-start_time').first()
+        timerecord = StaffTimerecord.objects.filter(staff=staff).order_by('-work_date', '-start_time', '-id').first()
         if not timerecord:
             messages.error(request, '取り消し可能な打刻が見つかりません。')
             return redirect('kintai:timerecord_punch')

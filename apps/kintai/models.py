@@ -746,8 +746,11 @@ class StaffTimerecord(MyModel):
     def clean(self):
         """バリデーション"""
         # 終了時刻が開始時刻より前の場合はエラー
-        if self.start_time and self.end_time:
-            if self.end_time <= self.start_time:
+        # 打刻時刻または丸め時刻を使用してチェック
+        start = self.start_time if self.start_time else self.rounded_start_time
+        end = self.end_time if self.end_time else self.rounded_end_time
+        if start and end:
+            if end <= start:
                 raise ValidationError('終了時刻は開始時刻より後の時刻を入力してください。')
         
         # スタッフ契約からスタッフを自動設定（saveメソッドが呼ばれる前にも検証が必要なため）
@@ -763,12 +766,6 @@ class StaffTimerecord(MyModel):
         # スタッフ契約からスタッフを自動設定
         if self.staff_contract and not self.staff_id:
             self.staff = self.staff_contract.staff
-
-        # 手動入力（rounded_...）がある場合は、それを raw (start_time/end_time) にも反映させる
-        if self.rounded_start_time and not self.start_time:
-            self.start_time = self.rounded_start_time
-        if self.rounded_end_time and not self.end_time:
-            self.end_time = self.rounded_end_time
 
         # 常に秒を切り捨てて保存
         # 丸め後の時刻がすでに設定されている場合（手動更新の場合）は、それを尊重する
@@ -903,7 +900,7 @@ class StaffTimerecordBreak(MyModel):
         related_name='breaks',
         verbose_name='勤怠打刻'
     )
-    break_start = models.DateTimeField('休憩開始時刻')
+    break_start = models.DateTimeField('休憩開始時刻', blank=True, null=True)
     break_end = models.DateTimeField('休憩終了時刻', blank=True, null=True)
     
     # 丸め時刻
@@ -938,16 +935,23 @@ class StaffTimerecordBreak(MyModel):
     def clean(self):
         """バリデーション"""
         # 休憩終了時刻が休憩開始時刻より前の場合はエラー
-        if self.break_end and self.break_end <= self.break_start:
-            raise ValidationError('休憩終了時刻は休憩開始時刻より後の時刻を入力してください。')
+        # 打刻時刻または丸め時刻を使用してチェック
+        start = self.break_start if self.break_start else self.rounded_break_start
+        end = self.break_end if self.break_end else self.rounded_break_end
+        if start and end:
+            if end <= start:
+                raise ValidationError('休憩終了時刻は休憩開始時刻より後の時刻を入力してください。')
         
         # 休憩時間が勤怠打刻の時間範囲内かチェック
         if self.timerecord_id:
             try:
                 tr = self.timerecord
-                if tr.start_time and self.break_start < tr.start_time:
+                tr_start = tr.start_time if tr.start_time else tr.rounded_start_time
+                tr_end = tr.end_time if tr.end_time else tr.rounded_end_time
+
+                if tr_start and start and start < tr_start:
                     raise ValidationError('休憩開始時刻は勤務開始時刻より後の時刻を入力してください。')
-                if tr.end_time and self.break_end and self.break_end > tr.end_time:
+                if tr_end and end and end > tr_end:
                     raise ValidationError('休憩終了時刻は勤務終了時刻より前の時刻を入力してください。')
             except ValidationError:
                 raise
@@ -955,12 +959,6 @@ class StaffTimerecordBreak(MyModel):
                 pass
     
     def save(self, *args, **kwargs):
-        # 手動入力（rounded_...）がある場合は、それを raw (break_start/break_end) にも反映させる
-        if self.rounded_break_start and not self.break_start:
-            self.break_start = self.rounded_break_start
-        if self.rounded_break_end and not self.break_end:
-            self.break_end = self.rounded_break_end
-
         # 常に秒を切り捨てて保存
         # 丸め後の時刻がすでに設定されている場合（手動更新の場合）は、それを尊重する
         if self.break_start and not self.rounded_break_start:
