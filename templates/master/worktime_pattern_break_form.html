@@ -25,7 +25,7 @@
                 <div class="col-sm-3">
                     <div class="form-check">
                         {{ form.start_time_next_day }}
-                        <label class="form-check-label" for="{{ form.start_time_next_day.id_for_label }}">翌日</label>
+                        <label class="form-check-label text-nowrap" for="{{ form.start_time_next_day.id_for_label }}">翌日</label>
                     </div>
                     {% if form.start_time_next_day.errors %}
                         <div class="text-danger">{{ form.start_time_next_day.errors }}</div>
@@ -44,7 +44,7 @@
                 <div class="col-sm-3">
                     <div class="form-check">
                         {{ form.end_time_next_day }}
-                        <label class="form-check-label" for="{{ form.end_time_next_day.id_for_label }}">翌日</label>
+                        <label class="form-check-label text-nowrap" for="{{ form.end_time_next_day.id_for_label }}">翌日</label>
                     </div>
                     {% if form.end_time_next_day.errors %}
                         <div class="text-danger">{{ form.end_time_next_day.errors }}</div>

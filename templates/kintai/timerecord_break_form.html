@@ -37,7 +37,7 @@
                         {{ form.rounded_break_start }}
                         <div class="form-check ms-2">
                             {{ form.break_start_next_day }}
-                            <label class="form-check-label" for="{{ form.break_start_next_day.id_for_label }}">翌日</label>
+                            <label class="form-check-label text-nowrap" for="{{ form.break_start_next_day.id_for_label }}">翌日</label>
                         </div>
                     </div>
                     {% if form.rounded_break_start.errors %}
@@ -50,7 +50,7 @@
                         {{ form.rounded_break_end }}
                         <div class="form-check ms-2">
                             {{ form.break_end_next_day }}
-                            <label class="form-check-label" for="{{ form.break_end_next_day.id_for_label }}">翌日</label>
+                            <label class="form-check-label text-nowrap" for="{{ form.break_end_next_day.id_for_label }}">翌日</label>
                         </div>
                     </div>
                     {% if form.rounded_break_end.errors %}
