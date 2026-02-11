@@ -67,6 +67,8 @@
                                 {% else %}
                                     {{ timerecord.start_time|date:"Y/m/d H:i:s" }}
                                 {% endif %}
+                            {% elif timerecord.rounded_start_time %}
+                                {{ timerecord.rounded_start_time|date:"Y/m/d H:i" }}
                             {% else %}
                                 -
                             {% endif %}
@@ -78,6 +80,8 @@
                                 {% else %}
                                     {{ timerecord.end_time|date:"Y/m/d H:i:s" }}
                                 {% endif %}
+                            {% elif timerecord.rounded_end_time %}
+                                {{ timerecord.rounded_end_time|date:"Y/m/d H:i" }}
                             {% else %}
                                 -
                             {% endif %}
