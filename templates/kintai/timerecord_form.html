@@ -37,7 +37,7 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.work_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">勤務日</label>
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     {{ form.work_date }}
                     {% if form.work_date.errors %}
                         <div class="text-danger">{{ form.work_date.errors }}</div>
@@ -48,12 +48,12 @@
             {% if timerecord and timerecord.start_time %}
             <div class="row mb-3 align-items-center">
                 <label class="col-sm-2 col-form-label text-start text-sm-end">打刻 開始時刻</label>
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     <p class="form-control-plaintext">{{ timerecord.start_time|date:"Y/m/d H:i" }}</p>
                 </div>
                 {% if timerecord.end_time %}
                 <label class="col-sm-2 col-form-label text-start text-sm-end">打刻 終了時刻</label>
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     <p class="form-control-plaintext">{{ timerecord.end_time|date:"Y/m/d H:i" }}</p>
                 </div>
                 {% endif %}
@@ -64,7 +64,7 @@
                 <label for="{{ form.rounded_start_time.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     {% if timerecord %}修正 開始時刻{% else %}開始時刻{% endif %}
                 </label>
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     <div class="d-flex align-items-center">
                         {{ form.rounded_start_time }}
                         <div class="form-check ms-2">
@@ -79,7 +79,7 @@
                 <label for="{{ form.rounded_end_time.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     {% if timerecord %}修正 終了時刻{% else %}終了時刻{% endif %}
                 </label>
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     <div class="d-flex align-items-center">
                         {{ form.rounded_end_time }}
                         <div class="form-check ms-2">
