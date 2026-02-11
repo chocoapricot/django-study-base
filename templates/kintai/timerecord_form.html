@@ -69,7 +69,7 @@
                         {{ form.rounded_start_time }}
                         <div class="form-check ms-2">
                             {{ form.rounded_start_time_next_day }}
-                            <label class="form-check-label" for="{{ form.rounded_start_time_next_day.id_for_label }}">翌日</label>
+                            <label class="form-check-label text-nowrap" for="{{ form.rounded_start_time_next_day.id_for_label }}">翌日</label>
                         </div>
                     </div>
                     {% if form.rounded_start_time.errors %}
@@ -84,7 +84,7 @@
                         {{ form.rounded_end_time }}
                         <div class="form-check ms-2">
                             {{ form.rounded_end_time_next_day }}
-                            <label class="form-check-label" for="{{ form.rounded_end_time_next_day.id_for_label }}">翌日</label>
+                            <label class="form-check-label text-nowrap" for="{{ form.rounded_end_time_next_day.id_for_label }}">翌日</label>
                         </div>
                     </div>
                     {% if form.rounded_end_time.errors %}
