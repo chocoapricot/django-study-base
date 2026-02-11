@@ -65,6 +65,32 @@
         <div>
             勤怠打刻カレンダー
             <span class="text-muted">- {{ staff }}{% favorite_star staff %}</span>
+            {% if overall_status == '20' %}
+                <span class="badge bg-info ms-2">申請済み</span>
+            {% elif overall_status == '30' %}
+                <span class="badge bg-success ms-2">承認済み</span>
+            {% elif overall_status == '40' %}
+                <span class="badge bg-danger ms-2">差戻し</span>
+            {% endif %}
+        </div>
+        <div class="d-flex">
+            {% if overall_status == '10' or overall_status == '40' or not overall_status %}
+                <form action="{% url 'kintai:timerecord_apply' %}" method="POST" onsubmit="return confirm('{{ target_month|date:'Y年m月' }}の勤怠を申請しますか？');">
+                    {% csrf_token %}
+                    <input type="hidden" name="target_month" value="{{ target_month|date:'Y-m' }}">
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="bi bi-send me-1"></i>申請する
+                    </button>
+                </form>
+            {% elif overall_status == '20' %}
+                <form action="{% url 'kintai:timerecord_withdraw' %}" method="POST" onsubmit="return confirm('申請を取り戻しますか？');">
+                    {% csrf_token %}
+                    <input type="hidden" name="target_month" value="{{ target_month|date:'Y-m' }}">
+                    <button type="submit" class="btn btn-sm btn-warning">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>取り戻す
+                    </button>
+                </form>
+            {% endif %}
         </div>
     </div>
     <div class="card-body">
@@ -130,12 +156,16 @@
                         <td class="align-middle text-center">
                             {% if data.timerecord %}
                                 <a href="{% url 'kintai:timerecord_detail' data.timerecord.pk %}" class="btn btn-sm btn-secondary ms-1" title="詳細">
-                                    <i class="bi bi-pencil"></i>
+                                    <i class="bi {% if is_locked %}bi-eye{% else %}bi-pencil{% endif %}"></i>
                                 </a>
                             {% else %}
-                                <a href="{% url 'kintai:timerecord_create' %}?work_date={{ data.date|date:'Y-m-d' }}&staff_contract={{ data.contract.pk }}" class="btn btn-sm btn-primary" title="新規登録">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
+                                {% if not is_locked %}
+                                    <a href="{% url 'kintai:timerecord_create' %}?work_date={{ data.date|date:'Y-m-d' }}&staff_contract={{ data.contract.pk }}" class="btn btn-sm btn-primary" title="新規登録">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                {% else %}
+                                    -
+                                {% endif %}
                             {% endif %}
                         </td>
                     </tr>

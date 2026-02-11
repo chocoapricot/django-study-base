@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -9,8 +10,9 @@ from datetime import date, datetime, timedelta
 from calendar import monthrange
 import jpholiday
 from django.utils import timezone
-from .models import StaffTimerecord, StaffTimerecordBreak
+from .models import StaffTimerecord, StaffTimerecordBreak, StaffTimerecordApproval
 from .forms import StaffTimerecordForm, StaffTimerecordBreakForm
+from .utils import is_timerecord_locked
 from apps.staff.models import Staff
 from apps.contract.models import StaffContract
 from apps.api.helpers import fetch_gsi_address
@@ -26,7 +28,7 @@ def timerecord_list(request):
     # スタッフ特定（メールアドレス連携）
     staff = None
     if request.user.email:
-        staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
+        staff = Staff.objects.unfiltered().select_related('international', 'disability').filter(email=request.user.email).first()
 
     # スタッフユーザーの場合は自分の打刻のみ表示
     if staff:
@@ -73,9 +75,19 @@ def timerecord_list(request):
 @permission_required('kintai.add_stafftimerecord', raise_exception=True)
 def timerecord_create(request):
     """勤怠打刻作成"""
+    staff = Staff.objects.unfiltered().filter(email=request.user.email).first()
+
     if request.method == 'POST':
         form = StaffTimerecordForm(request.POST, user=request.user)
         if form.is_valid():
+            work_date = form.cleaned_data.get('work_date')
+            staff_in_form = form.cleaned_data.get('staff_contract').staff if form.cleaned_data.get('staff_contract') else None
+            # スタッフユーザーの場合は自分、管理者の場合はフォームのスタッフを確認
+            target_staff = staff or staff_in_form
+            if is_timerecord_locked(target_staff, work_date):
+                messages.error(request, '申請済みまたは承認済みの勤怠は登録できません。')
+                return redirect('kintai:timerecord_calender')
+
             timerecord = form.save()
             messages.success(request, '勤怠打刻を登録しました。')
             return redirect('kintai:timerecord_detail', pk=timerecord.pk)
@@ -106,7 +118,7 @@ def timerecord_calender(request):
     # スタッフ特定
     staff = None
     if request.user.email:
-        staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
+        staff = Staff.objects.unfiltered().select_related('international', 'disability').filter(email=request.user.email).first()
 
     if not staff:
         messages.error(request, 'スタッフ情報が見つかりません。')
@@ -171,10 +183,26 @@ def timerecord_calender(request):
             'contract': active_contract,
         })
 
+    # 承認状況の取得
+    approvals = StaffTimerecordApproval.objects.unfiltered().filter(
+        staff=staff,
+        closing_date=last_day
+    )
+
+    overall_status = '10'  # デフォルト：作成中
+    if approvals.filter(status='30').exists():
+        overall_status = '30'  # 承認済み
+    elif approvals.filter(status='20').exists():
+        overall_status = '20'  # 提出済み
+    elif approvals.filter(status='40').exists():
+        overall_status = '40'  # 差戻し
+
     context = {
         'staff': staff,
         'target_month': target_month,
         'calendar_data': calendar_data,
+        'overall_status': overall_status,
+        'is_locked': overall_status in ['20', '30'],
     }
     return render(request, 'kintai/timerecord_calender.html', context)
 
@@ -192,7 +220,7 @@ def timerecord_detail(request, pk):
     # スタッフ特定
     staff = None
     if request.user.email:
-        staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
+        staff = Staff.objects.unfiltered().select_related('international', 'disability').filter(email=request.user.email).first()
 
     # スタッフユーザーの場合は自分の打刻のみ表示
     if staff and timerecord.staff != staff:
@@ -229,7 +257,7 @@ def timerecord_reverse_geocode(request):
         return JsonResponse({'error': 'Invalid model_name'}, status=400)
 
     # 権限チェック（スタッフは自分のデータのみ）
-    staff = Staff.objects.filter(email=request.user.email).first()
+    staff = Staff.objects.unfiltered().filter(email=request.user.email).first()
     if staff:
         if model_name == 'timerecord' and obj.staff != staff:
             return JsonResponse({'error': 'Permission denied'}, status=403)
@@ -275,12 +303,17 @@ def timerecord_update(request, pk):
     # スタッフ特定
     staff = None
     if request.user.email:
-        staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
+        staff = Staff.objects.unfiltered().select_related('international', 'disability').filter(email=request.user.email).first()
 
     # スタッフユーザーの場合は自分の打刻のみ編集可能
     if staff and timerecord.staff != staff:
         messages.error(request, 'アクセス権限がありません。')
         return redirect('kintai:timerecord_list')
+
+    # ロック状態の判定
+    if is_timerecord_locked(timerecord.staff, timerecord.work_date):
+        messages.error(request, '申請済みまたは承認済みの勤怠は編集できません。')
+        return redirect('kintai:timerecord_detail', pk=timerecord.pk)
     
     if request.method == 'POST':
         form = StaffTimerecordForm(request.POST, instance=timerecord, user=request.user)
@@ -308,12 +341,17 @@ def timerecord_delete(request, pk):
     # スタッフ特定
     staff = None
     if request.user.email:
-        staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
+        staff = Staff.objects.unfiltered().select_related('international', 'disability').filter(email=request.user.email).first()
 
     # スタッフユーザーの場合は自分の打刻のみ削除可能
     if staff and timerecord.staff != staff:
         messages.error(request, 'アクセス権限がありません。')
         return redirect('kintai:timerecord_list')
+
+    # ロック状態の判定
+    if is_timerecord_locked(timerecord.staff, timerecord.work_date):
+        messages.error(request, '申請済みまたは承認済みの勤怠は削除できません。')
+        return redirect('kintai:timerecord_detail', pk=timerecord.pk)
     
     if request.method == 'POST':
         timerecord.delete()
@@ -336,12 +374,17 @@ def timerecord_break_create(request, timerecord_pk):
     # スタッフ特定
     staff = None
     if request.user.email:
-        staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
+        staff = Staff.objects.unfiltered().select_related('international', 'disability').filter(email=request.user.email).first()
 
     # スタッフユーザーの場合は自分の打刻のみ編集可能
     if staff and timerecord.staff != staff:
         messages.error(request, 'アクセス権限がありません。')
         return redirect('kintai:timerecord_list')
+
+    # ロック状態の判定
+    if is_timerecord_locked(timerecord.staff, timerecord.work_date):
+        messages.error(request, '申請済みまたは承認済みの勤怠は編集できません。')
+        return redirect('kintai:timerecord_detail', pk=timerecord.pk)
     
     if request.method == 'POST':
         form = StaffTimerecordBreakForm(request.POST, timerecord=timerecord)
@@ -372,12 +415,17 @@ def timerecord_break_update(request, pk):
     # スタッフ特定
     staff = None
     if request.user.email:
-        staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
+        staff = Staff.objects.unfiltered().select_related('international', 'disability').filter(email=request.user.email).first()
 
     # スタッフユーザーの場合は自分の打刻のみ編集可能
     if staff and timerecord.staff != staff:
         messages.error(request, 'アクセス権限がありません。')
         return redirect('kintai:timerecord_list')
+
+    # ロック状態の判定
+    if is_timerecord_locked(timerecord.staff, timerecord.work_date):
+        messages.error(request, '申請済みまたは承認済みの勤怠は編集できません。')
+        return redirect('kintai:timerecord_detail', pk=timerecord.pk)
     
     if request.method == 'POST':
         form = StaffTimerecordBreakForm(request.POST, instance=break_record, timerecord=timerecord)
@@ -407,12 +455,17 @@ def timerecord_break_delete(request, pk):
     # スタッフ特定
     staff = None
     if request.user.email:
-        staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
+        staff = Staff.objects.unfiltered().select_related('international', 'disability').filter(email=request.user.email).first()
 
     # スタッフユーザーの場合は自分の打刻のみ編集可能
     if staff and timerecord.staff != staff:
         messages.error(request, 'アクセス権限がありません。')
         return redirect('kintai:timerecord_list')
+
+    # ロック状態の判定
+    if is_timerecord_locked(timerecord.staff, timerecord.work_date):
+        messages.error(request, '申請済みまたは承認済みの勤怠は編集できません。')
+        return redirect('kintai:timerecord_detail', pk=timerecord.pk)
     
     if request.method == 'POST':
         break_record.delete()
@@ -434,7 +487,7 @@ def timerecord_punch(request):
     # スタッフ特定
     staff = None
     if request.user.email:
-        staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
+        staff = Staff.objects.unfiltered().select_related('international', 'disability').filter(email=request.user.email).first()
     
     if not staff:
         messages.error(request, 'スタッフ情報が見つかりません。')
@@ -546,6 +599,9 @@ def timerecord_punch(request):
             if not can_cancel and timerecord.start_time and (now - timerecord.start_time).total_seconds() < 300:
                 can_cancel = True
 
+    # ロック状態の判定
+    is_locked = is_timerecord_locked(staff, today)
+
     context = {
         'staff': staff,
         'timerecord': timerecord,
@@ -554,9 +610,10 @@ def timerecord_punch(request):
         'status': status,
         'current_break': current_break,
         'today': today,
-        'can_cancel': can_cancel,
+        'can_cancel': can_cancel and not is_locked,
         'show_break_buttons': show_break_buttons,
         'require_location_info': require_location_info,
+        'is_locked': is_locked,
     }
     return render(request, 'kintai/timerecord_punch.html', context)
 
@@ -576,10 +633,15 @@ def timerecord_action(request):
     yesterday = today - timedelta(days=1)
     
     # スタッフ特定
-    staff = Staff.objects.select_related('international', 'disability').filter(email=request.user.email).first()
+    staff = Staff.objects.unfiltered().select_related('international', 'disability').filter(email=request.user.email).first()
     if not staff:
         messages.error(request, 'スタッフ情報が見つかりません。')
         return redirect('/')
+
+    # ロック状態の判定
+    if is_timerecord_locked(staff, today):
+        messages.error(request, '申請済みまたは承認済みの勤怠は打刻できません。')
+        return redirect('kintai:timerecord_punch')
     
     # 位置情報
     lat = request.POST.get('latitude')
@@ -789,3 +851,108 @@ def timerecord_action(request):
             messages.error(request, '直近5分以内の打刻が見つからないため、取り消しできません。')
             
     return redirect('kintai:timerecord_punch')
+
+
+@login_required
+@require_POST
+@permission_required('kintai.add_stafftimerecord', raise_exception=True)
+def timerecord_apply(request):
+    """勤怠打刻申請"""
+    target_month_str = request.POST.get('target_month')
+    if not target_month_str:
+        messages.error(request, '対象年月が指定されていません。')
+        return redirect('kintai:timerecord_calender')
+
+    try:
+        target_month = datetime.strptime(target_month_str, '%Y-%m').date().replace(day=1)
+    except ValueError:
+        messages.error(request, '無効な年月形式です。')
+        return redirect('kintai:timerecord_calender')
+
+    # スタッフ特定
+    staff = Staff.objects.unfiltered().filter(email=request.user.email).first()
+    if not staff:
+        messages.error(request, 'スタッフ情報が見つかりません。')
+        return redirect('/')
+
+    year = target_month.year
+    month = target_month.month
+    _, last_day_num = monthrange(year, month)
+    first_day = date(year, month, 1)
+    last_day = date(year, month, last_day_num)
+
+    # 該当月の有効な契約を取得
+    contracts = StaffContract.objects.unfiltered().filter(
+        staff=staff,
+        start_date__lte=last_day,
+        contract_status=Constants.CONTRACT_STATUS.CONFIRMED,
+    ).filter(
+        Q(end_date__gte=first_day) | Q(end_date__isnull=True)
+    )
+
+    if not contracts.exists():
+        messages.error(request, '申請対象の契約が見つかりません。')
+        return redirect('kintai:timerecord_calender')
+
+    for contract in contracts:
+        # 契約期間と月の重なりを計算
+        period_start = max(first_day, contract.start_date)
+        period_end = min(last_day, contract.end_date) if contract.end_date else last_day
+
+        # 申請データを登録・更新
+        StaffTimerecordApproval.objects.unfiltered().update_or_create(
+            staff=staff,
+            staff_contract=contract,
+            closing_date=last_day,
+            defaults={
+                'period_start': period_start,
+                'period_end': period_end,
+                'status': '20',  # 提出済み
+            }
+        )
+
+    messages.success(request, f'{target_month.strftime("%Y年%m月")}の勤怠を申請しました。')
+    return redirect(f"{reverse('kintai:timerecord_calender')}?target_month={target_month_str}")
+
+
+@login_required
+@require_POST
+@permission_required('kintai.add_stafftimerecord', raise_exception=True)
+def timerecord_withdraw(request):
+    """勤怠打刻申請取り戻し"""
+    target_month_str = request.POST.get('target_month')
+    if not target_month_str:
+        messages.error(request, '対象年月が指定されていません。')
+        return redirect('kintai:timerecord_calender')
+
+    try:
+        target_month = datetime.strptime(target_month_str, '%Y-%m').date().replace(day=1)
+    except ValueError:
+        messages.error(request, '無効な年月形式です。')
+        return redirect('kintai:timerecord_calender')
+
+    # スタッフ特定
+    staff = Staff.objects.unfiltered().filter(email=request.user.email).first()
+    if not staff:
+        messages.error(request, 'スタッフ情報が見つかりません。')
+        return redirect('/')
+
+    year = target_month.year
+    month = target_month.month
+    _, last_day_num = monthrange(year, month)
+    last_day = date(year, month, last_day_num)
+
+    # 該当月の提出済みレコードを取得
+    approvals = StaffTimerecordApproval.objects.unfiltered().filter(
+        staff=staff,
+        closing_date=last_day,
+        status='20' # 提出済みのみ
+    )
+
+    if not approvals.exists():
+        messages.error(request, '取り戻し可能な申請が見つかりません。')
+    else:
+        approvals.update(status='10') # 作成中に戻す
+        messages.success(request, f'{target_month.strftime("%Y年%m月")}の勤怠申請を取り戻しました。')
+
+    return redirect(f"{reverse('kintai:timerecord_calender')}?target_month={target_month_str}")
