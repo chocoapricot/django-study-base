@@ -1024,3 +1024,71 @@ class StaffTimerecordBreak(MyModel):
         start_diff = (self.rounded_break_start != self.break_start) if (self.rounded_break_start and self.break_start) else False
         end_diff = (self.rounded_break_end != self.break_end) if (self.rounded_break_end and self.break_end) else False
         return start_diff or end_diff
+
+class StaffTimerecordApproval(MyTenantModel):
+    """
+    勤怠打刻の承認情報を管理するモデル。
+    TimeRecordをまとめて申請承認管理するためのもの。
+    """
+    staff = models.ForeignKey(
+        'staff.Staff',
+        on_delete=models.CASCADE,
+        related_name='timerecord_approvals',
+        verbose_name='スタッフ'
+    )
+    staff_contract = models.ForeignKey(
+        'contract.StaffContract',
+        on_delete=models.CASCADE,
+        related_name='timerecord_approvals',
+        verbose_name='スタッフ契約'
+    )
+    closing_date = models.DateField('締め日')
+    period_start = models.DateField('締期間開始')
+    period_end = models.DateField('締期間終了')
+
+    # 承認ステータス
+    status = models.CharField(
+        '承認ステータス',
+        max_length=2,
+        choices=[
+            ('10', '作成中'),
+            ('20', '提出済み'),
+            ('30', '承認済み'),
+            ('40', '差戻し'),
+        ],
+        default='10'
+    )
+
+    class Meta:
+        db_table = 'apps_kintai_staff_timerecord_approval'
+        verbose_name = '勤怠申請承認'
+        verbose_name_plural = '勤怠申請承認'
+        ordering = ['-closing_date', 'staff']
+        indexes = [
+            models.Index(fields=['staff']),
+            models.Index(fields=['staff_contract']),
+            models.Index(fields=['closing_date']),
+            models.Index(fields=['status']),
+        ]
+
+    def __str__(self):
+        return f"{self.staff} - {self.closing_date}締め"
+
+    def clean(self):
+        """バリデーション"""
+        super().clean()
+        # スタッフ契約とスタッフの整合性チェック
+        if self.staff_contract_id and self.staff_id:
+            if self.staff_contract.staff_id != self.staff_id:
+                raise ValidationError('スタッフ契約とスタッフが一致しません。')
+
+        # 期間の整合性チェック
+        if self.period_start and self.period_end:
+            if self.period_start > self.period_end:
+                raise ValidationError('締期間終了は締期間開始より後の日付を入力してください。')
+
+    def save(self, *args, **kwargs):
+        # スタッフ契約からスタッフを自動設定
+        if self.staff_contract and not self.staff_id:
+            self.staff = self.staff_contract.staff
+        super().save(*args, **kwargs)
