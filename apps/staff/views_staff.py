@@ -47,7 +47,7 @@ def staff_export(request):
     if has_request_filter == 'true':
         from apps.connect.models import (
             ConnectStaff, MynumberRequest, ProfileRequest, BankRequest,
-            ContactRequest, ConnectInternationalRequest, DisabilityRequest
+            ContactRequest, ConnectInternationalRequest, DisabilityRequest, PayrollRequest
         )
         pending_mynumber_cs_ids = MynumberRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
         pending_profile_cs_ids = ProfileRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
@@ -55,6 +55,7 @@ def staff_export(request):
         pending_contact_cs_ids = ContactRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
         pending_international_cs_ids = ConnectInternationalRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
         pending_disability_cs_ids = DisabilityRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+        pending_payroll_cs_ids = PayrollRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
 
         all_pending_cs_ids = set()
         all_pending_cs_ids.update(pending_mynumber_cs_ids)
@@ -63,6 +64,7 @@ def staff_export(request):
         all_pending_cs_ids.update(pending_contact_cs_ids)
         all_pending_cs_ids.update(pending_international_cs_ids)
         all_pending_cs_ids.update(pending_disability_cs_ids)
+        all_pending_cs_ids.update(pending_payroll_cs_ids)
 
         pending_emails = ConnectStaff.objects.filter(id__in=list(all_pending_cs_ids)).values_list('email', flat=True)
         staffs = staffs.filter(email__in=pending_emails)
@@ -234,7 +236,7 @@ def staff_list(request):
     if has_request_filter == 'true':
         from apps.connect.models import (
             ConnectStaff, MynumberRequest, ProfileRequest, BankRequest,
-            ContactRequest, ConnectInternationalRequest, DisabilityRequest
+            ContactRequest, ConnectInternationalRequest, DisabilityRequest, PayrollRequest
         )
         # Get all ConnectStaff ids that have pending requests
         pending_mynumber_cs_ids = MynumberRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
@@ -243,6 +245,7 @@ def staff_list(request):
         pending_contact_cs_ids = ContactRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
         pending_international_cs_ids = ConnectInternationalRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
         pending_disability_cs_ids = DisabilityRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+        pending_payroll_cs_ids = PayrollRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
 
         all_pending_cs_ids = set()
         all_pending_cs_ids.update(pending_mynumber_cs_ids)
@@ -251,6 +254,7 @@ def staff_list(request):
         all_pending_cs_ids.update(pending_contact_cs_ids)
         all_pending_cs_ids.update(pending_international_cs_ids)
         all_pending_cs_ids.update(pending_disability_cs_ids)
+        all_pending_cs_ids.update(pending_payroll_cs_ids)
 
         # Get the emails of these ConnectStaff objects
         pending_emails = ConnectStaff.objects.filter(id__in=list(all_pending_cs_ids)).values_list('email', flat=True)
@@ -618,6 +622,7 @@ def staff_detail(request, pk):
     bank_request = None
     disability_request = None
     contact_request = None
+    payroll_request = None
     last_login = None  # 最終ログイン日時を初期化
 
     if staff.email:
