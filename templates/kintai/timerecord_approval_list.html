@@ -1,0 +1,82 @@
+{% extends 'common/_base.html' %}
+{% load query_tags %}
+{% load favorite_tags %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        勤怠打刻承認一覧
+    </div>
+    <div class="card-body">
+        <!-- 検索フィルタ -->
+        <form method="get" class="form-inline d-flex flex-wrap mb-3">
+            <div class="input-group input-group-sm me-2 mb-2">
+                <span class="input-group-text">キーワード</span>
+                <input type="text" name="q" class="form-control" value="{{ q }}" placeholder="スタッフ名">
+            </div>
+            <div class="input-group input-group-sm me-2 mb-2">
+                <span class="input-group-text">ステータス</span>
+                <select name="status" class="form-select">
+                    <option value="">すべて</option>
+                    {% for val, label in status_choices %}
+                    <option value="{{ val }}" {% if status == val %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-2">
+                <button type="submit" class="btn btn-sm btn-primary me-1">検索</button>
+                <a href="{% url 'kintai:timerecord_approval_list' %}" class="btn btn-sm btn-secondary">リセット</a>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered table-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th>スタッフ</th>
+                        <th>対象年月</th>
+                        <th>締期間</th>
+                        <th>ステータス</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for approval in page_obj %}
+                    <tr>
+                        <td class="align-middle">
+                            {{ approval.staff }}{% favorite_star approval.staff %}
+                        </td>
+                        <td class="align-middle">{{ approval.closing_date|date:"Y年m月" }}</td>
+                        <td class="align-middle">
+                            {{ approval.period_start|date:"Y/m/d" }} ～ {{ approval.period_end|date:"Y/m/d" }}
+                        </td>
+                        <td class="align-middle">
+                            {% if approval.status == '10' %}
+                                <span class="badge bg-secondary">{{ approval.get_status_display }}</span>
+                            {% elif approval.status == '20' %}
+                                <span class="badge bg-info">{{ approval.get_status_display }}</span>
+                            {% elif approval.status == '30' %}
+                                <span class="badge bg-success">{{ approval.get_status_display }}</span>
+                            {% elif approval.status == '40' %}
+                                <span class="badge bg-danger">{{ approval.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="align-middle text-center">
+                            <a href="{% url 'kintai:timerecord_approval_detail' approval.pk %}" class="btn btn-sm btn-secondary">
+                                <i class="bi bi-eye me-1"></i>詳細
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">該当するデータはありません。</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% include 'common/_pagination.html' %}
+    </div>
+</div>
+{% endblock %}
