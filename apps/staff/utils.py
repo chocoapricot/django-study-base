@@ -55,7 +55,7 @@ def annotate_staff_connection_info(staff_list):
     """
     from apps.connect.models import (
         ConnectStaff, MynumberRequest, ProfileRequest, BankRequest,
-        ContactRequest, ConnectInternationalRequest, DisabilityRequest
+        ContactRequest, ConnectInternationalRequest, DisabilityRequest, PayrollRequest
     )
     from apps.company.models import Company
 
@@ -85,6 +85,7 @@ def annotate_staff_connection_info(staff_list):
                 'contact': set(ContactRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
                 'international': set(ConnectInternationalRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
                 'disability': set(DisabilityRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
+                'payroll': set(PayrollRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
             }
 
     for staff in staff_list:
@@ -96,6 +97,7 @@ def annotate_staff_connection_info(staff_list):
         staff.has_pending_contact_request = False
         staff.has_pending_international_request = False
         staff.has_pending_disability_request = False
+        staff.has_pending_payroll_request = False
 
         connect_request = connect_staff_map.get(staff.email)
         if connect_request:
@@ -109,6 +111,7 @@ def annotate_staff_connection_info(staff_list):
                 staff.has_pending_contact_request = email in pending_requests.get('contact', set())
                 staff.has_pending_international_request = email in pending_requests.get('international', set())
                 staff.has_pending_disability_request = email in pending_requests.get('disability', set())
+                staff.has_pending_payroll_request = email in pending_requests.get('payroll', set())
 
         # 外国籍・障害者情報の有無
         staff.has_international_info = hasattr(staff, 'international')

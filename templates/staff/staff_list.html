@@ -240,7 +240,7 @@
                         {% if staff.has_pending_connection_request %}
                             <i class="bi bi-arrow-up-circle" style="color:#17a2b8;" title="接続申請中"></i>
                         {% elif staff.is_connected_approved %}
-                            {% if staff.has_pending_profile_request or staff.has_pending_mynumber_request or staff.has_pending_bank_request or staff.has_pending_contact_request or staff.has_pending_international_request or staff.has_pending_disability_request %}
+                            {% if staff.has_pending_profile_request or staff.has_pending_mynumber_request or staff.has_pending_bank_request or staff.has_pending_contact_request or staff.has_pending_international_request or staff.has_pending_disability_request or staff.has_pending_payroll_request %}
                                 <i class="bi bi-arrow-down-circle" style="color:#17a2b8;" title="変更あり"></i>
                             {% else %}
                                 <i class="bi bi-link" style="color:#17a2b8;" title="接続承認済み"></i>
@@ -268,21 +268,27 @@
                     </td>
                     {% if is_registration_status_view %}
                     <td>
-                        {% if staff.has_mynumber %}
+                        {% if staff.has_pending_mynumber_request %}
+                            <i class="bi bi-arrow-down-circle" style="color:#17a2b8;" title="変更あり"></i>
+                        {% elif staff.has_mynumber %}
                             <i class="bi bi-check-circle-fill text-success" title="登録済み"></i>
                         {% else %}
                             <i class="bi bi-dash-circle text-muted" title="未登録"></i>
                         {% endif %}
                     </td>
                     <td>
-                        {% if staff.has_bank %}
+                        {% if staff.has_pending_bank_request %}
+                            <i class="bi bi-arrow-down-circle" style="color:#17a2b8;" title="変更あり"></i>
+                        {% elif staff.has_bank %}
                             <i class="bi bi-check-circle-fill text-success" title="登録済み"></i>
                         {% else %}
                             <i class="bi bi-dash-circle text-muted" title="未登録"></i>
                         {% endif %}
                     </td>
                     <td>
-                        {% if staff.has_payroll %}
+                        {% if staff.has_pending_payroll_request %}
+                            <i class="bi bi-arrow-down-circle" style="color:#17a2b8;" title="変更あり"></i>
+                        {% elif staff.has_payroll %}
                             <i class="bi bi-check-circle-fill text-success" title="登録済み"></i>
                         {% else %}
                             <i class="bi bi-dash-circle text-muted" title="未登録"></i>
