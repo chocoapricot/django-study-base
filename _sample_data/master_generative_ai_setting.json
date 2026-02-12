@@ -43,7 +43,7 @@
             "updated_by": 1,
             "target_item": "AI Model",
             "format": "text",
-            "value": "gemini-2.5-flash",
+            "value": "gemini-3-flash-preview",
             "display_order": 901,
             "tenant_id": 1
         }
