@@ -618,6 +618,7 @@ def staff_detail(request, pk):
     bank_request = None
     disability_request = None
     contact_request = None
+    payroll_request = None
     last_login = None  # 最終ログイン日時を初期化
 
     if staff.email:
