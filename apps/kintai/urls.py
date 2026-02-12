@@ -56,5 +56,11 @@ urlpatterns = [
     path('timerecord/<int:timerecord_pk>/break/create/', views_timerecord.timerecord_break_create, name='timerecord_break_create'),
     path('timerecord/break/<int:pk>/update/', views_timerecord.timerecord_break_update, name='timerecord_break_update'),
     path('timerecord/break/<int:pk>/delete/', views_timerecord.timerecord_break_delete, name='timerecord_break_delete'),
+
+    # 勤怠打刻承認 (Company側)
+    path('timerecord/approval/', views_timerecord.timerecord_approval_list, name='timerecord_approval_list'),
+    path('timerecord/approval/<int:pk>/', views_timerecord.timerecord_approval_detail, name='timerecord_approval_detail'),
+    path('timerecord/approval/<int:pk>/approve/', views_timerecord.timerecord_approval_approve, name='timerecord_approval_approve'),
+    path('timerecord/approval/<int:pk>/reject/', views_timerecord.timerecord_approval_reject, name='timerecord_approval_reject'),
 ]
 

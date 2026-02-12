@@ -42,7 +42,7 @@ def timerecord_list(request):
         timerecords = timerecords.filter(
             Q(staff__name_last__icontains=search_query) |
             Q(staff__name_first__icontains=search_query) |
-            Q(staff__staff_id__icontains=search_query)
+            Q(staff__employee_no__icontains=search_query)
         )
     
     # 日付フィルタ
@@ -956,3 +956,104 @@ def timerecord_withdraw(request):
         messages.success(request, f'{target_month.strftime("%Y年%m月")}の勤怠申請を取り戻しました。')
 
     return redirect(f"{reverse('kintai:timerecord_calender')}?target_month={target_month_str}")
+
+@login_required
+@permission_required('kintai.view_stafftimerecordapproval', raise_exception=True)
+def timerecord_approval_list(request):
+    """勤怠打刻申請一覧 (Company側)"""
+    approvals = StaffTimerecordApproval.objects.select_related('staff', 'staff_contract').all()
+
+    # 検索
+    q = request.GET.get('q', '')
+    if q:
+        approvals = approvals.filter(
+            Q(staff__name_last__icontains=q) |
+            Q(staff__name_first__icontains=q) |
+            Q(staff__employee_no__icontains=q)
+        )
+
+    # ステータス
+    status = request.GET.get('status', '')
+    if status:
+        approvals = approvals.filter(status=status)
+
+    paginator = Paginator(approvals, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'q': q,
+        'status': status,
+        'status_choices': [
+            ('10', '作成中'),
+            ('20', '提出済み'),
+            ('30', '承認済み'),
+            ('40', '差戻し'),
+        ]
+    }
+    return render(request, 'kintai/timerecord_approval_list.html', context)
+
+
+@login_required
+@permission_required('kintai.view_stafftimerecordapproval', raise_exception=True)
+def timerecord_approval_detail(request, pk):
+    """勤怠打刻申請詳細 (Company側)"""
+    approval = get_object_or_404(StaffTimerecordApproval, pk=pk)
+
+    staff = approval.staff
+    contract = approval.staff_contract
+    period_start = approval.period_start
+    period_end = approval.period_end
+
+    # 打刻データ取得
+    timerecords = StaffTimerecord.objects.filter(
+        staff=staff,
+        staff_contract=contract,
+        work_date__range=(period_start, period_end)
+    ).prefetch_related('breaks')
+
+    timerecord_map = {tr.work_date: tr for tr in timerecords}
+
+    # カレンダーデータ作成
+    calendar_data = []
+    current_date = period_start
+    while current_date <= period_end:
+        timerecord = timerecord_map.get(current_date)
+        calendar_data.append({
+            'date': current_date,
+            'weekday': current_date.weekday(),
+            'is_holiday': jpholiday.is_holiday(current_date),
+            'timerecord': timerecord,
+        })
+        current_date += timedelta(days=1)
+
+    context = {
+        'approval': approval,
+        'calendar_data': calendar_data,
+    }
+    return render(request, 'kintai/timerecord_approval_detail.html', context)
+
+
+@login_required
+@permission_required('kintai.change_stafftimerecordapproval', raise_exception=True)
+@require_POST
+def timerecord_approval_approve(request, pk):
+    """勤怠打刻承認実行"""
+    approval = get_object_or_404(StaffTimerecordApproval, pk=pk)
+    approval.status = '30' # 承認済み
+    approval.save()
+    messages.success(request, f'{approval.staff}さんの{approval.closing_date.strftime("%Y年%m月")}分を承認しました。')
+    return redirect('kintai:timerecord_approval_list')
+
+
+@login_required
+@permission_required('kintai.change_stafftimerecordapproval', raise_exception=True)
+@require_POST
+def timerecord_approval_reject(request, pk):
+    """勤怠打刻差戻し実行"""
+    approval = get_object_or_404(StaffTimerecordApproval, pk=pk)
+    approval.status = '40' # 差戻し
+    approval.save()
+    messages.warning(request, f'{approval.staff}さんの{approval.closing_date.strftime("%Y年%m月")}分を差戻しました。')
+    return redirect('kintai:timerecord_approval_list')
