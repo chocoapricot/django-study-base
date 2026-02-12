@@ -38,6 +38,11 @@ urlpatterns = [
     path('contact/edit/', views.contact_edit, name='contact_edit'),
     path('contact/delete/', views.contact_delete, name='contact_delete'),
 
+    # 給与情報
+    path('payroll/', views.payroll_detail, name='payroll_detail'),
+    path('payroll/edit/', views.payroll_edit, name='payroll_edit'),
+    path('payroll/delete/', views.payroll_delete, name='payroll_delete'),
+
     # 資格
     path('qualification/', views_profile.profile_qualification_list, name='qualification_list'),
     path('qualification/create/', views_profile.profile_qualification_create, name='qualification_create'),

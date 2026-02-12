@@ -6,7 +6,7 @@ from django.utils import timezone
 from apps.common.models import MyModel
 from apps.common.constants import Constants, get_connect_status_choices, get_request_status_choices
 from apps.staff.models import Staff
-from apps.profile.models import StaffProfileMynumber, StaffProfile, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact
+from apps.profile.models import StaffProfileMynumber, StaffProfile, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact, StaffProfilePayroll
 from apps.master.models import StaffAgreement
 
 class ConnectStaff(MyModel):
@@ -116,6 +116,16 @@ class ConnectStaff(MyModel):
                         profile_international=profile_international_obj
                     )
 
+            # 給与情報の比較と申請
+            profile_payroll_obj = getattr(user_instance, 'staff_payroll', None)
+            if profile_payroll_obj:
+                staff_payroll_obj = getattr(staff_instance, 'payroll', None)
+                if self._is_payroll_different(profile_payroll_obj, staff_payroll_obj):
+                    PayrollRequest.objects.get_or_create(
+                        connect_staff=self,
+                        staff_payroll_profile=profile_payroll_obj
+                    )
+
         except Exception:
             # It is recommended to add logging in a production environment.
             pass
@@ -200,6 +210,21 @@ class ConnectStaff(MyModel):
 
         return False
 
+    def _is_payroll_different(self, profile_payroll, staff_payroll):
+        """スタッフプロフィール給与情報とスタッフ給与情報を比較する"""
+        fields_to_compare = [
+            'basic_pension_number'
+        ]
+
+        for field in fields_to_compare:
+            profile_value = getattr(profile_payroll, field, None)
+            staff_value = getattr(staff_payroll, field, None)
+
+            if str(profile_value or '') != str(staff_value or ''):
+                return True
+
+        return False
+
     def unapprove(self):
         """未承認に戻す"""
         self.status = Constants.CONNECT_STATUS.PENDING
@@ -214,6 +239,7 @@ class ConnectStaff(MyModel):
         self.contactrequest_set.all().delete()
         self.disabilityrequest_set.all().delete()
         self.connectinternationalrequest_set.all().delete()
+        self.payrollrequest_set.all().delete()
 
 
 
@@ -487,6 +513,44 @@ class ConnectInternationalRequest(MyModel):
 
     def __str__(self):
         return f"{self.connect_staff} - {self.profile_international} ({self.get_status_display()})"
+
+
+class PayrollRequest(MyModel):
+    """
+    給与情報の提出を要求するためのモデル。
+    """
+
+    STATUS_CHOICES = get_request_status_choices()
+
+    connect_staff = models.ForeignKey(
+        ConnectStaff,
+        on_delete=models.CASCADE,
+        verbose_name='スタッフ接続',
+        help_text='関連するスタッフ接続'
+    )
+    staff_payroll_profile = models.ForeignKey(
+        StaffProfilePayroll,
+        on_delete=models.CASCADE,
+        verbose_name='スタッフ給与プロフィール',
+        help_text='関連するスタッフ給与プロフィール'
+    )
+    status = models.CharField(
+        'ステータス',
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=Constants.REQUEST_STATUS.PENDING,
+        help_text='申請の現在のステータス'
+    )
+
+    class Meta:
+        db_table = 'apps_connect_payroll_request'
+        verbose_name = '給与情報申請'
+        verbose_name_plural = '給与情報申請'
+        unique_together = ['connect_staff', 'staff_payroll_profile']
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.connect_staff} - {self.staff_payroll_profile} ({self.get_status_display()})"
 
 
 class ConnectClient(MyModel):

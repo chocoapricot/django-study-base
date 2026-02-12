@@ -615,3 +615,37 @@ class StaffProfileContact(MyModel):
 
     def __str__(self):
         return f"{self.user.username}"
+
+
+class StaffProfilePayroll(MyModel):
+    """
+    スタッフの給与関連情報を管理するプロフィールモデル。
+    基礎年金番号などを保持する。
+    """
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='staff_payroll',
+        verbose_name='ユーザー'
+    )
+    basic_pension_number = models.CharField(
+        '基礎年金番号',
+        max_length=12,
+        blank=True,
+        null=True,
+        validators=[
+            RegexValidator(
+                regex=r'^[\d-]{10,12}$',
+                message='基礎年金番号は10桁の数字（ハイフン可）で入力してください'
+            )
+        ],
+        help_text='10桁の数字で入力してください（ハイフンも含められます）'
+    )
+
+    class Meta:
+        db_table = 'apps_profile_staff_payroll'
+        verbose_name = 'スタッフ給与プロフィール'
+        verbose_name_plural = 'スタッフ給与プロフィール'
+
+    def __str__(self):
+        return f"{self.user.username} - 給与情報"

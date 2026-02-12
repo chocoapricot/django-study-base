@@ -4,8 +4,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.urls import reverse
-from .models import StaffProfile, StaffProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact
-from .forms import StaffProfileForm, StaffProfileMynumberForm, StaffProfileInternationalForm, StaffProfileBankForm, StaffProfileDisabilityForm, StaffProfileContactForm
+from .models import StaffProfile, StaffProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact, StaffProfilePayroll
+from .forms import StaffProfileForm, StaffProfileMynumberForm, StaffProfileInternationalForm, StaffProfileBankForm, StaffProfileDisabilityForm, StaffProfileContactForm, StaffProfilePayrollForm
 from .decorators import check_staff_agreement
 
 
@@ -22,6 +22,7 @@ def profile_index(request):
         'has_contact': StaffProfileContact.objects.filter(user=user).exists(),
         'has_international': StaffProfileInternational.objects.filter(user=user).exists(),
         'has_disability': StaffProfileDisability.objects.filter(user=user).exists(),
+        'has_payroll': StaffProfilePayroll.objects.filter(user=user).exists(),
     }
     return render(request, 'profile/profile_index.html', context)
 
@@ -458,6 +459,104 @@ def disability_delete(request):
         'disability': disability,
     }
     return render(request, 'profile/disability_delete.html', context)
+
+
+@login_required
+@check_staff_agreement
+@permission_required('profile.view_staffprofilepayroll', raise_exception=True)
+def payroll_detail(request):
+    """給与情報詳細表示"""
+    try:
+        payroll = StaffProfilePayroll.objects.get(user=request.user)
+    except StaffProfilePayroll.DoesNotExist:
+        payroll = None
+
+    context = {
+        'payroll': payroll,
+    }
+    return render(request, 'profile/payroll_detail.html', context)
+
+
+@login_required
+@check_staff_agreement
+@permission_required('profile.add_staffprofilepayroll', raise_exception=True)
+@permission_required('profile.change_staffprofilepayroll', raise_exception=True)
+def payroll_edit(request):
+    """給与情報編集"""
+    try:
+        payroll = StaffProfilePayroll.objects.get(user=request.user)
+        is_new = False
+    except StaffProfilePayroll.DoesNotExist:
+        payroll = None
+        is_new = True
+
+    if request.method == 'POST':
+        form = StaffProfilePayrollForm(request.POST, instance=payroll)
+        if form.is_valid():
+            payroll = form.save(commit=False)
+            payroll.user = request.user
+            payroll.save()
+
+            # 接続申請の作成処理
+            from apps.connect.models import ConnectStaff, PayrollRequest
+            try:
+                # 承認済みの接続情報を取得
+                connect_staff = ConnectStaff.objects.filter(
+                    email=request.user.email,
+                    status='approved'
+                ).first()
+
+                if connect_staff:
+                    # 既存の申請がない場合のみ作成
+                    existing_request = PayrollRequest.objects.filter(
+                        connect_staff=connect_staff,
+                        staff_payroll_profile=payroll,
+                        status='pending'
+                    ).first()
+
+                    if not existing_request:
+                        PayrollRequest.objects.create(
+                            connect_staff=connect_staff,
+                            staff_payroll_profile=payroll,
+                            status='pending'
+                        )
+            except Exception:
+                # 接続申請の作成に失敗しても処理は継続
+                pass
+
+            if is_new:
+                messages.success(request, '給与情報を登録しました。')
+            else:
+                messages.success(request, '給与情報を更新しました。')
+
+            return redirect('profile:index')
+    else:
+        form = StaffProfilePayrollForm(instance=payroll)
+
+    context = {
+        'form': form,
+        'payroll': payroll,
+        'is_new': is_new,
+    }
+    return render(request, 'profile/payroll_form.html', context)
+
+
+@login_required
+@check_staff_agreement
+@permission_required('profile.delete_staffprofilepayroll', raise_exception=True)
+def payroll_delete(request):
+    """給与情報削除確認"""
+    payroll = get_object_or_404(StaffProfilePayroll, user=request.user)
+
+    if request.method == 'POST':
+        payroll.delete()
+        messages.success(request, '給与情報を削除しました。')
+        return redirect('profile:payroll_detail')
+
+    context = {
+        'payroll': payroll,
+    }
+    return render(request, 'profile/payroll_delete.html', context)
 
 
 @login_required
