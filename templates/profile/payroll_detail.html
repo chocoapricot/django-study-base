@@ -1,0 +1,39 @@
+{% extends 'common/_base.html' %}
+
+{% block title %}給与情報詳細{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        給与情報詳細
+        <div>
+            {% if not payroll %}
+                <a href="{% url 'profile:payroll_edit' %}" class="btn btn-sm btn-primary">給与情報登録</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card-body">
+        {% if payroll %}
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>基礎年金番号</strong></label>
+                <div class="col-sm-10">
+                    <p class="form-control-plaintext">{{ payroll.basic_pension_number }}</p>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info" role="alert">
+                <i class="bi bi-info-circle"></i>
+                給与情報が登録されていません。「給与情報登録」ボタンから登録してください。
+            </div>
+        {% endif %}
+        <div class="d-flex justify-content-start">
+            {% if payroll %}
+                <a href="{% url 'profile:payroll_edit' %}" class="btn btn-sm btn-primary ms-2">編集</a>
+                <a href="{% url 'profile:payroll_delete' %}" class="btn btn-sm btn-dark ms-2">削除</a>
+            {% endif %}
+            <a href="{% url 'profile:index' %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

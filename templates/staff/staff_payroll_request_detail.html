@@ -1,0 +1,90 @@
+{% extends 'common/_base.html' %}
+
+{% block content %}
+
+<!-- スタッフ情報カード -->
+{% include 'staff/_staff_info_card.html' %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>給与情報申請承認</span>
+    </div>
+    <div class="card-body">
+        {% if payroll_request.status == 'pending' %}
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle-fill"></i>
+            スタッフから提出された給与情報を確認し、承認または却下を選択してください。
+        </div>
+        {% elif payroll_request.status == 'approved' %}
+        <div class="alert alert-success" role="alert">
+            <i class="bi bi-check-circle-fill"></i>
+            この給与情報申請は承認済みです。スタッフ給与情報が更新されています。
+        </div>
+        {% elif payroll_request.status == 'rejected' %}
+        <div class="alert alert-danger" role="alert">
+            <i class="bi bi-x-circle-fill"></i>
+            この給与情報申請は却下されています。
+        </div>
+        {% endif %}
+
+        <!-- 比較表示 -->
+        <h5 class="mt-4 mb-3">給与情報比較</h5>
+        <div class="table-responsive">
+            <table class="table" style="border-top: 1px solid #ddd;">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 20%;">項目</th>
+                        <th style="width: 40%;">現在のスタッフ給与情報</th>
+                        <th style="width: 40%;">申請された給与情報</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="{% if staff.payroll.basic_pension_number != payroll_request.staff_payroll_profile.basic_pension_number or not staff.payroll %}table-primary{% endif %}">
+                        <td><strong>基礎年金番号</strong></td>
+                        <td>
+                            {% if staff.payroll %}
+                                {{ staff.payroll.basic_pension_number }}
+                                <small class="text-muted d-block">（現在登録済み）</small>
+                            {% else %}
+                                <span class="text-muted">未登録</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if staff.payroll.basic_pension_number != payroll_request.staff_payroll_profile.basic_pension_number or not staff.payroll %}
+                                <span class="text-primary fw-bold">
+                                    {{ payroll_request.staff_payroll_profile.basic_pension_number }}
+                                </span>
+                            {% else %}
+                                {{ payroll_request.staff_payroll_profile.basic_pension_number }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 承認・却下ボタン -->
+        {% if payroll_request.status == 'pending' %}
+        <div class="d-flex justify-content-start mt-4">
+            <form method="post" class="me-2">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="approve">
+                <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('給与情報申請を承認し、スタッフ給与情報を更新しますか？')">
+                    承認
+                </button>
+            </form>
+            <form method="post" class="me-2">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reject">
+                <button type="submit" class="btn btn-sm btn-dark" onclick="return confirm('給与情報申請を却下しますか？')">
+                    却下
+                </button>
+            </form>
+            <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

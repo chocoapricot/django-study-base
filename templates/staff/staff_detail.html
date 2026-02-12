@@ -375,7 +375,7 @@
                             <input class="form-check-input" type="checkbox" id="connectApprovalSwitch"
                                    {% if connect_request and connect_request.is_approved %}checked{% endif %} disabled>
                             <label class="form-check-label" for="connectApprovalSwitch">
-                                {% if mynumber_request or profile_request or international_request %}
+                                {% if mynumber_request or profile_request or international_request or payroll_request %}
                                     <i class="bi bi-arrow-down-circle" style="font-size: 20px; color:#17a2b8;" title="申請あり"></i>
                                 {% else %}
                                     <i class="bi bi-link" style="font-size: 20px;color:#17a2b8;"></i>
@@ -397,6 +397,20 @@
                         <i class="bi bi-clock-history" style="font-size: 20px; color: #17a2b8;"></i>
                         最終ログイン:{{ last_login|timesince }}前
                         <span class="text-muted small">（{{ last_login|date:"Y/m/d H:i:s" }}）</span>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if payroll_request %}
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-1">
+                    </div>
+                    <div class="col-sm-11">
+                        <i class="bi bi-cash-stack" style="font-size: 20px; color: #17a2b8;"></i>
+                        給与情報の変更があります。
+                        <a href="{% url 'staff:staff_payroll_request_detail' staff.pk payroll_request.pk %}" class="btn btn-sm btn-primary">
+                            確認
+                        </a>
                     </div>
                 </div>
                 {% endif %}

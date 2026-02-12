@@ -22,6 +22,7 @@ from .views import (
     staff_disability_detail, staff_disability_create, staff_disability_edit, staff_disability_delete,
     staff_disability_request_detail,
     staff_payroll_detail, staff_payroll_create, staff_payroll_edit, staff_payroll_delete,
+    staff_payroll_request_detail,
     staff_evaluation_list, staff_evaluation_create, staff_evaluation_update, staff_evaluation_delete,
     staff_tag_edit,
     staff_flag_list, staff_flag_create, staff_flag_update, staff_flag_delete,
@@ -134,6 +135,7 @@ urlpatterns = [
     path('staff/<int:staff_pk>/payroll/create/', staff_payroll_create, name='staff_payroll_create'),
     path('staff/<int:staff_pk>/payroll/edit/', staff_payroll_edit, name='staff_payroll_edit'),
     path('staff/<int:staff_pk>/payroll/delete/', staff_payroll_delete, name='staff_payroll_delete'),
+    path('staff/<int:staff_pk>/payroll/request/<int:pk>/', staff_payroll_request_detail, name='staff_payroll_request_detail'),
 
     # 評価管理
     path('staff/<int:staff_pk>/evaluation/', staff_evaluation_list, name='staff_evaluation_list'),

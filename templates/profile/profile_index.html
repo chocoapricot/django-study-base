@@ -81,6 +81,23 @@
             </a>
         </div>
         <div class="col-md-6 col-lg-4">
+            {% if has_payroll %}
+            <a href="{% url 'profile:payroll_detail' %}" class="text-decoration-none">
+            {% else %}
+            <a href="{% url 'profile:payroll_edit' %}" class="text-decoration-none">
+            {% endif %}
+                <div class="stats-card has-count">
+                    <div class="stats-card-body d-flex align-items-center">
+                        <i class="bi bi-cash-stack stats-icon me-3" style="color:#20c997;"></i>
+                        <div class="flex-grow-1">
+                            <p class="stats-label">給与関連情報 {% if has_payroll %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</p>
+                            <p class="stats-description">基礎年金番号などを登録してください</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
             {% if has_mynumber %}
             <a href="{% url 'profile:mynumber_detail' %}" class="text-decoration-none">
             {% else %}

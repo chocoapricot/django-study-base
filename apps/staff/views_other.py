@@ -11,7 +11,7 @@ from django.contrib import messages
 from apps.system.logs.utils import log_model_action
 from .forms_mail import ConnectionRequestMailForm, DisconnectionMailForm
 
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact, StaffFlag
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact, StaffFlag, StaffPayroll
 from .forms import StaffMynumberForm, StaffBankForm, StaffInternationalForm, StaffDisabilityForm, StaffContactForm
 from apps.system.settings.utils import my_parameter
 from apps.system.settings.models import Dropdowns
@@ -582,6 +582,54 @@ def staff_bank_delete(request, staff_id):
         'bank': bank,
     }
     return render(request, 'staff/staff_bank_confirm_delete.html', context)
+
+
+@login_required
+@permission_required('staff.change_staffpayroll', raise_exception=True)
+def staff_payroll_request_detail(request, staff_pk, pk):
+    """給与情報申請の詳細、承認・却下"""
+    from apps.connect.models import PayrollRequest
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    payroll_request = get_object_or_404(PayrollRequest, pk=pk, connect_staff__email=staff.email)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'approve':
+            # 承認処理
+            try:
+                # 申請から給与情報を取得
+                payroll_profile = payroll_request.staff_payroll_profile
+
+                # スタッフの給与情報を更新または作成
+                staff_payroll, created = StaffPayroll.objects.update_or_create(
+                    staff=staff,
+                    defaults={
+                        'basic_pension_number': payroll_profile.basic_pension_number,
+                    }
+                )
+
+                # 申請ステータスを更新
+                payroll_request.status = 'approved'
+                payroll_request.save()
+
+                messages.success(request, f'給与情報申請を承認し、{staff.name}の給与情報を更新しました。')
+            except Exception as e:
+                messages.error(request, f'承認処理中にエラーが発生しました: {e}')
+
+        elif action == 'reject':
+            # 却下処理
+            payroll_request.status = 'rejected'
+            payroll_request.save()
+            log_model_action(request.user, 'update', payroll_request)
+            messages.warning(request, '給与情報申請を却下しました。')
+
+        return redirect('staff:staff_detail', pk=staff.pk)
+
+    context = {
+        'staff': staff,
+        'payroll_request': payroll_request,
+    }
+    return render(request, 'staff/staff_payroll_request_detail.html', context)
 
 
 @login_required

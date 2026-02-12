@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import StaffProfile, StaffProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact
+from .models import StaffProfile, StaffProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact, StaffProfilePayroll
 from apps.common.forms import MyRadioSelect
 from apps.common.forms.fields import to_fullwidth_katakana, validate_kana
 
@@ -337,3 +337,23 @@ class StaffProfileContactForm(forms.ModelForm):
             if not postal_code.isdigit() or len(postal_code) != 7:
                 raise forms.ValidationError("郵便番号は7桁の数字で入力してください。")
         return postal_code
+
+
+class StaffProfilePayrollForm(forms.ModelForm):
+    """スタッフ給与プロフィールフォーム"""
+    class Meta:
+        model = StaffProfilePayroll
+        fields = ['basic_pension_number']
+        widgets = {
+            'basic_pension_number': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'maxlength': '12',
+                'placeholder': '123-456-7890',
+                'style': 'ime-mode:disabled;',
+                'autocomplete': 'off'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['basic_pension_number'].required = True

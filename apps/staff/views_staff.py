@@ -621,7 +621,7 @@ def staff_detail(request, pk):
     last_login = None  # 最終ログイン日時を初期化
 
     if staff.email:
-        from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest, ConnectInternationalRequest, BankRequest, DisabilityRequest, ContactRequest
+        from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest, ConnectInternationalRequest, BankRequest, DisabilityRequest, ContactRequest, PayrollRequest
         from apps.company.models import Company
         from django.contrib.auth import get_user_model
         User = get_user_model()
@@ -667,6 +667,10 @@ def staff_detail(request, pk):
                         connect_staff=connect_request,
                         status='pending'
                     ).first()
+                    payroll_request = PayrollRequest.objects.filter(
+                        connect_staff=connect_request,
+                        status='pending'
+                    ).first()
         except Exception:
             pass
 
@@ -691,6 +695,7 @@ def staff_detail(request, pk):
         'bank_request': bank_request,
         'disability_request': disability_request,
         'contact_request': contact_request,
+        'payroll_request': payroll_request,
         'evaluations': evaluations,
         'avg_rating': avg_rating,
         'rating_distribution': rating_distribution,
