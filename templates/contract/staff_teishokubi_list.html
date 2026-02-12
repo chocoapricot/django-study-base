@@ -125,5 +125,35 @@ function resetForm() {
     // 「すべて」フィルタを明示的に指定してリダイレクト
     window.location.href = "{% url 'contract:staff_contract_teishokubi_list' %}?dispatch_filter=all";
 }
+
+document.body.setAttribute('data-has-logic', 'true');
+
+document.addEventListener('DOMContentLoaded', function() {
+    const logicContent = document.getElementById('logic-info-content');
+    if (logicContent) {
+        logicContent.innerHTML = `
+            <div class="mb-3">
+                <h6><i class="bi bi-info-circle me-2"></i>個人抵触日一覧の仕組み</h6>
+                <ul class="mb-0">
+                    <li><strong>個人抵触日</strong>: 派遣法に基づく同一組織（課など）での派遣可能期間（原則3年）の制限管理</li>
+                    <li><strong>管理単位</strong>: スタッフ、クライアント、組織名の組み合わせで管理</li>
+                    <li><strong>アラート表示</strong>: 抵触日まで30日以内は「要注意」、期限切れは「期限切れ」バッジを表示</li>
+                    <li><strong>現在派遣中契約</strong>: 同一の組み合わせで現在派遣契約中の期間を表示</li>
+                </ul>
+            </div>
+            <div class="mb-3">
+                <h6><i class="bi bi-gear me-2"></i>算出・表示ロジック</h6>
+                <ul class="mb-0">
+                    <li>派遣契約の割当期間（有期雇用のみ）を合算して算出（3ヶ月以内の離職期間は通算）</li>
+                    <li>派遣抵触日制限外情報（60歳以上、産休・育休代替など）が登録されている契約は算出から除外</li>
+                    <li>派遣開始日の降順で表示</li>
+                </ul>
+            </div>
+        `;
+
+        // カスタムイベントを発火してアイコンを更新
+        document.dispatchEvent(new Event('logicInfoSet'));
+    }
+});
 </script>
 {% endblock %}
