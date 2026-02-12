@@ -557,22 +557,30 @@ class StaffGrade(MyTenantModel):
     @property
     def duration(self):
         """有効期間の長さを計算して文字列で返す"""
+        return self.get_duration()
+
+    def get_duration(self, reference_date=None):
+        """
+        有効期間の長さを計算して文字列で返す。
+        reference_dateが指定された場合、その日を基準として計算する。
+        """
         if not self.valid_from:
             return ""
         
         from django.utils import timezone
         from dateutil.relativedelta import relativedelta
-        today = timezone.localdate()
         
-        end_date = None
-        if self.valid_to:
-            end_date = self.valid_to
-        elif self.valid_from <= today:
-            # 終了日がない（無期限）かつ開始日が今日以前なら、今日までとして計算
-            end_date = today
-            
-        if not end_date:
-            return ""
+        if reference_date is None:
+            reference_date = timezone.localdate()
+
+        # 終了日を決定
+        end_date = self.valid_to
+        if end_date is None or end_date > reference_date:
+            # 終了日がないか、基準日より後の場合は基準日を使用
+            if self.valid_from <= reference_date:
+                end_date = reference_date
+            else:
+                return ""
         
         # 終了日の翌日との差分を取ることで、当日分を含める
         delta = relativedelta(end_date + relativedelta(days=1), self.valid_from)

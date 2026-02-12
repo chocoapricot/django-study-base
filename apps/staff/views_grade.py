@@ -104,20 +104,28 @@ def staff_grade_bulk_change(request):
     # 等級マスタを取得
     grade_master = Grade.objects.filter(is_active=True).order_by('display_order', 'code')
 
+    # 改定日の取得
+    revision_date_str = request.GET.get('revision_date') or request.POST.get('revision_date')
+    if revision_date_str:
+        try:
+            revision_date = datetime.strptime(revision_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            revision_date = datetime.now().date()
+    else:
+        revision_date = datetime.now().date()
+
     if request.method == 'POST':
-        revision_date_str = request.POST.get('revision_date')
-        if not revision_date_str:
+        if not request.POST.get('revision_date'):
             messages.error(request, '改定日は必須です。')
         else:
             try:
-                revision_date = datetime.strptime(revision_date_str, '%Y-%m-%d').date()
                 yesterday = revision_date - timedelta(days=1)
 
                 changed_count = 0
                 with transaction.atomic():
                     for staff in staff_list:
                         new_grade_code = request.POST.get(f'grade_{staff.pk}')
-                        current_grade_obj = staff.get_current_grade()
+                        current_grade_obj = staff.get_current_grade(revision_date)
                         current_grade_code = current_grade_obj.grade_code if current_grade_obj else None
 
                         if new_grade_code and new_grade_code != current_grade_code:
@@ -199,6 +207,7 @@ def staff_grade_bulk_change(request):
         'staff_list': staff_list,
         'grade_master': grade_master,
         'today': datetime.now().date(),
+        'revision_date': revision_date,
         'query': query,
         'tag_filter': int(tag_filter) if tag_filter else '',
         'department_filter': department_filter,
