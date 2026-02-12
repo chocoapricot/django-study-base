@@ -108,9 +108,9 @@ django-study-base/
 └── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（116テーブル）
+## データベーステーブル一覧（117テーブル）
 
-### 本アプリケーション独自テーブル（99テーブル）
+### 本アプリケーション独自テーブル（100テーブル）
 
 | テーブル名 | モデル名 | 説明 |
 | --- | --- | --- |
@@ -154,6 +154,7 @@ django-study-base/
 | `apps_kintai_staff_timecard` | `StaffTimecard` | 日次勤怠 |
 | `apps_kintai_staff_timerecord` | `StaffTimerecord` | 勤怠打刻 |
 | `apps_kintai_staff_timerecord_break` | `StaffTimerecordBreak` | 勤怠打刻休憩 |
+| `apps_kintai_staff_timerecord_approval` | `StaffTimerecordApproval` | 勤怠申請承認 |
 | `apps_master_bank` | `Bank` | 銀行マスター |
 | `apps_master_bank_branch` | `BankBranch` | 銀行支店マスター |
 | `apps_master_bill_bank` | `BillBank` | 会社銀行マスター |
