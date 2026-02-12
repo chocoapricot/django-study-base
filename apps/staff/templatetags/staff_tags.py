@@ -19,3 +19,18 @@ def staff_status_markers(staff):
         html += '<i class="bi bi-heart ms-1" style="color:#17a2b8;" title="障害者"></i>'
 
     return format_html(html)
+
+@register.filter
+def current_grade_as_of(staff, date):
+    """指定日時点の等級を取得するフィルタ"""
+    if not staff or not date:
+        return None
+    return staff.get_current_grade(date)
+
+@register.filter
+def duration_until(grade, date):
+    """指定日の前日までの継続期間を返すフィルタ"""
+    if not grade or not date:
+        return ""
+    from datetime import timedelta
+    return grade.get_duration(date - timedelta(days=1))
