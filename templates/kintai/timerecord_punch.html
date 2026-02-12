@@ -154,7 +154,12 @@
                 </span>
                 {% if is_locked %}
                     <div class="mt-2 text-danger fw-bold">
-                        <i class="bi bi-lock-fill me-1"></i>勤怠申請済みのため、本日の打刻はできません。
+                        <i class="bi bi-lock-fill me-1"></i>
+                        {% if overall_status == '30' %}
+                            勤怠承認済みのため、本日の打刻はできません。
+                        {% else %}
+                            勤怠申請済みのため、本日の打刻はできません。
+                        {% endif %}
                     </div>
                 {% endif %}
             </div>
