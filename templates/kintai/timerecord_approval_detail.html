@@ -42,11 +42,20 @@
     <div class="card-body">
         <div class="row mb-3 align-items-center">
             <div class="col-sm-2 text-start text-sm-end"><strong>スタッフ</strong></div>
-            <div class="col-sm-10">{{ approval.staff }}{% favorite_star approval.staff %}</div>
+            <div class="col-sm-10">
+                <a href="{% url 'staff:staff_detail' approval.staff.pk %}" target="_blank">
+                    {{ approval.staff }}
+                </a>
+                {% favorite_star approval.staff %}
+            </div>
         </div>
         <div class="row mb-3 align-items-center">
             <div class="col-sm-2 text-start text-sm-end"><strong>契約</strong></div>
-            <div class="col-sm-10">{{ approval.staff_contract }}</div>
+            <div class="col-sm-10">
+                <a href="{% url 'contract:staff_contract_detail' approval.staff_contract.pk %}" target="_blank">
+                    {{ approval.staff_contract }}
+                </a>
+            </div>
         </div>
         <div class="row mb-3 align-items-center">
             <div class="col-sm-2 text-start text-sm-end"><strong>締期間</strong></div>
