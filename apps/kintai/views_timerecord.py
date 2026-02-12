@@ -230,9 +230,13 @@ def timerecord_detail(request, pk):
     # 休憩時間を取得
     breaks = timerecord.breaks.all().order_by('break_start')
     
+    # ロック状態の判定
+    is_locked = is_timerecord_locked(timerecord.staff, timerecord.work_date)
+
     context = {
         'timerecord': timerecord,
         'breaks': breaks,
+        'is_locked': is_locked,
     }
     return render(request, 'kintai/timerecord_detail.html', context)
 
@@ -600,7 +604,14 @@ def timerecord_punch(request):
                 can_cancel = True
 
     # ロック状態の判定
-    is_locked = is_timerecord_locked(staff, today)
+    approval = StaffTimerecordApproval.objects.unfiltered().filter(
+        staff=staff,
+        period_start__lte=today,
+        period_end__gte=today,
+        status__in=['20', '30']
+    ).first()
+    is_locked = approval is not None
+    overall_status = approval.status if approval else None
 
     context = {
         'staff': staff,
@@ -614,6 +625,7 @@ def timerecord_punch(request):
         'show_break_buttons': show_break_buttons,
         'require_location_info': require_location_info,
         'is_locked': is_locked,
+        'overall_status': overall_status,
     }
     return render(request, 'kintai/timerecord_punch.html', context)
 
@@ -893,6 +905,19 @@ def timerecord_apply(request):
     if not contracts.exists():
         messages.error(request, '申請対象の契約が見つかりません。')
         return redirect('kintai:timerecord_calender')
+
+    # 打刻データの不備チェック（開始・終了が揃っていない日がないか）
+    incomplete_records = StaffTimerecord.objects.filter(
+        staff=staff,
+        work_date__range=(first_day, last_day)
+    ).filter(
+        Q(rounded_start_time__isnull=True, rounded_end_time__isnull=False) |
+        Q(rounded_start_time__isnull=False, rounded_end_time__isnull=True)
+    )
+    if incomplete_records.exists():
+        dates = [r.work_date.strftime("%m/%d") for r in incomplete_records]
+        messages.error(request, f'打刻が不完全な日があります（{", ".join(dates)}）。開始時刻と終了時刻を両方入力してください。')
+        return redirect(f"{reverse('kintai:timerecord_calender')}?target_month={target_month_str}")
 
     for contract in contracts:
         # 契約期間と月の重なりを計算
