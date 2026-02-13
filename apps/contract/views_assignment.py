@@ -18,6 +18,7 @@ from .forms import StaffContractForm, ContractAssignmentConfirmForm, ContractAss
 from .models import ClientContract, ContractAssignment, StaffContract, ContractAssignmentConfirm, ContractAssignmentHaken, ContractAssignmentFlag
 from apps.system.logs.models import AppLog
 from apps.system.logs.utils import log_model_action
+from apps.profile.decorators import check_staff_agreement
 
 
 def _calculate_profit_margin(client_contract, staff_contract):
@@ -1075,6 +1076,7 @@ def assignment_employment_conditions_issue(request, assignment_pk):
         messages.error(request, f'就業条件明示書の発行中にエラーが発生しました: {str(e)}')
         return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
 @login_required
+@check_staff_agreement
 @permission_required('contract.view_clientcontract', raise_exception=True)
 def view_assignment_haken_print_pdf(request, pk):
     """
@@ -1097,6 +1099,7 @@ def view_assignment_haken_print_pdf(request, pk):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('contract.view_clientcontract', raise_exception=True)
 def download_assignment_haken_print_pdf(request, pk):
     """
@@ -1303,6 +1306,7 @@ def staff_contract_assignment_employment_conditions_issue(request, contract_pk, 
 
 
 @login_required
+@check_staff_agreement
 @permission_required('contract.view_clientcontract', raise_exception=True)
 def assignment_employment_conditions_text(request, assignment_pk):
     """
