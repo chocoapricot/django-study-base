@@ -130,6 +130,11 @@
                     {% csrf_token %}
                     <button type="submit" class="btn btn-sm btn-danger">差戻す</button>
                 </form>
+            {% elif approval.status == '30' %}
+                <form action="{% url 'kintai:timerecord_approval_cancel' approval.pk %}" method="POST" class="me-2" onsubmit="return confirm('承認を取り消しますか？');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-warning">承認を取り消す</button>
+                </form>
             {% endif %}
             <a href="{% url 'kintai:timerecord_approval_list' %}" class="btn btn-sm btn-secondary">戻る</a>
         </div>

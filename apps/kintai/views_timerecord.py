@@ -1082,3 +1082,18 @@ def timerecord_approval_reject(request, pk):
     approval.save()
     messages.warning(request, f'{approval.staff}さんの{approval.closing_date.strftime("%Y年%m月")}分を差戻しました。')
     return redirect('kintai:timerecord_approval_list')
+
+
+@login_required
+@permission_required('kintai.change_stafftimerecordapproval', raise_exception=True)
+@require_POST
+def timerecord_approval_cancel(request, pk):
+    """勤怠打刻承認取り消し実行"""
+    approval = get_object_or_404(StaffTimerecordApproval, pk=pk)
+    if approval.status != '30':
+        messages.error(request, '承認済みのデータではありません。')
+    else:
+        approval.status = '20'  # 提出済みに戻す
+        approval.save()
+        messages.success(request, f'{approval.staff}さんの{approval.closing_date.strftime("%Y年%m月")}分の承認を取り消しました。')
+    return redirect('kintai:timerecord_approval_list')
