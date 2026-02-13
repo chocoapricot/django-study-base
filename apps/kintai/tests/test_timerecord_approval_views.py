@@ -113,3 +113,17 @@ class TimerecordApprovalViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.approval.refresh_from_db()
         self.assertEqual(self.approval.status, '40')
+
+    def test_cancel_action(self):
+        session = self.client.session
+        session['tenant_id'] = self.tenant_id
+        session.save()
+
+        # First, approve it
+        self.approval.status = '30'
+        self.approval.save()
+
+        response = self.client.post(reverse('kintai:timerecord_approval_cancel', args=[self.approval.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.approval.refresh_from_db()
+        self.assertEqual(self.approval.status, '20')

@@ -62,5 +62,6 @@ urlpatterns = [
     path('timerecord/approval/<int:pk>/', views_timerecord.timerecord_approval_detail, name='timerecord_approval_detail'),
     path('timerecord/approval/<int:pk>/approve/', views_timerecord.timerecord_approval_approve, name='timerecord_approval_approve'),
     path('timerecord/approval/<int:pk>/reject/', views_timerecord.timerecord_approval_reject, name='timerecord_approval_reject'),
+    path('timerecord/approval/<int:pk>/cancel/', views_timerecord.timerecord_approval_cancel, name='timerecord_approval_cancel'),
 ]
 
