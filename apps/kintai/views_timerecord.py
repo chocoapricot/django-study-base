@@ -12,7 +12,7 @@ import jpholiday
 from django.utils import timezone
 from .models import StaffTimerecord, StaffTimerecordBreak, StaffTimerecordApproval
 from .forms import StaffTimerecordForm, StaffTimerecordBreakForm
-from .utils import is_timerecord_locked
+from .utils import is_timerecord_locked, sync_timerecords_to_timecards
 from apps.staff.models import Staff
 from apps.contract.models import StaffContract
 from apps.api.helpers import fetch_gsi_address
@@ -1068,6 +1068,10 @@ def timerecord_approval_approve(request, pk):
     approval = get_object_or_404(StaffTimerecordApproval, pk=pk)
     approval.status = '30' # 承認済み
     approval.save()
+
+    # 打刻データからタイムカードを作成
+    sync_timerecords_to_timecards(approval)
+
     messages.success(request, f'{approval.staff}さんの{approval.closing_date.strftime("%Y年%m月")}分を承認しました。')
     return redirect('kintai:timerecord_approval_list')
 

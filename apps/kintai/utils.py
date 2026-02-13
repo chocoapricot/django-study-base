@@ -100,6 +100,79 @@ def apply_time_rounding(start_time, end_time, time_punch):
     return rounded_start, rounded_end
 
 
+def sync_timerecords_to_timecards(approval):
+    """
+    承認された勤怠申請に基づいて日次勤怠(StaffTimecard)を作成・更新する
+    """
+    from django.utils import timezone
+    from .models import StaffTimerecord, StaffTimecard
+
+    staff = approval.staff
+    contract = approval.staff_contract
+    period_start = approval.period_start
+    period_end = approval.period_end
+
+    # 打刻データを取得
+    timerecords = StaffTimerecord.objects.filter(
+        staff=staff,
+        staff_contract=contract,
+        work_date__range=(period_start, period_end)
+    ).prefetch_related('breaks')
+
+    updated_timesheets = set()
+
+    for tr in timerecords:
+        # 開始・終了の両方が揃っている場合のみ処理
+        if not tr.rounded_start_time or not tr.rounded_end_time:
+            continue
+
+        # タイムカード用の時刻（ローカル時刻）を取得
+        local_start = timezone.localtime(tr.rounded_start_time)
+        local_end = timezone.localtime(tr.rounded_end_time)
+
+        # start_time
+        start_time = local_start.time()
+        start_next_day = local_start.date() > tr.work_date
+
+        # end_time
+        end_time = local_end.time()
+        end_next_day = local_end.date() > tr.work_date
+
+        # 休憩時間の合計（分）
+        total_break_minutes = tr.total_break_minutes
+
+        # StaffTimecardを取得または作成
+        timecard = StaffTimecard.objects.filter(
+            staff_contract=contract,
+            work_date=tr.work_date
+        ).first()
+
+        if not timecard:
+            timecard = StaffTimecard(
+                staff_contract=contract,
+                work_date=tr.work_date
+            )
+
+        # データを更新
+        timecard.work_type = '10'  # 出勤
+        timecard.start_time = start_time
+        timecard.start_time_next_day = start_next_day
+        timecard.end_time = end_time
+        timecard.end_time_next_day = end_next_day
+        timecard.break_minutes = total_break_minutes
+        timecard.memo = tr.memo
+
+        # 保存（集計更新は後でまとめて行う）
+        timecard.save(skip_timesheet_update=True)
+
+        if timecard.timesheet:
+            updated_timesheets.add(timecard.timesheet)
+
+    # 影響を受けた月次勤怠の集計を更新
+    for ts in updated_timesheets:
+        ts.calculate_totals()
+
+
 def is_timerecord_locked(staff, work_date):
     """
     指定された日の勤怠がロックされているか（申請済みまたは承認済み）を確認する
