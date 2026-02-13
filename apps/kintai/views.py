@@ -262,20 +262,7 @@ def staff_timecard_calendar(request, staff_pk, target_month):
         Q(end_date__gte=target_date) | Q(end_date__isnull=True)
     ).select_related('employment_type', 'worktime_pattern')
 
-    # 打刻申請によるロックの確認
-    is_locked = False
-    from .models import StaffTimerecordApproval
-    if StaffTimerecordApproval.objects.unfiltered().filter(
-        staff_id=staff.id,
-        closing_date=month_end,
-        status__in=['20', '30']
-    ).exists():
-        is_locked = True
-
     if request.method == 'POST':
-        if is_locked:
-            messages.error(request, '勤怠申請済みのため、保存できません。')
-            return redirect('kintai:staff_timecard_calendar', staff_pk=staff_pk, target_month=target_month)
 
         # フォームデータから日次勤怠を一括保存
         updated_timesheets = set()  # 更新された月次勤怠を記録
@@ -458,7 +445,6 @@ def staff_timecard_calendar(request, staff_pk, target_month):
     context = {
         'staff': staff,
         'calendar_data': calendar_data,
-        'is_locked': is_locked,
         'year': year,
         'month': month,
         'target_date': target_date,
@@ -624,25 +610,6 @@ def timecard_create(request, timesheet_pk):
         messages.error(request, 'この月次勤怠は編集できません。')
         return redirect('kintai:timesheet_detail', pk=timesheet_pk)
 
-    # 打刻申請によるロックの確認
-    is_locked = is_timerecord_locked(timesheet.staff_id, timesheet.target_month)
-
-    if is_locked:
-        messages.error(request, '勤怠申請済みのため、編集できません。')
-        return redirect('kintai:timesheet_detail', pk=timesheet_pk)
-    
-    # 打刻申請によるロックの確認
-    import calendar as py_calendar
-    _, last_day_num = py_calendar.monthrange(timesheet.target_month.year, timesheet.target_month.month)
-    last_day = timesheet.target_month.replace(day=last_day_num)
-    from .models import StaffTimerecordApproval
-    if StaffTimerecordApproval.objects.unfiltered().filter(
-        staff_id=timesheet.staff_id,
-        closing_date=last_day,
-        status__in=['20', '30']
-    ).exists():
-        messages.error(request, '勤怠申請済みのため、登録できません。')
-        return redirect('kintai:timesheet_detail', pk=timesheet_pk)
 
     if request.method == 'POST':
         # pass timesheet to the form so form-level validation can check contract period
@@ -702,18 +669,6 @@ def timecard_create_initial(request, contract_pk, target_month):
         target_month=target_date
     )
 
-    # 打刻申請によるロックの確認
-    import calendar as py_calendar
-    _, last_day_num = py_calendar.monthrange(target_date.year, target_date.month)
-    last_day = target_date.replace(day=last_day_num)
-    from .models import StaffTimerecordApproval
-    if StaffTimerecordApproval.objects.unfiltered().filter(
-        staff_id=contract.staff_id,
-        closing_date=last_day,
-        status__in=['20', '30']
-    ).exists():
-        messages.error(request, '勤怠申請済みのため、登録できません。')
-        return redirect('kintai:contract_search')
 
     if request.method == 'POST':
         form = StaffTimecardForm(request.POST, timesheet=virtual_timesheet)
@@ -761,10 +716,6 @@ def timecard_edit(request, pk):
         messages.error(request, 'この月次勤怠は編集できません。')
         return redirect('kintai:timesheet_detail', pk=timesheet.pk)
 
-    # 打刻申請によるロックの確認
-    if is_timerecord_locked(timesheet.staff_id, timecard.work_date):
-        messages.error(request, '勤怠申請済みのため、編集できません。')
-        return redirect('kintai:timesheet_detail', pk=timesheet.pk)
     
     if request.method == 'POST':
         form = StaffTimecardForm(request.POST, instance=timecard, timesheet=timesheet)
@@ -803,10 +754,6 @@ def timecard_delete(request, pk):
         messages.error(request, 'この月次勤怠は編集できません。')
         return redirect('kintai:timesheet_detail', pk=timesheet.pk)
 
-    # 打刻申請によるロックの確認
-    if is_timerecord_locked(timesheet.staff_id, timecard.work_date):
-        messages.error(request, '勤怠申請済みのため、削除できません。')
-        return redirect('kintai:timesheet_detail', pk=timesheet.pk)
     
     if request.method == 'POST':
         timecard.delete()
@@ -1067,18 +1014,6 @@ def timecard_calendar_initial(request, contract_pk, target_month):
         target_month=target_date
     )
 
-    # 打刻申請によるロックの確認
-    import calendar as py_calendar
-    _, last_day_num = py_calendar.monthrange(target_date.year, target_date.month)
-    last_day = target_date.replace(day=last_day_num)
-    from .models import StaffTimerecordApproval
-    if StaffTimerecordApproval.objects.unfiltered().filter(
-        staff_id=contract.staff_id,
-        closing_date=last_day,
-        status__in=['20', '30']
-    ).exists():
-        messages.error(request, '勤怠申請済みのため、登録できません。')
-        return redirect('kintai:contract_search')
 
     if request.method == 'POST':
         # 月次勤怠を保存
@@ -1771,18 +1706,6 @@ def staff_timecard_register_detail(request, contract_pk, target_month):
         messages.error(request, '無効な年月形式です。')
         return redirect('kintai:staff_timecard_register')
     
-    # 打刻申請によるロックの確認
-    import calendar as py_calendar
-    _, last_day_num = py_calendar.monthrange(target_date.year, target_date.month)
-    last_day = target_date.replace(day=last_day_num)
-    from .models import StaffTimerecordApproval
-    if StaffTimerecordApproval.objects.unfiltered().filter(
-        staff_id=staff.id,
-        closing_date=last_day,
-        status__in=['20', '30']
-    ).exists():
-        messages.error(request, '勤怠申請済みのため、編集できません。')
-        return redirect('kintai:staff_timecard_register')
 
     # 月次勤怠を取得または作成
     timesheet, created = StaffTimesheet.objects.get_or_create(
