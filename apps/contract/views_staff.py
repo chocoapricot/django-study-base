@@ -25,6 +25,7 @@ from apps.master.models import ContractPattern, StaffAgreement, DefaultValue, Gr
 from apps.connect.models import ConnectStaff, ConnectStaffAgree, ConnectClient, MynumberRequest, ProfileRequest, BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
 from apps.company.models import Company, CompanyDepartment
 from apps.system.settings.models import Dropdowns
+from apps.profile.decorators import check_staff_agreement
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
@@ -854,6 +855,7 @@ def staff_contract_issue(request, pk):
     return redirect('contract:staff_contract_detail', pk=contract.pk)
 
 @login_required
+@check_staff_agreement
 def staff_contract_confirm_list(request):
     """スタッフ契約確認一覧（スタッフ契約書 + 就業条件明示書）"""
     from apps.connect.models import ConnectStaff
@@ -1554,6 +1556,7 @@ def staff_contract_teishokubi_detail_create(request, pk):
     return render(request, 'contract/staff_teishokubi_detail_form.html', context)
 
 @login_required
+@check_staff_agreement
 @permission_required('contract.confirm_staffcontract', raise_exception=True)
 def view_staff_contract_pdf(request, pk):
     """
@@ -1578,6 +1581,7 @@ def view_staff_contract_pdf(request, pk):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('contract.confirm_staffcontract', raise_exception=True)
 def download_staff_contract_pdf(request, pk):
     """Downloads a previously generated staff contract PDF."""
