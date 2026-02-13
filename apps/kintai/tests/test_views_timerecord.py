@@ -480,14 +480,15 @@ class TimerecordCRUDViewTest(TestCase):
         url = reverse('kintai:timerecord_break_create', kwargs={'timerecord_pk': self.timerecord.pk})
 
         # 正しいフォーマットの文字列を生成
-        now = timezone.localtime(timezone.now())
-        start_time_str = now.strftime('%H:%M')
-        end_time_str = (now + timezone.timedelta(hours=1)).strftime('%H:%M')
+        # 勤務開始30分後から1時間半後の休憩とする
+        base_time = timezone.localtime(self.timerecord.start_time) + timezone.timedelta(minutes=30)
+        start_time_str = base_time.strftime('%H:%M')
+        end_time_str = (base_time + timezone.timedelta(hours=1)).strftime('%H:%M')
         data = {
             'rounded_break_start': start_time_str,
-            'break_start_next_day': False,
+            'break_start_next_day': base_time.date() > self.timerecord.work_date,
             'rounded_break_end': end_time_str,
-            'break_end_next_day': False
+            'break_end_next_day': (base_time + timezone.timedelta(hours=1)).date() > self.timerecord.work_date
         }
 
         # 権限のないユーザー
