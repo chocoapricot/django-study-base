@@ -555,7 +555,8 @@ def staff_contract_teishokubi_detail(request, pk):
             calculator = TeishokubiCalculator(
                 staff_email=teishokubi.staff_email,
                 client_corporate_number=teishokubi.client_corporate_number,
-                organization_name=teishokubi.organization_name
+                organization_name=teishokubi.organization_name,
+                tenant_id=teishokubi.tenant_id
             )
             calculator.calculate_and_update()
 
@@ -605,7 +606,8 @@ def staff_contract_teishokubi_detail_create(request, pk):
             calculator = TeishokubiCalculator(
                 staff_email=teishokubi.staff_email,
                 client_corporate_number=teishokubi.client_corporate_number,
-                organization_name=teishokubi.organization_name
+                organization_name=teishokubi.organization_name,
+                tenant_id=teishokubi.tenant_id
             )
             calculator.calculate_and_update()
 

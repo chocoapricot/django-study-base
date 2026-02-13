@@ -1,5 +1,16 @@
 # 変更履歴
 
+## 2026-02-14
+
+### Fixed
+- 個人抵触日管理一覧（`/contract/staff/teishokubi/`）において、サンプルデータが存在するにもかかわらずリストが空になる不具合を修正しました。
+    - 原因：自動生成された `StaffContractTeishokubi` レコードに `tenant_id` が設定されていなかったため、マルチテナントのフィルタリングにより除外されていました。
+    - 修正内容：
+        - `TeishokubiCalculator` に `tenant_id` を渡すように拡張し、新規作成・更新時に正しく `tenant_id` をセットするようにしました。
+        - 既存の `tenant_id` が `None` のレコードを、関連する契約から特定した正しい `tenant_id` に修復しました。
+- `apps/contract/views_haken.py` と `apps/contract/views_staff.py` の間で、個人抵触日関連のビュー関数が重複して定義されていた問題を修正し、両方のバージョンの不整合を解消しました。
+
+
 ## 2026-02-07
 
 ### Changed

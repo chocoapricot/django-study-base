@@ -26,7 +26,8 @@ def run_teishokubi_calculation(instance):
             calculator = TeishokubiCalculator(
                 staff_email=staff_email,
                 client_corporate_number=client_corporate_number,
-                organization_name=organization_name
+                organization_name=organization_name,
+                tenant_id=instance.tenant_id
             )
             calculator.calculate_and_update()
 

@@ -1037,7 +1037,8 @@ class ContractAssignment(MyTenantModel):
                         calculator = TeishokubiCalculator(
                             staff_email=staff_email,
                             client_corporate_number=client_corporate_number,
-                            organization_name=organization_name
+                            organization_name=organization_name,
+                            tenant_id=self.tenant_id
                         )
 
                         # この割当を追加した場合の抵触日を計算

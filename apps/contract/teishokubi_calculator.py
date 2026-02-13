@@ -11,10 +11,11 @@ class TeishokubiCalculator:
     抵触日を計算するためのクラス
     """
 
-    def __init__(self, staff_email, client_corporate_number, organization_name):
+    def __init__(self, staff_email, client_corporate_number, organization_name, tenant_id=None):
         self.staff_email = staff_email
         self.client_corporate_number = client_corporate_number
         self.organization_name = organization_name
+        self.tenant_id = tenant_id
 
     def calculate_and_update(self):
         """
@@ -38,7 +39,8 @@ class TeishokubiCalculator:
                         assignment_start_date=period['start_date'],
                         assignment_end_date=period['end_date'],
                         is_calculated=period['is_calculated'],
-                        is_manual=False
+                        is_manual=False,
+                        tenant_id=self.tenant_id
                     )
         else:
             # 該当する割当がない場合は、自動作成された抵触日レコードのみ削除
@@ -198,6 +200,7 @@ class TeishokubiCalculator:
             defaults={
                 'dispatch_start_date': haken_start_date,
                 'conflict_date': conflict_date,
+                'tenant_id': self.tenant_id,
             }
         )
         return obj
