@@ -1,0 +1,93 @@
+
+{% extends 'common/_base.html' %}
+{% load help_tags %}
+
+{% block extra_css %}
+<style>
+    .table-saturday,
+    .table-saturday > th,
+    .table-saturday > td {
+        background-color: #e6f2ff !important;
+    }
+
+    .table-sunday,
+    .table-sunday > th,
+    .table-sunday > td {
+        background-color: #ffe6e6 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="card shadow-sm border-0">
+        <form method="post">
+            {% csrf_token %}
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center sticky-top">
+                <h5 class="mb-0 text-primary fw-bold">勤務カレンダー登録 (クライアント用)</h5>
+                <div>
+                    <button type="submit" class="btn btn-danger">一括保存</button>
+                    <a href="{% url 'kintai:client_timesheet_detail' timesheet.pk %}" class="btn btn-secondary">戻る</a>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered mb-0 align-middle">
+                        <thead class="table-light text-center">
+                            <tr>
+                                <th style="width: 60px;">日付</th>
+                                <th style="width: 120px;">勤務区分</th>
+                                <th style="width: 120px;">開始時刻</th>
+                                <th style="width: 40px;" class="text-nowrap">翌日</th>
+                                <th style="width: 120px;">終了時刻</th>
+                                <th style="width: 40px;" class="text-nowrap">翌日</th>
+                                <th style="width: 80px;">休憩(分)</th>
+                                <th style="width: 80px;">有給(日)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for day in calendar_data %}
+                            <tr class="{% if day.is_holiday or day.weekday == 6 %}table-sunday{% elif day.weekday == 5 %}table-saturday{% endif %}">
+                                <td class="text-center" style="{% if day.is_holiday or day.weekday == 6 %}color: #cc0000; font-weight: bold;{% elif day.weekday == 5 %}color: #0066cc; font-weight: bold;{% endif %}">
+                                    {{ day.day }}({{ day.weekday_name }})
+                                    {% if day.is_holiday and day.holiday_name %}
+                                        {% my_help_icon day.holiday_name %}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <select name="work_type_{{ day.day }}" class="form-select form-select-sm">
+                                        <option value="">-</option>
+                                        <option value="10" {% if day.timecard.work_type == '10' %}selected{% endif %}>出勤</option>
+                                        <option value="20" {% if day.timecard.work_type == '20' %}selected{% endif %}>休日</option>
+                                        <option value="30" {% if day.timecard.work_type == '30' %}selected{% endif %}>欠勤</option>
+                                        <option value="40" {% if day.timecard.work_type == '40' %}selected{% endif %}>有給休暇</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="time" name="start_time_{{ day.day }}" value="{{ day.timecard.start_time|time:'H:i' }}" class="form-control form-control-sm">
+                                </td>
+                                <td class="text-center">
+                                    <input type="checkbox" name="start_time_next_day_{{ day.day }}" class="form-check-input" {% if day.timecard.start_time_next_day %}checked{% endif %}>
+                                </td>
+                                <td>
+                                    <input type="time" name="end_time_{{ day.day }}" value="{{ day.timecard.end_time|time:'H:i' }}" class="form-control form-control-sm">
+                                </td>
+                                <td class="text-center">
+                                    <input type="checkbox" name="end_time_next_day_{{ day.day }}" class="form-check-input" {% if day.timecard.end_time_next_day %}checked{% endif %}>
+                                </td>
+                                <td>
+                                    <input type="number" name="break_minutes_{{ day.day }}" value="{{ day.timecard.break_minutes|default:0 }}" class="form-control form-control-sm text-end" min="0">
+                                </td>
+                                <td>
+                                    <input type="number" name="paid_leave_days_{{ day.day }}" value="{{ day.timecard.paid_leave_days|default:0 }}" class="form-control form-control-sm text-end" min="0" step="0.5" max="1">
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
