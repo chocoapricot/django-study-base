@@ -128,7 +128,7 @@
                                     <option value="10" {% if day.timecard and day.timecard.work_type == '10' %}selected{% endif %}>出勤</option>
                                     <option value="20" {% if day.timecard and day.timecard.work_type == '20' %}selected{% endif %}>休日</option>
                                     <option value="30" {% if day.timecard and day.timecard.work_type == '30' %}selected{% endif %}>欠勤</option>
-                                    <option value="40" {% if day.timecard and day.timecard.work_type == '40' %}selected{% endif %}>有給休暇</option>
+                                    <option value="70" {% if day.timecard and day.timecard.work_type == '70' %}selected{% endif %}>稼働無し</option>
                                 </select>
                             </td>
                             <td>

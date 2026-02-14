@@ -88,7 +88,6 @@
                     <tr><th>残業時間</th><td>{% if timesheet.total_overtime_hours_display %}{{ timesheet.total_overtime_hours_display }}{% else %}-{% endif %}</td></tr>
                     <tr><th>深夜時間 {% my_help_preset "late_night_overtime" %}</th><td>{% if timesheet.total_late_night_overtime_hours_display %}{{ timesheet.total_late_night_overtime_hours_display }}{% else %}-{% endif %}</td></tr>
                     <tr><th>欠勤日数</th><td>{% if timesheet.total_absence_days is not None and timesheet.total_absence_days > 0 %}{{ timesheet.total_absence_days }}日{% else %}-{% endif %}</td></tr>
-                    <tr><th>有給休暇日数</th><td>{% if timesheet.total_paid_leave_days is not None and timesheet.total_paid_leave_days > 0 %}{{ timesheet.total_paid_leave_days }}日{% else %}-{% endif %}</td></tr>
                 </table>
             </div>
         </div>
@@ -152,12 +151,6 @@
                                 <span class="badge bg-secondary">休日</span>
                             {% elif tc.work_type == '30' %}
                                 <span class="badge bg-danger">欠勤</span>
-                            {% elif tc.work_type == '40' %}
-                                <span class="badge bg-success">有給休暇</span>
-                            {% elif tc.work_type == '50' %}
-                                <span class="badge bg-info">特別休暇</span>
-                            {% elif tc.work_type == '60' %}
-                                <span class="badge bg-warning">代休</span>
                             {% elif tc.work_type == '70' %}
                                 <span class="badge bg-secondary">稼働無し</span>
                             {% endif %}

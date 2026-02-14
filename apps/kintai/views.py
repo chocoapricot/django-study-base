@@ -1919,8 +1919,7 @@ def client_timecard_calendar_initial(request, assignment_pk, target_month):
                 end_time=end_time,
                 start_time_next_day=request.POST.get(f'start_time_next_day_{day}') == 'on',
                 end_time_next_day=request.POST.get(f'end_time_next_day_{day}') == 'on',
-                break_minutes=int(request.POST.get(f'break_minutes_{day}', 0) or 0),
-                paid_leave_days=float(request.POST.get(f'paid_leave_days_{day}', 0) or 0)
+                break_minutes=int(request.POST.get(f'break_minutes_{day}', 0) or 0)
             )
             timecard.save(skip_timesheet_update=True)
 
@@ -2017,7 +2016,6 @@ def client_timecard_calendar(request, pk):
             timecard.start_time_next_day = request.POST.get(f'start_time_next_day_{day}') == 'on'
             timecard.end_time_next_day = request.POST.get(f'end_time_next_day_{day}') == 'on'
             timecard.break_minutes = int(request.POST.get(f'break_minutes_{day}', 0) or 0)
-            timecard.paid_leave_days = float(request.POST.get(f'paid_leave_days_{day}', 0) or 0)
             timecard.save(skip_timesheet_update=True)
 
         timesheet.refresh_from_db()

@@ -411,7 +411,6 @@ class ClientTimesheet(MyTenantModel):
     total_deduction_minutes = models.PositiveIntegerField('控除時間（分）', default=0, help_text='月単位時間範囲での控除時間')
     total_variable_minutes = models.PositiveIntegerField('変形時間（分）', default=0, help_text='1ヶ月単位変形労働での月次法定超過時間')
     total_absence_days = models.PositiveIntegerField('欠勤日数', default=0)
-    total_paid_leave_days = models.DecimalField('有給休暇日数', max_digits=4, decimal_places=1, default=0)
 
     # ステータス
     status = models.CharField(
@@ -519,7 +518,6 @@ class ClientTimesheet(MyTenantModel):
         self.total_late_night_overtime_minutes = sum(tc.late_night_overtime_minutes or 0 for tc in timecards)
         self.total_holiday_work_minutes = sum(tc.holiday_work_minutes or 0 for tc in timecards)
         self.total_absence_days = timecards.filter(work_type='30').count()
-        self.total_paid_leave_days = sum(tc.paid_leave_days or 0 for tc in timecards)
 
         # --- 月単位時間範囲方式の割増・控除時間計算 ---
         self.total_premium_minutes = 0
@@ -756,9 +754,6 @@ class ClientTimecard(MyTenantModel):
             ('10', '出勤'),
             ('20', '休日'),
             ('30', '欠勤'),
-            ('40', '有給休暇'),
-            ('50', '特別休暇'),
-            ('60', '代休'),
             ('70', '稼働無し'),
         ],
         default='10'
@@ -777,9 +772,6 @@ class ClientTimecard(MyTenantModel):
     overtime_minutes = models.PositiveIntegerField('残業時間（分）', default=0, help_text='残業時間（分）')
     late_night_overtime_minutes = models.PositiveIntegerField('深夜時間（分）', default=0, help_text='深夜残業時間（分）')
     holiday_work_minutes = models.PositiveIntegerField('休日労働時間（分）', default=0, help_text='休日労働時間（分）')
-
-    # 有給休暇
-    paid_leave_days = models.DecimalField('有給休暇日数', max_digits=3, decimal_places=1, default=0, help_text='0.5（半休）または1.0（全休）')
 
     # 備考
     memo = models.TextField('メモ', blank=True, null=True)
@@ -819,11 +811,6 @@ class ClientTimecard(MyTenantModel):
             if not self.start_time_next_day and not self.end_time_next_day:
                 if self.start_time >= self.end_time:
                     raise ValidationError('退勤時刻は出勤時刻より後の時刻を入力してください。')
-
-        # 有給休暇の場合は日数が必須
-        if self.work_type == '40':  # 有給休暇
-            if not self.paid_leave_days or self.paid_leave_days <= 0:
-                raise ValidationError('有給休暇の場合は有給休暇日数を入力してください。')
 
         # client_contract が指定されている場合、勤務日が契約期間内かチェック
         if self.client_contract_id and self.work_date:
@@ -941,7 +928,7 @@ class ClientTimecard(MyTenantModel):
 
     @property
     def is_holiday(self):
-        return self.work_type in ['20', '40', '50', '60']
+        return self.work_type in ['20', '70']
 
     @property
     def is_absence(self):

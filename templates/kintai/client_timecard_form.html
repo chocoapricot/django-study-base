@@ -138,18 +138,6 @@
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center">
-                <div class="col-sm-4 text-start text-sm-end">
-                    <strong>有給休暇日数</strong>
-                </div>
-                <div class="col-sm-4">
-                    {{ form.paid_leave_days }}
-                    {% if form.paid_leave_days.errors %}
-                        <div class="text-danger">{{ form.paid_leave_days.errors }}</div>
-                    {% endif %}
-                    <small class="form-text text-muted">0.5（半休）または1.0（全休）</small>
-                </div>
-            </div>
 
             <div class="row mb-3 align-items-center">
                 <div class="col-sm-4 text-start text-sm-end">
@@ -188,8 +176,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const startTimeRow = startTimeInput.closest('.row');
     const breakMinutesInput = document.getElementById('{{ form.break_minutes.id_for_label }}');
     const breakMinutesRow = breakMinutesInput.closest('.row');
-    const paidLeaveDaysInput = document.getElementById('{{ form.paid_leave_days.id_for_label }}');
-    const paidLeaveDaysRow = paidLeaveDaysInput.closest('.row');
     const endTimeRow = document.getElementById('{{ form.end_time.id_for_label }}').closest('.row');
     const lateNightBreakRow = document.getElementById('{{ form.late_night_break_minutes.id_for_label }}').closest('.row');
     
@@ -206,21 +192,18 @@ document.addEventListener('DOMContentLoaded', function() {
             endTimeRow.style.display = '';
             breakMinutesRow.style.display = '';
             lateNightBreakRow.style.display = '';
-            paidLeaveDaysRow.style.display = 'none';
-        } else if (workType === '40') {  // 有給休暇
+        } else if (workType === '70') {  // 稼働無し
             workTimePatternRow.style.display = 'none';
             startTimeRow.style.display = 'none';
             endTimeRow.style.display = 'none';
             breakMinutesRow.style.display = 'none';
             lateNightBreakRow.style.display = 'none';
-            paidLeaveDaysRow.style.display = '';
         } else {
             workTimePatternRow.style.display = 'none';
             startTimeRow.style.display = 'none';
             endTimeRow.style.display = 'none';
             breakMinutesRow.style.display = 'none';
             lateNightBreakRow.style.display = 'none';
-            paidLeaveDaysRow.style.display = 'none';
         }
     }
     
