@@ -796,5 +796,28 @@
         "disp_seq": 82,
         "active": true
     }
+},
+{
+    "model": "settings.menu",
+    "pk": 41,
+    "fields": {
+        "version": 1770648094684000,
+        "created_at": "2026-02-15T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2026-02-15T00:00:00Z",
+        "updated_by": 1,
+        "name": "クライアント勤怠",
+        "url": "/kintai/client/contract/search/",
+        "icon": "bi-calendar-check",
+        "icon_style": "color:#28a745;",
+        "parent": null,
+        "level": 0,
+        "exact_match": false,
+        "required_permission": "kintai.view_clienttimesheet",
+        "disp_seq": 83,
+        "active": true
+    }
 }
 ]
+
+
