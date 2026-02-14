@@ -807,7 +807,7 @@
         "updated_at": "2026-02-15T00:00:00Z",
         "updated_by": 1,
         "name": "クライアント勤怠",
-        "url": "/kintai/client/contract/search/",
+        "url": "/kintai/client/search/",
         "icon": "bi-calendar-check",
         "icon_style": "color:#28a745;",
         "parent": null,
