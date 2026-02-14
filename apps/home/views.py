@@ -246,6 +246,9 @@ def home(request):
         'unanswered_inquiry_count': 0,
         'has_contract_assignment_perm': False,
         'unconfirmed_staff_contract_extension_count': 0,
+        'has_view_staff_contract_perm': False,
+        'unapproved_staff_contract_count': 0,
+        'unapproved_client_contract_count': 0,
         'has_view_client_contract_perm': False,
         'teishokubi_deadline_count': 0,
         'personal_teishokubi_deadline_count': 0,
@@ -346,6 +349,14 @@ def home(request):
                 assignment_confirm__isnull=True
             ).count()
 
+        # スタッフ契約未承認件数
+        unapproved_staff_contract_count = 0
+        has_view_staff_contract_perm = request.user.has_perm('contract.view_staffcontract')
+        if has_view_staff_contract_perm:
+            unapproved_staff_contract_count = StaffContract.objects.filter(
+                contract_status=Constants.CONTRACT_STATUS.PENDING
+            ).count()
+
         # 警告日数の取得
         try:
             residence_period_warning_days = UserParameter.objects.get(key='RESIDENCE_PERIOD_WARNING_DAYS').get_number_value()
@@ -380,6 +391,14 @@ def home(request):
         # 事業所抵触日期限の件数
         teishokubi_deadline_count = 0
         has_view_client_contract_perm = request.user.has_perm('contract.view_clientcontract')
+
+        # クライアント契約未承認件数
+        unapproved_client_contract_count = 0
+        if has_view_client_contract_perm:
+            unapproved_client_contract_count = ClientContract.objects.filter(
+                contract_status=Constants.CONTRACT_STATUS.PENDING
+            ).count()
+
         if has_view_client_contract_perm:
             office_teishokubi_warning_date = today + timedelta(days=office_teishokubi_warning_days)
             teishokubi_deadline_count = ClientContract.objects.filter(
@@ -462,6 +481,9 @@ def home(request):
             'unanswered_inquiry_count': unanswered_inquiry_count,
             'has_contract_assignment_perm': has_contract_assignment_perm,
             'unconfirmed_staff_contract_extension_count': unconfirmed_staff_contract_extension_count,
+            'has_view_staff_contract_perm': has_view_staff_contract_perm,
+            'unapproved_staff_contract_count': unapproved_staff_contract_count,
+            'unapproved_client_contract_count': unapproved_client_contract_count,
             'has_view_client_contract_perm': has_view_client_contract_perm,
             'teishokubi_deadline_count': teishokubi_deadline_count,
             'personal_teishokubi_deadline_count': personal_teishokubi_deadline_count,

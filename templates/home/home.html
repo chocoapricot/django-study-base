@@ -187,6 +187,13 @@
                     {% include 'home/_stats_card.html' with count=unconfirmed_staff_contract_extension_count url=expire_url label='スタッフ契約延長未確認' description='延長または終了が未確認のスタッフ契約の件数です。' bg_class='bg-info-light' icon='bi-file-earmark-person-fill' badge_icon='bi-question-circle' icon_color='#17a2b8' %}
                 {% endif %}
 
+                {% if has_view_staff_contract_perm %}
+                    {% url 'contract:staff_contract_list' as staff_unapproved_url %}
+                    {% with staff_url=staff_unapproved_url|add:"?status=5" %}
+                        {% include 'home/_stats_card.html' with count=unapproved_staff_contract_count url=staff_url label='スタッフ契約未承認' description='承認待ちのスタッフ契約の件数です。' bg_class='bg-success-light' icon='bi-file-earmark-person-fill' badge_icon='bi-exclamation-circle' icon_color='#ff5722' %}
+                    {% endwith %}
+                {% endif %}
+
                 {% if has_view_client_contract_perm %}
                     {% user_parameter 'PERSONAL_TEISHOKUBI_WARNING_DAYS' '60' as days %}
                     {% with desc="個人抵触日が"|add:days|add:"日以内の派遣契約数です。" %}
@@ -212,6 +219,13 @@
 
                 {% if perms.client.view_client %}{% url 'connect:client_list' as connect_client_url %}{% endif %}
                 {% include 'home/_stats_card.html' with count=pending_connect_client_count url=connect_client_url label='クライアント申請未承認' description='承認待ちの新規接続申請があるクライアントの数です。' bg_class='bg-primary-light' icon='bi-building-fill' badge_icon='bi-link' icon_color='#28a745' unit='社' %}
+
+                {% if has_view_client_contract_perm %}
+                    {% url 'contract:client_contract_list' as client_unapproved_url %}
+                    {% with client_url=client_unapproved_url|add:"?status=5" %}
+                        {% include 'home/_stats_card.html' with count=unapproved_client_contract_count url=client_url label='クライアント契約未承認' description='承認待ちのクライアント契約の件数です。' bg_class='bg-primary-light' icon='bi-file-earmark-text-fill' badge_icon='bi-exclamation-circle' icon_color='#28a745' %}
+                    {% endwith %}
+                {% endif %}
             </div>
         </div>
     </div>
