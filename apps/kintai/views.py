@@ -1848,9 +1848,9 @@ def client_timesheet_detail(request, pk):
     return render(request, 'kintai/client_timesheet_detail.html', context)
 
 @login_required
-@permission_required('kintai.add_clienttimesheet', raise_exception=True)
+@permission_required('kintai.add_clienttimecard', raise_exception=True)
 def client_timecard_calendar_initial(request, assignment_pk, target_month):
-    """クライアント日次勤怠カレンダー入力（初回作成・自動取得）"""
+    """クライアント日次勤怠カレンダー入力（初回作成）"""
     tenant_id = get_current_tenant_id()
     assignment = get_object_or_404(ContractAssignment, pk=assignment_pk, tenant_id=tenant_id)
     
@@ -1860,18 +1860,113 @@ def client_timecard_calendar_initial(request, assignment_pk, target_month):
     except ValueError:
         return redirect('kintai:client_contract_search')
     
-    timesheet, created = ClientTimesheet.objects.get_or_create(
+    # 既に存在する場合は通常カレンダーへ
+    exists_timesheet = ClientTimesheet.objects.filter(
         tenant_id=tenant_id,
         client_contract=assignment.client_contract,
         staff=assignment.staff_contract.staff,
+        target_month=target_date
+    ).first()
+    if exists_timesheet:
+        return redirect('kintai:client_timecard_calendar', pk=exists_timesheet.pk)
+
+    # 仮想Timesheet
+    virtual_timesheet = ClientTimesheet(
+        tenant_id=tenant_id,
+        client_contract=assignment.client_contract,
+        client=assignment.client_contract.client,
+        staff=assignment.staff_contract.staff,
         target_month=target_date,
-        defaults={
-            'client': assignment.client_contract.client,
-            'status': '10'
-        }
+        status='10'
     )
+
+    if request.method == 'POST':
+        # 月次勤怠を保存
+        virtual_timesheet.save()
+        timesheet = virtual_timesheet
+        
+        # フォームデータから日次勤怠を一括保存
+        from datetime import time as dt_time
+        _, last_day = calendar.monthrange(year, month)
+
+        for day in range(1, last_day + 1):
+            work_type = request.POST.get(f'work_type_{day}')
+
+            if not work_type:
+                continue
+
+            start_time_str = request.POST.get(f'start_time_{day}')
+            end_time_str = request.POST.get(f'end_time_{day}')
+
+            start_time = None
+            if start_time_str:
+                h, m = map(int, start_time_str.split(':'))
+                start_time = dt_time(h, m)
+
+            end_time = None
+            if end_time_str:
+                h, m = map(int, end_time_str.split(':'))
+                end_time = dt_time(h, m)
+
+            timecard = ClientTimecard(
+                timesheet=timesheet,
+                work_date=date(year, month, day),
+                client_contract=timesheet.client_contract,
+                staff=timesheet.staff,
+                tenant_id=tenant_id,
+                work_type=work_type,
+                start_time=start_time,
+                end_time=end_time,
+                start_time_next_day=request.POST.get(f'start_time_next_day_{day}') == 'on',
+                end_time_next_day=request.POST.get(f'end_time_next_day_{day}') == 'on',
+                break_minutes=int(request.POST.get(f'break_minutes_{day}', 0) or 0),
+                paid_leave_days=float(request.POST.get(f'paid_leave_days_{day}', 0) or 0)
+            )
+            timecard.save(skip_timesheet_update=True)
+
+        timesheet.calculate_totals()
+        messages.success(request, '月次勤怠と日次勤怠を作成しました。')
+        return redirect('kintai:client_timesheet_detail', pk=timesheet.pk)
+
+    # GET時のカレンダーデータ
+    _, last_day = calendar.monthrange(year, month)
+    calendar_data = []
+    for day in range(1, last_day + 1):
+        work_date = date(year, month, day)
+        is_holiday = jpholiday.is_holiday(work_date)
+        try:
+            holiday_name = jpholiday.is_holiday_name(work_date) if is_holiday else None
+        except Exception:
+            holiday_name = None
+
+        calendar_data.append({
+            'day': day,
+            'date': work_date,
+            'weekday': work_date.weekday(),
+            'weekday_name': ['月', '火', '水', '木', '金', '土', '日'][work_date.weekday()],
+            'is_weekend': work_date.weekday() >= 5,
+            'is_holiday': is_holiday,
+            'holiday_name': holiday_name,
+            'timecard': None,
+        })
+
+    default_values = _get_contract_work_time(assignment.client_contract)
     
-    return redirect('kintai:client_timecard_calendar', pk=timesheet.pk)
+    contracts_work_times = {}
+    if assignment.client_contract:
+        contracts_work_times[assignment.client_contract.pk] = _get_work_times_data(assignment.client_contract)
+
+    context = {
+        'timesheet': virtual_timesheet,
+        'calendar_data': calendar_data,
+        'default_start_time': default_values['start_time'],
+        'default_end_time': default_values['end_time'],
+        'default_break_minutes': default_values['break_minutes'],
+        'contracts_work_times_json': json.dumps(contracts_work_times),
+        'is_initial': True,
+        'assignment': assignment,
+    }
+    return render(request, 'kintai/client_timecard_calendar.html', context)
 
 
 @login_required

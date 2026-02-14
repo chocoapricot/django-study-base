@@ -49,13 +49,36 @@
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        月次勤怠詳細
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="text-muted mb-3">基本情報</h6>
+                <table class="table table-sm">
+                    <tr><th style="width: 40%;">クライアント</th><td>{{ timesheet.client.name }}</td></tr>
+                    <tr><th>スタッフ</th><td>{{ timesheet.staff.name }}{% favorite_star timesheet.staff %}{% staff_status_markers timesheet.staff %}</td></tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-muted mb-3">勤怠集計</h6>
+                <table class="table table-sm">
+                    <tr><th style="width: 40%;">対象年月</th><td>{{ timesheet.target_month|date:"Y年m月" }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         <div>
             勤務カレンダー登録 (クライアント用)
             <span class="text-muted">- {{ timesheet.staff.name }}{% favorite_star timesheet.staff %}{% staff_status_markers timesheet.staff %} ({{ timesheet.target_month|date:"Y年m月" }})</span>
         </div>
         <div>
-            <button type="button" class="btn btn-sm btn-info" id="fill-all-btn">契約通り</button>
+            <button type="button" class="btn btn-sm btn-info" id="fill-all-btn">一括入力</button>
             <button type="button" class="btn btn-sm btn-secondary" id="clear-all-btn">クリア</button>
         </div>
     </div>
@@ -67,8 +90,8 @@
                 <table class="table table-bordered table-sm" style="border-top: 1px solid #ddd;">
                     <thead class="table-light">
                         <tr>
-                            <th style="width: 8%;">勤務日</th>
-                            <th style="width: 15%;">クライアント契約</th>
+                            <th style="width: 10%;">勤務日</th>
+                            <th style="width: 15%;" class="d-none">クライアント契約</th>
                             <th style="width: 5%;">就業時間</th>
                             <th style="width: 5%;">勤務区分</th>
                             <th style="width: 8%;">出勤時刻</th>
@@ -87,7 +110,7 @@
                                     {% my_help_icon day.holiday_name %}
                                 {% endif %}
                             </td>
-                            <td>
+                            <td class="d-none">
                                 <select name="contract_{{ day.day }}" class="form-select form-select-sm contract-select" data-day="{{ day.day }}">
                                     <option value="{{ timesheet.client_contract.pk }}" selected>
                                         {{ timesheet.client_contract.contract_name }}
@@ -132,7 +155,11 @@
             <div class="row mt-4">
                 <div class="col-12">
                     <button type="submit" class="btn btn-sm btn-danger">一括保存</button>
-                    <a href="{% url 'kintai:client_timesheet_detail' timesheet.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% if is_initial %}
+                        <a href="{% url 'kintai:client_timesheet_preview' assignment.pk timesheet.target_month|date:'Y-m' %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% else %}
+                        <a href="{% url 'kintai:client_timesheet_detail' timesheet.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% endif %}
                 </div>
             </div>
         </form>

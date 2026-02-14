@@ -74,7 +74,7 @@ urlpatterns = [
     path('client/timecard/create/initial/<int:assignment_pk>/<str:target_month>/', views.client_timecard_create_initial, name='client_timecard_create_initial'),
     path('client/timecard/<int:pk>/edit/', views.client_timecard_edit, name='client_timecard_edit'),
     path('client/timecard/<int:pk>/delete/', views.client_timecard_delete, name='client_timecard_delete'),
-    path('client/assignment/<int:assignment_pk>/calendar/<str:target_month>/', views.client_timecard_calendar_initial, name='client_timecard_calendar_initial'),
+    path('client/timecard/calendar/initial/<int:assignment_pk>/<str:target_month>/', views.client_timecard_calendar_initial, name='client_timecard_calendar_initial'),
     path('client/timecard/<int:pk>/calendar/', views.client_timecard_calendar, name='client_timecard_calendar'),
 ]
 
