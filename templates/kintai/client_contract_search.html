@@ -19,8 +19,8 @@
             <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
                 <thead>
                     <tr>
-                        <th style="width: 6%;">社員番号</th>
                         <th style="width: 14%;">クライアント</th>
+                        <th style="width: 6%;">社員番号</th>
                         <th style="width: 10%;">スタッフ</th>
                         <th style="width: 8%;">雇用形態</th>
                         <th style="width: 13%;">契約期間</th>
@@ -35,11 +35,11 @@
                 <tbody>
                     {% for item in assignment_list %}
                     <tr>
-                        <td>{{ item.staff.employee_no|default:"-" }}</td>
                         <td>
                             {{ item.assignment.client_contract.client.name }}<br>
                             <small class="text-muted">{{ item.assignment.client_contract.contract_name }}</small>
                         </td>
+                        <td>{{ item.staff.employee_no|default:"-" }}</td>
                         <td>
                             {{ item.staff.name }}{% favorite_star item.staff %}{% staff_status_markers item.staff %}
                         </td>
