@@ -19,30 +19,80 @@
             <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
                 <thead>
                     <tr>
-                        <th style="width: 20%;">クライアント</th>
-                        <th style="width: 25%;">クライアント契約</th>
+                        <th style="width: 15%;">クライアント</th>
                         <th style="width: 20%;">スタッフ</th>
-                        <th style="width: 15%;">対象年月</th>
-                        <th style="width: 20%;">操作</th>
+                        <th style="width: 10%;">対象年月</th>
+                        <th style="width: 7%;">入力日数</th>
+                        <th style="width: 7%;">出勤日数</th>
+                        <th style="width: 10%;">総労働時間</th>
+                        <th style="width: 10%;">残業時間</th>
+                        <th style="width: 10%;">有給日数</th>
+                        <th style="width: 11%;">操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in assignment_list %}
                     <tr>
-                        <td>{{ item.assignment.client_contract.client.name }}</td>
-                        <td>{{ item.assignment.client_contract.contract_name }}</td>
+                        <td>
+                            {{ item.assignment.client_contract.client.name }}<br>
+                            <small class="text-muted">{{ item.assignment.client_contract.contract_name }}</small>
+                        </td>
                         <td>
                             {{ item.staff.name }}{% favorite_star item.staff %}{% staff_status_markers item.staff %}
                         </td>
-                        <td>{{ target_date|date:'Y年m月' }}</td>
                         <td>
-                            <a href="{% url 'kintai:client_timecard_calendar_initial' item.assignment.pk target_date|date:'Y-m' %}" class="btn btn-sm btn-primary">
-                                勤怠入力
-                            </a>
                             {% if item.timesheet %}
-                                <a href="{% url 'kintai:client_timesheet_detail' item.timesheet.pk %}" class="btn btn-sm btn-outline-primary ms-1">
-                                    詳細
-                                </a>
+                                <a href="{% url 'kintai:client_timesheet_detail' item.timesheet.pk %}">{{ target_date|date:"Y年m月" }}</a>
+                            {% else %}
+                                {{ target_date|date:"Y年m月" }}
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if item.timesheet %}
+                                {{ item.input_days }}日
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if item.timesheet %}
+                                {{ item.timesheet.total_work_days|default:"0" }}日
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if item.timesheet %}
+                                {{ item.timesheet.total_work_hours_display|default:"-" }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if item.timesheet %}
+                                {{ item.timesheet.total_overtime_hours_display|default:"-" }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if item.timesheet %}
+                                {{ item.timesheet.total_paid_leave_days|default:"0" }}日
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not item.timesheet %}
+                                {% if perms.kintai.add_clienttimesheet %}
+                                    <a href="{% url 'kintai:client_timesheet_preview' item.assignment.pk target_date|date:'Y-m' %}" class="btn btn-sm btn-primary">
+                                        新規作成
+                                    </a>
+                                {% endif %}
+                            {% else %}
+                                {% if perms.kintai.delete_clienttimesheet %}
+                                    <a href="{% url 'kintai:client_timesheet_delete' item.timesheet.pk %}" class="btn btn-dark btn-sm" title="削除"><i class="bi bi-x"></i></a>
+                                {% endif %}
                             {% endif %}
                         </td>
                     </tr>

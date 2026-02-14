@@ -1778,9 +1778,14 @@ def client_contract_search(request):
             target_month=target_date
         ).first()
 
+        input_days = 0
+        if timesheet:
+            input_days = timesheet.timecards.count()
+
         assignment_list.append({
             'assignment': assignment,
             'timesheet': timesheet,
+            'input_days': input_days,
             'staff': assignment.staff_contract.staff,
         })
 
@@ -1982,3 +1987,54 @@ def client_timesheet_delete(request, pk):
         messages.success(request, 'クライアント月次勤怠を削除しました。')
         return redirect('kintai:client_contract_search')
     return render(request, 'kintai/client_timesheet_delete.html', {'timesheet': timesheet})
+
+
+@login_required
+@permission_required('kintai.view_clienttimesheet', raise_exception=True)
+def client_timesheet_preview(request, assignment_pk, target_month):
+    """クライアント月次勤怠プレビュー（未作成状態）"""
+    tenant_id = get_current_tenant_id()
+    assignment = get_object_or_404(ContractAssignment, pk=assignment_pk, tenant_id=tenant_id)
+
+    try:
+        year, month = map(int, target_month.split('-'))
+        target_date = date(year, month, 1)
+    except ValueError:
+        return redirect('kintai:client_contract_search')
+
+    # 既に存在する場合は詳細画面へリダイレクト
+    exists_timesheet = ClientTimesheet.objects.filter(
+        tenant_id=tenant_id,
+        client_contract=assignment.client_contract,
+        staff=assignment.staff_contract.staff,
+        target_month=target_date
+    ).first()
+    if exists_timesheet:
+        return redirect('kintai:client_timesheet_detail', pk=exists_timesheet.pk)
+
+    # 仮想的なTimesheetオブジェクトを作成（DBには保存しない）
+    timesheet = ClientTimesheet(
+        tenant_id=tenant_id,
+        client_contract=assignment.client_contract,
+        client=assignment.client_contract.client,
+        staff=assignment.staff_contract.staff,
+        target_month=target_date,
+        status='00'  # 未作成
+    )
+    # 集計値をハイフン表示するためにNoneを設定（テンプレート側で制御）
+    timesheet.total_work_days = None
+    timesheet.total_work_hours = None
+    timesheet.total_overtime_hours = None
+    timesheet.total_late_night_overtime_hours = None
+    timesheet.total_holiday_work_hours = None
+    timesheet.total_absence_days = None
+    timesheet.total_paid_leave_days = None
+
+    context = {
+        'timesheet': timesheet,
+        'timecards': [],
+        'is_preview': True,  # プレビューモードフラグ
+        'target_date': target_date,
+        'assignment': assignment,
+    }
+    return render(request, 'kintai/client_timesheet_detail.html', context)
