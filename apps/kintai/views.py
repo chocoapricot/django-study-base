@@ -1829,7 +1829,7 @@ def client_timesheet_detail(request, pk):
     for tc in timecards:
         tc.weekday = tc.work_date.weekday()
         tc.weekday_name = ['月', '火', '水', '木', '金', '土', '日'][tc.weekday]
-        tc.is_holiday = jpholiday.is_holiday(tc.work_date)
+        tc.is_public_holiday = jpholiday.is_holiday(tc.work_date)
         try:
             tc.holiday_name = jpholiday.is_holiday_name(tc.work_date)
         except:
@@ -1840,6 +1840,33 @@ def client_timesheet_detail(request, pk):
         'timecards': timecards,
     }
     return render(request, 'kintai/client_timesheet_detail.html', context)
+
+@login_required
+@permission_required('kintai.add_clienttimesheet', raise_exception=True)
+def client_timecard_calendar_initial(request, assignment_pk, target_month):
+    """クライアント日次勤怠カレンダー入力（初回作成・自動取得）"""
+    tenant_id = get_current_tenant_id()
+    assignment = get_object_or_404(ContractAssignment, pk=assignment_pk, tenant_id=tenant_id)
+    
+    try:
+        year, month = map(int, target_month.split('-'))
+        target_date = date(year, month, 1)
+    except ValueError:
+        return redirect('kintai:client_contract_search')
+    
+    timesheet, created = ClientTimesheet.objects.get_or_create(
+        tenant_id=tenant_id,
+        client_contract=assignment.client_contract,
+        staff=assignment.staff_contract.staff,
+        target_month=target_date,
+        defaults={
+            'client': assignment.client_contract.client,
+            'status': '10'
+        }
+    )
+    
+    return redirect('kintai:client_timecard_calendar', pk=timesheet.pk)
+
 
 @login_required
 @permission_required('kintai.change_clienttimecard', raise_exception=True)
@@ -1906,18 +1933,39 @@ def client_timecard_calendar(request, pk):
     calendar_data = []
     for day in range(1, last_day + 1):
         work_date = date(year, month, day)
+        is_holiday = jpholiday.is_holiday(work_date)
+        try:
+            holiday_name = jpholiday.is_holiday_name(work_date) if is_holiday else None
+        except Exception:
+            holiday_name = None
+
         calendar_data.append({
             'day': day,
             'date': work_date,
+            'weekday': work_date.weekday(),
             'weekday_name': ['月', '火', '水', '木', '金', '土', '日'][work_date.weekday()],
             'is_weekend': work_date.weekday() >= 5,
-            'is_holiday': jpholiday.is_holiday(work_date),
+            'is_holiday': is_holiday,
+            'holiday_name': holiday_name,
             'timecard': timecards_dict.get(day),
         })
+
+    # デフォルト値を契約から取得
+    default_values = _get_contract_work_time(timesheet.client_contract)
+    
+    # 就業時間パターンデータを取得
+    import json
+    contracts_work_times = {}
+    if timesheet.client_contract:
+        contracts_work_times[timesheet.client_contract.pk] = _get_work_times_data(timesheet.client_contract)
 
     context = {
         'timesheet': timesheet,
         'calendar_data': calendar_data,
+        'default_start_time': default_values['start_time'],
+        'default_end_time': default_values['end_time'],
+        'default_break_minutes': default_values['break_minutes'],
+        'contracts_work_times_json': json.dumps(contracts_work_times),
     }
     return render(request, 'kintai/client_timecard_calendar.html', context)
 

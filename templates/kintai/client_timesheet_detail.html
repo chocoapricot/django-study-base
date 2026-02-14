@@ -62,9 +62,9 @@
                     </thead>
                     <tbody>
                         {% for tc in timecards %}
-                        <tr class="{% if tc.is_holiday or tc.work_date.weekday == 6 %}table-sunday{% elif tc.work_date.weekday == 5 %}table-saturday{% endif %}">
-                            <td class="{% if tc.is_holiday or tc.work_date.weekday == 6 %}text-sunday fw-bold{% elif tc.work_date.weekday == 5 %}text-saturday fw-bold{% endif %}">{{ tc.work_date|date:'d' }}</td>
-                            <td class="{% if tc.is_holiday or tc.work_date.weekday == 6 %}text-sunday fw-bold{% elif tc.work_date.weekday == 5 %}text-saturday fw-bold{% endif %}">{{ tc.weekday_name }}</td>
+                        <tr class="{% if tc.is_public_holiday or tc.work_date.weekday == 6 %}table-sunday{% elif tc.work_date.weekday == 5 %}table-saturday{% endif %}">
+                            <td class="{% if tc.is_public_holiday or tc.work_date.weekday == 6 %}text-sunday fw-bold{% elif tc.work_date.weekday == 5 %}text-saturday fw-bold{% endif %}">{{ tc.work_date|date:'d' }}</td>
+                            <td class="{% if tc.is_public_holiday or tc.work_date.weekday == 6 %}text-sunday fw-bold{% elif tc.work_date.weekday == 5 %}text-saturday fw-bold{% endif %}">{{ tc.weekday_name }}</td>
                             <td>{{ tc.get_work_type_display }}</td>
                             <td>{{ tc.start_time|time:'H:i' }}{% if tc.start_time_next_day %}(翌){% endif %}</td>
                             <td>{{ tc.end_time|time:'H:i' }}{% if tc.end_time_next_day %}(翌){% endif %}</td>

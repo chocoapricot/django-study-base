@@ -1,6 +1,6 @@
-
 {% extends 'common/_base.html' %}
-{% load help_tags %}
+{% load help_tags staff_tags %}
+{% load favorite_tags %}
 
 {% block extra_css %}
 <style>
@@ -15,79 +15,204 @@
     .table-sunday > td {
         background-color: #ffe6e6 !important;
     }
+
+    /* ホバー時のスタイルも上書き */
+    .table-hover > .table-saturday:hover,
+    .table-hover > .table-saturday:hover > th,
+    .table-hover > .table-saturday:hover > td {
+        background-color: #d0e8ff !important; /* 少し濃い青 */
+    }
+
+    .table-hover > .table-sunday:hover,
+    .table-hover > .table-sunday:hover > th,
+    .table-hover > .table-sunday:hover > td {
+        background-color: #ffdde0 !important; /* 少し濃い赤 */
+    }
+
+    .table-responsive {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .table thead th {
+        position: sticky;
+        top: 0;
+        background-color: #f8f9fa;
+        z-index: 10;
+    }
+
+    input:disabled, select:disabled {
+        background-color: #e9ecef;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="card shadow-sm border-0">
-        <form method="post">
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            勤務カレンダー登録 (クライアント用)
+            <span class="text-muted">- {{ timesheet.staff.name }}{% favorite_star timesheet.staff %}{% staff_status_markers timesheet.staff %} ({{ timesheet.target_month|date:"Y年m月" }})</span>
+        </div>
+        <div>
+            <button type="button" class="btn btn-sm btn-info" id="fill-all-btn">契約通り</button>
+            <button type="button" class="btn btn-sm btn-secondary" id="clear-all-btn">クリア</button>
+        </div>
+    </div>
+    <div class="card-body">
+        <form method="post" id="calendar-form">
             {% csrf_token %}
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center sticky-top">
-                <h5 class="mb-0 text-primary fw-bold">勤務カレンダー登録 (クライアント用)</h5>
-                <div>
-                    <button type="submit" class="btn btn-danger">一括保存</button>
-                    <a href="{% url 'kintai:client_timesheet_detail' timesheet.pk %}" class="btn btn-secondary">戻る</a>
-                </div>
+            
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm" style="border-top: 1px solid #ddd;">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 8%;">勤務日</th>
+                            <th style="width: 15%;">クライアント契約</th>
+                            <th style="width: 5%;">就業時間</th>
+                            <th style="width: 5%;">勤務区分</th>
+                            <th style="width: 8%;">出勤時刻</th>
+                            <th style="width: 4%;" class="text-nowrap">翌日</th>
+                            <th style="width: 8%;">退勤時刻</th>
+                            <th style="width: 4%;" class="text-nowrap">翌日</th>
+                            <th style="width: 7%;">休憩(分)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for day in calendar_data %}
+                        <tr class="{% if day.is_holiday or day.weekday == 6 %}table-sunday{% elif day.weekday == 5 %}table-saturday{% endif %}" data-day="{{ day.day }}" data-is-holiday="{% if day.is_holiday %}true{% else %}false{% endif %}" data-saved-work-time-id="{% if day.timecard and day.timecard.work_time_pattern_work_id %}{{ day.timecard.work_time_pattern_work_id }}{% endif %}">
+                            <td style="{% if day.is_holiday or day.weekday == 6 %}color: #cc0000; font-weight: bold;{% elif day.weekday == 5 %}color: #0066cc; font-weight: bold;{% endif %}">
+                                {{ day.date|date:"Y/m/d (D)" }}
+                                {% if day.is_holiday and day.holiday_name %}
+                                    {% my_help_icon day.holiday_name %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <select name="contract_{{ day.day }}" class="form-select form-select-sm contract-select" data-day="{{ day.day }}">
+                                    <option value="{{ timesheet.client_contract.pk }}" selected>
+                                        {{ timesheet.client_contract.contract_name }}
+                                    </option>
+                                </select>
+                            </td>
+                            <td>
+                                <select name="work_time_pattern_work_{{ day.day }}" class="form-select form-select-sm work-time-select" data-day="{{ day.day }}" disabled>
+                                    <option value="">-</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select name="work_type_{{ day.day }}" class="form-select form-select-sm work-type-select" data-day="{{ day.day }}">
+                                    <option value="">-</option>
+                                    <option value="10" {% if day.timecard and day.timecard.work_type == '10' %}selected{% endif %}>出勤</option>
+                                    <option value="20" {% if day.timecard and day.timecard.work_type == '20' %}selected{% endif %}>休日</option>
+                                    <option value="30" {% if day.timecard and day.timecard.work_type == '30' %}selected{% endif %}>欠勤</option>
+                                    <option value="40" {% if day.timecard and day.timecard.work_type == '40' %}selected{% endif %}>有給休暇</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="time" name="start_time_{{ day.day }}" class="form-control form-control-sm start-time" data-day="{{ day.day }}" value="{% if day.timecard and day.timecard.start_time %}{{ day.timecard.start_time|time:'H:i' }}{% endif %}">
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" name="start_time_next_day_{{ day.day }}" class="form-check-input start-time-next-day" data-day="{{ day.day }}" {% if day.timecard and day.timecard.start_time_next_day %}checked{% endif %}>
+                            </td>
+                            <td>
+                                <input type="time" name="end_time_{{ day.day }}" class="form-control form-control-sm end-time" data-day="{{ day.day }}" value="{% if day.timecard and day.timecard.end_time %}{{ day.timecard.end_time|time:'H:i' }}{% endif %}">
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" name="end_time_next_day_{{ day.day }}" class="form-check-input end-time-next-day" data-day="{{ day.day }}" {% if day.timecard and day.timecard.end_time_next_day %}checked{% endif %}>
+                            </td>
+                            <td>
+                                <input type="number" name="break_minutes_{{ day.day }}" class="form-control form-control-sm text-end break-minutes" data-day="{{ day.day }}" min="0" value="{% if day.timecard %}{{ day.timecard.break_minutes }}{% else %}0{% endif %}">
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-sm table-bordered mb-0 align-middle">
-                        <thead class="table-light text-center">
-                            <tr>
-                                <th style="width: 60px;">日付</th>
-                                <th style="width: 120px;">勤務区分</th>
-                                <th style="width: 120px;">開始時刻</th>
-                                <th style="width: 40px;" class="text-nowrap">翌日</th>
-                                <th style="width: 120px;">終了時刻</th>
-                                <th style="width: 40px;" class="text-nowrap">翌日</th>
-                                <th style="width: 80px;">休憩(分)</th>
-                                <th style="width: 80px;">有給(日)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for day in calendar_data %}
-                            <tr class="{% if day.is_holiday or day.weekday == 6 %}table-sunday{% elif day.weekday == 5 %}table-saturday{% endif %}">
-                                <td class="text-center" style="{% if day.is_holiday or day.weekday == 6 %}color: #cc0000; font-weight: bold;{% elif day.weekday == 5 %}color: #0066cc; font-weight: bold;{% endif %}">
-                                    {{ day.day }}({{ day.weekday_name }})
-                                    {% if day.is_holiday and day.holiday_name %}
-                                        {% my_help_icon day.holiday_name %}
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <select name="work_type_{{ day.day }}" class="form-select form-select-sm">
-                                        <option value="">-</option>
-                                        <option value="10" {% if day.timecard.work_type == '10' %}selected{% endif %}>出勤</option>
-                                        <option value="20" {% if day.timecard.work_type == '20' %}selected{% endif %}>休日</option>
-                                        <option value="30" {% if day.timecard.work_type == '30' %}selected{% endif %}>欠勤</option>
-                                        <option value="40" {% if day.timecard.work_type == '40' %}selected{% endif %}>有給休暇</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="time" name="start_time_{{ day.day }}" value="{{ day.timecard.start_time|time:'H:i' }}" class="form-control form-control-sm">
-                                </td>
-                                <td class="text-center">
-                                    <input type="checkbox" name="start_time_next_day_{{ day.day }}" class="form-check-input" {% if day.timecard.start_time_next_day %}checked{% endif %}>
-                                </td>
-                                <td>
-                                    <input type="time" name="end_time_{{ day.day }}" value="{{ day.timecard.end_time|time:'H:i' }}" class="form-control form-control-sm">
-                                </td>
-                                <td class="text-center">
-                                    <input type="checkbox" name="end_time_next_day_{{ day.day }}" class="form-check-input" {% if day.timecard.end_time_next_day %}checked{% endif %}>
-                                </td>
-                                <td>
-                                    <input type="number" name="break_minutes_{{ day.day }}" value="{{ day.timecard.break_minutes|default:0 }}" class="form-control form-control-sm text-end" min="0">
-                                </td>
-                                <td>
-                                    <input type="number" name="paid_leave_days_{{ day.day }}" value="{{ day.timecard.paid_leave_days|default:0 }}" class="form-control form-control-sm text-end" min="0" step="0.5" max="1">
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+
+            <div class="row mt-4">
+                <div class="col-12">
+                    <button type="submit" class="btn btn-sm btn-danger">一括保存</button>
+                    <a href="{% url 'kintai:client_timesheet_detail' timesheet.pk %}" class="btn btn-sm btn-secondary">戻る</a>
                 </div>
             </div>
         </form>
     </div>
 </div>
+
+<script src="/static/js/kintai/timecard_calendar.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 契約ごとの就業時間データ
+    const contractsWorkTimes = {{ contracts_work_times_json|safe }};
+
+    // 契約選択時に就業時間プルダウンを更新
+    function updateWorkTimeOptions(day, contractId, savedWorkTimeId) {
+        const workTimeSelect = document.querySelector(`select[name="work_time_pattern_work_${day}"]`);
+        
+        // 既存の選択肢をクリア
+        workTimeSelect.innerHTML = '<option value="">-</option>';
+        
+        if (contractId && contractsWorkTimes[contractId]) {
+            // 契約が選択されている場合は有効化
+            workTimeSelect.disabled = false;
+            
+            // 就業時間の選択肢を追加
+            contractsWorkTimes[contractId].forEach(workTime => {
+                const option = document.createElement('option');
+                option.value = workTime.id;
+                option.textContent = workTime.name;
+                option.dataset.startTime = workTime.start_time;
+                option.dataset.endTime = workTime.end_time;
+                option.dataset.startNextDay = workTime.start_time_next_day;
+                option.dataset.endNextDay = workTime.end_time_next_day;
+                option.dataset.breakMinutes = workTime.break_minutes;
+                
+                // 保存済みの値を選択
+                if (savedWorkTimeId && workTime.id == savedWorkTimeId) {
+                    option.selected = true;
+                }
+                
+                workTimeSelect.appendChild(option);
+            });
+        } else {
+            // 契約が選択されていない場合は無効化
+            workTimeSelect.disabled = true;
+        }
+    }
+
+    document.querySelectorAll('.contract-select').forEach(select => {
+        const day = select.dataset.day;
+        const row = select.closest('tr');
+        
+        // 保存済みの就業時間パターンIDを取得（data属性から）
+        const savedWorkTimeId = row.dataset.savedWorkTimeId;
+        
+        // 初期化時に既に契約が選択されている場合は就業時間プルダウンを更新
+        if (select.value) {
+            updateWorkTimeOptions(day, select.value, savedWorkTimeId);
+        }
+        
+        select.addEventListener('change', function() {
+            const contractId = this.value;
+            updateWorkTimeOptions(day, contractId);
+        });
+    });
+
+    // 共通ロジックの初期化
+    new TimecardCalendar({
+        defaultStartTime: "{{ default_start_time }}",
+        defaultEndTime: "{{ default_end_time }}",
+        defaultBreakMinutes: "{{ default_break_minutes }}",
+        onFillAll: function(row) {
+            // 契約を選択（最初の有効な契約）
+            const contractSelect = row.querySelector('.contract-select');
+            if (contractSelect.options.length > 0) {
+                contractSelect.selectedIndex = 0;  // クライアント用は1つしかないのでそれを選択
+                // changeイベントを発火させて就業時間プルダウンを更新
+                contractSelect.dispatchEvent(new Event('change'));
+            }
+        }
+    });
+});
+</script>
 {% endblock %}

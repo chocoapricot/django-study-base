@@ -36,13 +36,12 @@
                         </td>
                         <td>{{ target_date|date:'Y年m月' }}</td>
                         <td>
+                            <a href="{% url 'kintai:client_timecard_calendar_initial' item.assignment.pk target_date|date:'Y-m' %}" class="btn btn-sm btn-primary">
+                                勤怠入力
+                            </a>
                             {% if item.timesheet %}
-                                <a href="{% url 'kintai:client_timesheet_detail' item.timesheet.pk %}" class="btn btn-sm btn-primary">
+                                <a href="{% url 'kintai:client_timesheet_detail' item.timesheet.pk %}" class="btn btn-sm btn-outline-primary ms-1">
                                     詳細
-                                </a>
-                            {% else %}
-                                <a href="{% url 'kintai:client_timesheet_create' %}?assignment={{ item.assignment.pk }}&target_month={{ target_date|date:'Y-m' }}" class="btn btn-sm btn-primary">
-                                    新規作成
                                 </a>
                             {% endif %}
                         </td>
