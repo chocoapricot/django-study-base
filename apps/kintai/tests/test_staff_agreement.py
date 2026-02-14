@@ -177,7 +177,7 @@ class StaffAgreementKintaiTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '勤怠打刻')
         # 契約がない旨のメッセージが表示されることを確認
-        self.assertContains(response, '有効で確認済みのスタッフ契約がありません')
+        self.assertContains(response, '有効で確認済みのスタッフ契約がありません。または、契約上の打刻設定がされていません。')
         # 打刻ボタンが非表示になることを確認
         self.assertNotContains(response, 'name="action" value="start"')
         self.assertNotContains(response, 'name="action" value="end"')

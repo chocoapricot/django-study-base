@@ -701,7 +701,7 @@ def timerecord_action(request):
                 ).first()
             
             if not contract:
-                messages.error(request, f'{today.strftime("%Y/%m/%d")} に有効で確認済みのスタッフ契約がありません。打刻できません。')
+                messages.error(request, f'{today.strftime("%Y/%m/%d")} に有効で確認済みのスタッフ契約がありません。または、契約上の打刻設定がされていません。打刻できません。')
             else:
                 StaffTimerecord.objects.create(
                     staff=staff,
