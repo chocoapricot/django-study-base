@@ -1,7 +1,8 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from apps.common.models import MyModel, MyTenantModel, TenantManager
-from apps.contract.models import StaffContract
+from apps.contract.models import StaffContract, ClientContract
+from apps.client.models import Client
 from apps.staff.models import Staff
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -375,6 +376,606 @@ class StaffTimesheet(MyTenantModel):
         return "-"
 
 
+class ClientTimesheet(MyTenantModel):
+    """
+    クライアント向け月次勤怠情報を管理するモデル。
+    クライアント契約に対してスタッフごとに毎月作成される。
+    """
+    client_contract = models.ForeignKey(
+        ClientContract,
+        on_delete=models.CASCADE,
+        related_name='client_timesheets',
+        verbose_name='クライアント契約'
+    )
+    client = models.ForeignKey(
+        Client,
+        on_delete=models.CASCADE,
+        related_name='client_timesheets',
+        verbose_name='クライアント'
+    )
+    staff = models.ForeignKey(
+        Staff,
+        on_delete=models.CASCADE,
+        related_name='client_timesheets',
+        verbose_name='スタッフ'
+    )
+    target_month = models.DateField('対象年月', help_text='対象年月の1日を設定してください。')
+
+    # 勤怠集計情報
+    total_work_days = models.PositiveIntegerField('出勤日数', default=0)
+    total_work_minutes = models.PositiveIntegerField('総労働時間（分）', default=0)
+    total_overtime_minutes = models.PositiveIntegerField('残業時間（分）', default=0)
+    total_late_night_overtime_minutes = models.PositiveIntegerField('深夜時間（分）', default=0)
+    total_holiday_work_minutes = models.PositiveIntegerField('休日労働時間（分）', default=0)
+    total_premium_minutes = models.PositiveIntegerField('割増時間（分）', default=0, help_text='月単位時間範囲での割増時間')
+    total_deduction_minutes = models.PositiveIntegerField('控除時間（分）', default=0, help_text='月単位時間範囲での控除時間')
+    total_variable_minutes = models.PositiveIntegerField('変形時間（分）', default=0, help_text='1ヶ月単位変形労働での月次法定超過時間')
+    total_absence_days = models.PositiveIntegerField('欠勤日数', default=0)
+    total_paid_leave_days = models.DecimalField('有給休暇日数', max_digits=4, decimal_places=1, default=0)
+
+    # ステータス
+    status = models.CharField(
+        'ステータス',
+        max_length=2,
+        choices=[
+            ('10', '作成中'),
+            ('20', '提出済み'),
+            ('30', '承認済み'),
+            ('40', '差戻し'),
+        ],
+        default='10'
+    )
+
+    # 提出・承認情報
+    submitted_at = models.DateTimeField('提出日時', blank=True, null=True)
+    submitted_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='submitted_client_timesheets',
+        verbose_name='提出者'
+    )
+    approved_at = models.DateTimeField('承認日時', blank=True, null=True)
+    approved_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='approved_client_timesheets',
+        verbose_name='承認者'
+    )
+    rejected_at = models.DateTimeField('差戻し日時', blank=True, null=True)
+    rejected_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='rejected_client_timesheets',
+        verbose_name='差戻し者'
+    )
+    rejection_reason = models.TextField('差戻し理由', blank=True, null=True)
+
+    class Meta:
+        db_table = 'apps_kintai_client_timesheet'
+        verbose_name = 'クライアント月次勤怠'
+        verbose_name_plural = 'クライアント月次勤怠'
+        unique_together = ['client_contract', 'staff', 'target_month']
+        ordering = ['-target_month', 'client__name', 'staff__name_last', 'staff__name_first']
+        indexes = [
+            models.Index(fields=['client_contract']),
+            models.Index(fields=['client']),
+            models.Index(fields=['staff']),
+            models.Index(fields=['target_month']),
+            models.Index(fields=['status']),
+        ]
+
+    def __str__(self):
+        if self.target_month:
+            return f"{self.client} - {self.staff} - {self.target_month.year}年{self.target_month.month}月"
+        return f"{self.client} - {self.staff} - (年月未設定)"
+
+    def clean(self):
+        """バリデーション"""
+        if self.target_month and self.target_month.day != 1:
+            raise ValidationError({'target_month': '対象年月は月の1日を設定してください。'})
+
+        # クライアント契約の契約期間内かチェック
+        if getattr(self, 'client_contract_id', None) and self.target_month:
+            try:
+                _, last_day_num = monthrange(self.target_month.year, self.target_month.month)
+                last_day = date(self.target_month.year, self.target_month.month, last_day_num)
+            except (ValueError, TypeError):
+                last_day = None
+
+            if self.target_month and last_day:
+                cc = self.client_contract
+                cc_start = cc.start_date
+                cc_end = cc.end_date
+
+                if cc_start and last_day < cc_start:
+                    raise ValidationError('指定した年月はクライアント契約の契約期間外です。')
+
+                if cc_end and self.target_month > cc_end:
+                    raise ValidationError('指定した年月はクライアント契約の契約期間外です。')
+
+    def save(self, *args, **kwargs):
+        # target_month を常にその月の1日に設定
+        if self.target_month:
+            self.target_month = self.target_month.replace(day=1)
+
+        # クライアント契約からクライアントを自動設定
+        if self.client_contract and not self.client_id:
+            self.client = self.client_contract.client
+        super().save(*args, **kwargs)
+
+    def calculate_totals(self):
+        """日次勤怠データから集計値を計算する"""
+        timecards = self.timecards.all()
+
+        self.total_work_days = timecards.filter(work_type='10').count()
+        self.total_work_minutes = sum(tc.work_minutes or 0 for tc in timecards)
+        self.total_overtime_minutes = sum(tc.overtime_minutes or 0 for tc in timecards)
+        self.total_late_night_overtime_minutes = sum(tc.late_night_overtime_minutes or 0 for tc in timecards)
+        self.total_holiday_work_minutes = sum(tc.holiday_work_minutes or 0 for tc in timecards)
+        self.total_absence_days = timecards.filter(work_type='30').count()
+        self.total_paid_leave_days = sum(tc.paid_leave_days or 0 for tc in timecards)
+
+        # --- 月単位時間範囲方式の割増・控除時間計算 ---
+        self.total_premium_minutes = 0
+        self.total_deduction_minutes = 0
+        self.total_variable_minutes = 0
+
+        if self.client_contract and self.client_contract.overtime_pattern:
+            overtime_pattern = self.client_contract.overtime_pattern
+
+            if overtime_pattern.calculation_type == 'monthly_range':
+                # 月単位時間範囲方式の場合
+                monthly_range_min = overtime_pattern.monthly_range_min or 0
+                monthly_range_max = overtime_pattern.monthly_range_max or 0
+
+                if monthly_range_min > 0 and self.total_work_minutes < monthly_range_min * 60:
+                    # 最小時間に満たない場合は控除時間を計算
+                    self.total_deduction_minutes = (monthly_range_min * 60) - self.total_work_minutes
+
+                if monthly_range_max > 0 and self.total_work_minutes > monthly_range_max * 60:
+                    # 最大時間を超える場合は割増時間を計算
+                    self.total_premium_minutes = self.total_work_minutes - (monthly_range_max * 60)
+
+            elif overtime_pattern.calculation_type == 'premium':
+                # 割増方式で月単位時間外割増が有効な場合
+                if overtime_pattern.monthly_overtime_enabled and overtime_pattern.monthly_overtime_hours:
+                    # 月単位時間外割増時間を超えた残業時間を割増時間として計算
+                    monthly_overtime_threshold = overtime_pattern.monthly_overtime_hours * 60
+                    if self.total_overtime_minutes > monthly_overtime_threshold:
+                        self.total_premium_minutes = self.total_overtime_minutes - monthly_overtime_threshold
+
+            elif overtime_pattern.calculation_type == 'variable':
+                # 1ヶ月単位変形労働方式の場合
+                year = self.target_month.year
+                month = self.target_month.month
+                _, days_in_month = monthrange(year, month)
+
+                standard_hours = 0
+                standard_minutes = 0
+
+                if days_in_month == 28:
+                    standard_hours = overtime_pattern.days_28_hours
+                    standard_minutes = overtime_pattern.days_28_minutes
+                elif days_in_month == 29:
+                    standard_hours = overtime_pattern.days_29_hours
+                    standard_minutes = overtime_pattern.days_29_minutes
+                elif days_in_month == 30:
+                    standard_hours = overtime_pattern.days_30_hours
+                    standard_minutes = overtime_pattern.days_30_minutes
+                elif days_in_month == 31:
+                    standard_hours = overtime_pattern.days_31_hours
+                    standard_minutes = overtime_pattern.days_31_minutes
+
+                standard_total_minutes = (standard_hours * 60) + standard_minutes
+                actual_work_minutes = self.total_work_minutes - self.total_overtime_minutes
+
+                if actual_work_minutes > standard_total_minutes:
+                    self.total_variable_minutes = actual_work_minutes - standard_total_minutes
+
+                if overtime_pattern.monthly_overtime_enabled and overtime_pattern.monthly_overtime_hours:
+                    monthly_overtime_threshold = overtime_pattern.monthly_overtime_hours * 60
+                    total_overtime_and_variable = self.total_overtime_minutes + self.total_variable_minutes
+                    if total_overtime_and_variable > monthly_overtime_threshold:
+                        self.total_premium_minutes = total_overtime_and_variable - monthly_overtime_threshold
+
+            elif overtime_pattern.calculation_type == 'flextime':
+                # 1ヶ月単位フレックス方式の場合
+                year = self.target_month.year
+                month = self.target_month.month
+                _, days_in_month = monthrange(year, month)
+
+                standard_hours = 0
+                standard_minutes = 0
+
+                if days_in_month == 28:
+                    standard_hours = overtime_pattern.days_28_hours
+                    standard_minutes = overtime_pattern.days_28_minutes
+                elif days_in_month == 29:
+                    standard_hours = overtime_pattern.days_29_hours
+                    standard_minutes = overtime_pattern.days_29_minutes
+                elif days_in_month == 30:
+                    standard_hours = overtime_pattern.days_30_hours
+                    standard_minutes = overtime_pattern.days_30_minutes
+                elif days_in_month == 31:
+                    standard_hours = overtime_pattern.days_31_hours
+                    standard_minutes = overtime_pattern.days_31_minutes
+
+                standard_total_minutes = (standard_hours * 60) + standard_minutes
+
+                if self.total_work_minutes > standard_total_minutes:
+                    self.total_overtime_minutes = self.total_work_minutes - standard_total_minutes
+
+                    if overtime_pattern.monthly_overtime_enabled and overtime_pattern.monthly_overtime_hours:
+                        monthly_overtime_threshold = overtime_pattern.monthly_overtime_hours * 60
+                        if self.total_overtime_minutes > monthly_overtime_threshold:
+                            self.total_premium_minutes = self.total_overtime_minutes - monthly_overtime_threshold
+                elif self.total_work_minutes < standard_total_minutes:
+                    self.total_deduction_minutes = standard_total_minutes - self.total_work_minutes
+
+        self.save()
+
+    @property
+    def is_editable(self):
+        """編集可能かどうか"""
+        return self.status in ['10', '40']
+
+    @property
+    def is_submitted(self):
+        """提出済みかどうか"""
+        return self.status in ['20', '30']
+
+    @property
+    def is_approved(self):
+        """承認済みかどうか"""
+        return self.status == '30'
+
+    @property
+    def monthly_standard_hours(self):
+        """その月の基準時間（法定労働時間）を取得"""
+        if not self.client_contract or not self.client_contract.overtime_pattern:
+            return 0
+
+        overtime_pattern = self.client_contract.overtime_pattern
+        year = self.target_month.year
+        month = self.target_month.month
+        _, days_in_month = monthrange(year, month)
+
+        if days_in_month == 28:
+            return overtime_pattern.days_28_hours
+        elif days_in_month == 29:
+            return overtime_pattern.days_29_hours
+        elif days_in_month == 30:
+            return overtime_pattern.days_30_hours
+        elif days_in_month == 31:
+            return overtime_pattern.days_31_hours
+        return 0
+
+    @property
+    def total_work_hours_display(self):
+        """総労働時間の表示用文字列"""
+        if self.total_work_minutes:
+            hours, minutes = divmod(self.total_work_minutes, 60)
+            return f"{hours}時間{minutes:02d}分"
+        return "-"
+
+    @property
+    def total_overtime_hours_display(self):
+        """残業時間の表示用文字列"""
+        if self.total_overtime_minutes and self.total_overtime_minutes > 0:
+            hours, minutes = divmod(self.total_overtime_minutes, 60)
+            return f"{hours}時間{minutes:02d}分"
+        return "-"
+
+    @property
+    def total_late_night_overtime_hours_display(self):
+        """深夜時間の表示用文字列"""
+        if self.total_late_night_overtime_minutes and self.total_late_night_overtime_minutes > 0:
+            hours, minutes = divmod(self.total_late_night_overtime_minutes, 60)
+            return f"{hours}時間{minutes:02d}分"
+        return "-"
+
+    @property
+    def total_holiday_work_hours_display(self):
+        """休日労働時間の表示用文字列"""
+        if self.total_holiday_work_minutes and self.total_holiday_work_minutes > 0:
+            hours, minutes = divmod(self.total_holiday_work_minutes, 60)
+            return f"{hours}時間{minutes:02d}分"
+        return "-"
+
+    @property
+    def total_premium_hours_display(self):
+        """割増時間の表示用文字列"""
+        if self.total_premium_minutes and self.total_premium_minutes > 0:
+            hours, minutes = divmod(self.total_premium_minutes, 60)
+            return f"{hours}時間{minutes:02d}分"
+        return "-"
+
+    @property
+    def total_deduction_hours_display(self):
+        """控除時間の表示用文字列"""
+        if self.total_deduction_minutes and self.total_deduction_minutes > 0:
+            hours, minutes = divmod(self.total_deduction_minutes, 60)
+            return f"{hours}時間{minutes:02d}分"
+        return "-"
+
+    @property
+    def total_variable_hours_display(self):
+        """変形時間の表示用文字列"""
+        if self.total_variable_minutes and self.total_variable_minutes > 0:
+            hours, minutes = divmod(self.total_variable_minutes, 60)
+            return f"{hours}時間{minutes:02d}分"
+        return "-"
+
+
+class ClientTimecard(MyTenantModel):
+    """
+    クライアント向け日次勤怠情報を管理するモデル。
+    クライアント月次勤怠（ClientTimesheet）に紐づく。
+    """
+    timesheet = models.ForeignKey(
+        ClientTimesheet,
+        on_delete=models.CASCADE,
+        related_name='timecards',
+        verbose_name='クライアント月次勤怠',
+        null=True,
+        blank=True
+    )
+    client_contract = models.ForeignKey(
+        ClientContract,
+        on_delete=models.CASCADE,
+        related_name='client_timecards_direct',
+        verbose_name='クライアント契約'
+    )
+    staff = models.ForeignKey(
+        Staff,
+        on_delete=models.CASCADE,
+        related_name='client_timecards',
+        verbose_name='スタッフ'
+    )
+    work_date = models.DateField('勤務日')
+    work_time_pattern_work = models.ForeignKey(
+        'master.WorkTimePatternWork',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='就業時間パターン',
+        related_name='client_timecards'
+    )
+
+    # 勤務区分
+    work_type = models.CharField(
+        '勤務区分',
+        max_length=2,
+        choices=[
+            ('10', '出勤'),
+            ('20', '休日'),
+            ('30', '欠勤'),
+            ('40', '有給休暇'),
+            ('50', '特別休暇'),
+            ('60', '代休'),
+            ('70', '稼働無し'),
+        ],
+        default='10'
+    )
+
+    # 勤務時間
+    start_time = models.TimeField('出勤時刻', blank=True, null=True)
+    start_time_next_day = models.BooleanField('出勤時刻翌日', default=False)
+    end_time = models.TimeField('退勤時刻', blank=True, null=True)
+    end_time_next_day = models.BooleanField('退勤時刻翌日', default=False)
+    break_minutes = models.PositiveIntegerField('休憩時間（分）', default=0)
+    late_night_break_minutes = models.PositiveIntegerField('深夜休憩（分）', default=0)
+
+    # 計算結果
+    work_minutes = models.PositiveIntegerField('労働時間（分）', default=0, help_text='実労働時間（分）')
+    overtime_minutes = models.PositiveIntegerField('残業時間（分）', default=0, help_text='残業時間（分）')
+    late_night_overtime_minutes = models.PositiveIntegerField('深夜時間（分）', default=0, help_text='深夜残業時間（分）')
+    holiday_work_minutes = models.PositiveIntegerField('休日労働時間（分）', default=0, help_text='休日労働時間（分）')
+
+    # 有給休暇
+    paid_leave_days = models.DecimalField('有給休暇日数', max_digits=3, decimal_places=1, default=0, help_text='0.5（半休）または1.0（全休）')
+
+    # 備考
+    memo = models.TextField('メモ', blank=True, null=True)
+
+    class Meta:
+        db_table = 'apps_kintai_client_timecard'
+        verbose_name = 'クライアント日次勤怠'
+        verbose_name_plural = 'クライアント日次勤怠'
+        unique_together = [['client_contract', 'staff', 'work_date']]
+        ordering = ['work_date']
+        indexes = [
+            models.Index(fields=['timesheet']),
+            models.Index(fields=['client_contract']),
+            models.Index(fields=['staff']),
+            models.Index(fields=['work_date']),
+            models.Index(fields=['work_type']),
+        ]
+
+    def __str__(self):
+        try:
+            if self.timesheet and self.timesheet.staff:
+                return f"{self.timesheet.staff} - {self.work_date}"
+        except:
+            pass
+        if self.staff:
+            return f"{self.staff} - {self.work_date}"
+        return f"クライアント日次勤怠 - {self.work_date}"
+
+    def clean(self):
+        """バリデーション"""
+        # 出勤の場合は出勤・退勤時刻が必須
+        if self.work_type == '10':  # 出勤
+            if not self.start_time or not self.end_time:
+                raise ValidationError('出勤の場合は出勤時刻と退勤時刻を入力してください。')
+
+            # 退勤時刻が出勤時刻より前の場合はエラー（翌日フラグを考慮）
+            if not self.start_time_next_day and not self.end_time_next_day:
+                if self.start_time >= self.end_time:
+                    raise ValidationError('退勤時刻は出勤時刻より後の時刻を入力してください。')
+
+        # 有給休暇の場合は日数が必須
+        if self.work_type == '40':  # 有給休暇
+            if not self.paid_leave_days or self.paid_leave_days <= 0:
+                raise ValidationError('有給休暇の場合は有給休暇日数を入力してください。')
+
+        # client_contract が指定されている場合、勤務日が契約期間内かチェック
+        if self.client_contract_id and self.work_date:
+            try:
+                cc = self.client_contract
+                cc_start = cc.start_date
+                cc_end = cc.end_date
+                if cc_start and self.work_date < cc_start:
+                    raise ValidationError('勤務日はクライアント契約の契約期間外です。')
+                if cc_end and self.work_date > cc_end:
+                    raise ValidationError('勤務日はクライアント契約の契約期間外です。')
+            except ValidationError:
+                raise
+            except Exception:
+                pass
+
+    def save(self, skip_timesheet_update=False, *args, **kwargs):
+        # client_contract と staff が指定されている場合、対応するクライアント月次勤怠を自動作成または取得
+        if self.client_contract_id and self.staff_id and self.work_date:
+            target_month = self.work_date.replace(day=1)
+
+            timesheet, created = ClientTimesheet.objects.get_or_create(
+                client_contract=self.client_contract,
+                staff=self.staff,
+                target_month=target_month,
+                defaults={
+                    'client': self.client_contract.client,
+                }
+            )
+            self.timesheet = timesheet
+
+        # 労働時間を自動計算
+        self.calculate_work_hours()
+        super().save(*args, **kwargs)
+
+        # 月次勤怠の集計を更新
+        if not skip_timesheet_update and self.timesheet:
+            self.timesheet.calculate_totals()
+
+    def calculate_work_hours(self):
+        """労働時間を計算する"""
+        if self.work_type != '10' or not self.start_time or not self.end_time:
+            self.work_minutes = 0
+            self.overtime_minutes = 0
+            self.late_night_overtime_minutes = 0
+            self.holiday_work_minutes = 0
+            return
+
+        # 勤務時間を計算（分単位）
+        today = timezone.localdate()
+        start_dt = datetime.combine(today, self.start_time)
+        end_dt = datetime.combine(today, self.end_time)
+
+        if self.start_time_next_day:
+            start_dt += timedelta(days=1)
+        if self.end_time_next_day:
+            end_dt += timedelta(days=1)
+
+        if not self.start_time_next_day and not self.end_time_next_day and end_dt <= start_dt:
+            end_dt += timedelta(days=1)
+
+        total_minutes = int((end_dt - start_dt).total_seconds() / 60)
+        total_break_minutes = (self.break_minutes or 0) + (self.late_night_break_minutes or 0)
+        work_minutes = total_minutes - total_break_minutes
+        self.work_minutes = work_minutes if work_minutes > 0 else 0
+
+        # --- 契約に紐づく時間外算出パターンを取得 ---
+        overtime_pattern = None
+        if self.timesheet and self.timesheet.client_contract:
+            overtime_pattern = self.timesheet.client_contract.overtime_pattern
+
+        # --- 残業時間の計算 ---
+        self.overtime_minutes = 0
+        if overtime_pattern:
+            if overtime_pattern.calculation_type == 'premium':
+                if (overtime_pattern.daily_overtime_enabled and
+                        overtime_pattern.daily_overtime_hours is not None):
+                    standard_hours = overtime_pattern.daily_overtime_hours or 0
+                    standard_mins = overtime_pattern.daily_overtime_minutes or 0
+                    standard_minutes = standard_hours * 60 + standard_mins
+                    if self.work_minutes > standard_minutes:
+                        self.overtime_minutes = self.work_minutes - standard_minutes
+
+            elif overtime_pattern.calculation_type == 'variable':
+                if (overtime_pattern.daily_overtime_enabled and
+                        overtime_pattern.daily_overtime_hours is not None):
+                    standard_hours = overtime_pattern.daily_overtime_hours or 0
+                    standard_mins = overtime_pattern.daily_overtime_minutes or 0
+                    standard_minutes = standard_hours * 60 + standard_mins
+                    if self.work_minutes > standard_minutes:
+                        self.overtime_minutes = self.work_minutes - standard_minutes
+
+        # --- 深夜時間の計算 ---
+        self.late_night_overtime_minutes = 0
+        if overtime_pattern and overtime_pattern.calculate_midnight_premium:
+            late_night_start = time(22, 0)
+            late_night_end = time(5, 0)
+
+            late_night_minutes = 0
+            current_time = start_dt
+            while current_time < end_dt:
+                t = current_time.time()
+                if t >= late_night_start or t < late_night_end:
+                    late_night_minutes += 1
+                current_time += timedelta(minutes=1)
+
+            late_night_work_minutes = late_night_minutes - (self.late_night_break_minutes or 0)
+            self.late_night_overtime_minutes = late_night_work_minutes if late_night_work_minutes > 0 else 0
+
+        # --- 休日労働時間の計算 ---
+        if self.work_date.weekday() >= 5:  # 土日
+            self.holiday_work_minutes = self.work_minutes
+        else:
+            self.holiday_work_minutes = 0
+
+    @property
+    def is_holiday(self):
+        return self.work_type in ['20', '40', '50', '60']
+
+    @property
+    def is_absence(self):
+        return self.work_type == '30'
+
+    @property
+    def work_hours_display(self):
+        if self.work_minutes:
+            hours, minutes = divmod(self.work_minutes, 60)
+            return f"{hours}時間{minutes:02d}分"
+        return "-"
+
+    @property
+    def overtime_hours_display(self):
+        if self.overtime_minutes and self.overtime_minutes > 0:
+            hours, minutes = divmod(self.overtime_minutes, 60)
+            return f"{hours}時間{minutes:02d}分"
+        return "-"
+
+    @property
+    def late_night_overtime_hours_display(self):
+        if self.late_night_overtime_minutes and self.late_night_overtime_minutes > 0:
+            hours, minutes = divmod(self.late_night_overtime_minutes, 60)
+            return f"{hours}時間{minutes:02d}分"
+        return "-"
+
+    @property
+    def holiday_work_hours_display(self):
+        if self.holiday_work_minutes and self.holiday_work_minutes > 0:
+            hours, minutes = divmod(self.holiday_work_minutes, 60)
+            return f"{hours}時間{minutes:02d}分"
+        return "-"
+
+
 class StaffTimecard(MyTenantModel):
     """
     日次勤怠情報を管理するモデル。
@@ -546,9 +1147,9 @@ class StaffTimecard(MyTenantModel):
             return
 
         # 勤務時間を計算（分単位）
-        from datetime import datetime, timedelta
-        start_dt = datetime.combine(date.today(), self.start_time)
-        end_dt = datetime.combine(date.today(), self.end_time)
+        today = timezone.localdate()
+        start_dt = datetime.combine(today, self.start_time)
+        end_dt = datetime.combine(today, self.end_time)
 
         # 翌日フラグを考慮
         if self.start_time_next_day:
