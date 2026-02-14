@@ -1,0 +1,42 @@
+{% extends 'common/_base.html' %}
+{% load help_tags %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        日次勤怠削除確認
+    </div>
+    <div class="card-body">
+        <p class="text-danger">以下の日次勤怠データを削除します。よろしいですか？</p>
+        
+        <table class="table table-sm table-bordered">
+            <tr>
+                <th style="width: 30%;">勤務日</th>
+                <td>{{ timecard.work_date|date:"Y/m/d (D)" }}</td>
+            </tr>
+            <tr>
+                <th>勤務区分</th>
+                <td>{{ timecard.get_work_type_display }}</td>
+            </tr>
+            <tr>
+                <th>勤務時間</th>
+                <td>
+                    {% if timecard.start_time %}
+                        {{ timecard.start_time|time:"H:i" }}{% if timecard.start_time_next_day %}(翌){% endif %}
+                        〜
+                        {{ timecard.end_time|time:"H:i" }}{% if timecard.end_time_next_day %}(翌){% endif %}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-danger me-2">削除する</button>
+            <a href="{% url 'kintai:client_timesheet_detail' timecard.timesheet.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

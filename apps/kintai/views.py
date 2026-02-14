@@ -2038,3 +2038,153 @@ def client_timesheet_preview(request, assignment_pk, target_month):
         'assignment': assignment,
     }
     return render(request, 'kintai/client_timesheet_detail.html', context)
+
+
+@login_required
+@permission_required('kintai.add_clienttimecard', raise_exception=True)
+def client_timecard_create(request, timesheet_pk):
+    """クライアント日次勤怠作成"""
+    tenant_id = get_current_tenant_id()
+    timesheet = get_object_or_404(ClientTimesheet, pk=timesheet_pk, tenant_id=tenant_id)
+
+    if not timesheet.is_editable:
+        messages.error(request, 'この月次勤怠は編集できません。')
+        return redirect('kintai:client_timesheet_detail', pk=timesheet_pk)
+
+    if request.method == 'POST':
+        form = ClientTimecardForm(request.POST, timesheet=timesheet)
+        if form.is_valid():
+            timecard = form.save(commit=False)
+            timecard.timesheet = timesheet
+            timecard.client_contract = timesheet.client_contract
+            timecard.staff = timesheet.staff
+            timecard.tenant_id = tenant_id
+            timecard.save()
+            messages.success(request, '日次勤怠を作成しました。')
+            return redirect('kintai:client_timesheet_detail', pk=timesheet_pk)
+    else:
+        form = ClientTimecardForm(timesheet=timesheet)
+
+    work_times_data = _get_work_times_data(timesheet.client_contract)
+
+    context = {
+        'form': form,
+        'timesheet': timesheet,
+        'work_times_data_json': json.dumps(work_times_data),
+    }
+    return render(request, 'kintai/client_timecard_form.html', context)
+
+
+@login_required
+@permission_required('kintai.add_clienttimecard', raise_exception=True)
+def client_timecard_create_initial(request, assignment_pk, target_month):
+    """クライアント初回日次勤怠作成（同時に月次勤怠も作成）"""
+    tenant_id = get_current_tenant_id()
+    assignment = get_object_or_404(ContractAssignment, pk=assignment_pk, tenant_id=tenant_id)
+
+    try:
+        year, month = map(int, target_month.split('-'))
+        target_date = date(year, month, 1)
+    except ValueError:
+        return redirect('kintai:client_contract_search')
+
+    # 既に存在する場合は通常作成へリダイレクト
+    exists_timesheet = ClientTimesheet.objects.filter(
+        tenant_id=tenant_id,
+        client_contract=assignment.client_contract,
+        staff=assignment.staff_contract.staff,
+        target_month=target_date
+    ).first()
+    if exists_timesheet:
+        return redirect('kintai:client_timecard_create', timesheet_pk=exists_timesheet.pk)
+
+    # 仮想Timesheetを作成
+    virtual_timesheet = ClientTimesheet(
+        tenant_id=tenant_id,
+        client_contract=assignment.client_contract,
+        client=assignment.client_contract.client,
+        staff=assignment.staff_contract.staff,
+        target_month=target_date,
+        status='10'
+    )
+
+    if request.method == 'POST':
+        form = ClientTimecardForm(request.POST, timesheet=virtual_timesheet)
+        if form.is_valid():
+            virtual_timesheet.save()
+            timecard = form.save(commit=False)
+            timecard.timesheet = virtual_timesheet
+            timecard.client_contract = virtual_timesheet.client_contract
+            timecard.staff = virtual_timesheet.staff
+            timecard.tenant_id = tenant_id
+            timecard.save()
+            messages.success(request, '月次勤怠と日次勤怠を作成しました。')
+            return redirect('kintai:client_timesheet_detail', pk=virtual_timesheet.pk)
+    else:
+        form = ClientTimecardForm(timesheet=virtual_timesheet)
+
+    work_times_data = _get_work_times_data(assignment.client_contract)
+
+    context = {
+        'form': form,
+        'timesheet': virtual_timesheet,
+        'is_preview': True,
+        'work_times_data_json': json.dumps(work_times_data),
+    }
+    return render(request, 'kintai/client_timecard_form.html', context)
+
+
+@login_required
+@permission_required('kintai.change_clienttimecard', raise_exception=True)
+def client_timecard_edit(request, pk):
+    """クライアント日次勤怠編集"""
+    tenant_id = get_current_tenant_id()
+    timecard = get_object_or_404(ClientTimecard, pk=pk, tenant_id=tenant_id)
+    timesheet = timecard.timesheet
+
+    if not timesheet.is_editable:
+        messages.error(request, 'この月次勤怠は編集できません。')
+        return redirect('kintai:client_timesheet_detail', pk=timesheet.pk)
+
+    if request.method == 'POST':
+        form = ClientTimecardForm(request.POST, instance=timecard, timesheet=timesheet)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '日次勤怠を更新しました。')
+            return redirect('kintai:client_timesheet_detail', pk=timesheet.pk)
+    else:
+        form = ClientTimecardForm(instance=timecard, timesheet=timesheet)
+
+    work_times_data = _get_work_times_data(timesheet.client_contract)
+
+    context = {
+        'form': form,
+        'timecard': timecard,
+        'timesheet': timesheet,
+        'work_times_data_json': json.dumps(work_times_data),
+    }
+    return render(request, 'kintai/client_timecard_form.html', context)
+
+
+@login_required
+@permission_required('kintai.delete_clienttimecard', raise_exception=True)
+def client_timecard_delete(request, pk):
+    """クライアント日次勤怠削除"""
+    tenant_id = get_current_tenant_id()
+    timecard = get_object_or_404(ClientTimecard, pk=pk, tenant_id=tenant_id)
+    timesheet = timecard.timesheet
+
+    if not timesheet.is_editable:
+        messages.error(request, 'この月次勤怠は編集できません。')
+        return redirect('kintai:client_timesheet_detail', pk=timesheet.pk)
+
+    if request.method == 'POST':
+        timecard.delete()
+        timesheet.calculate_totals()
+        messages.success(request, '日次勤怠を削除しました。')
+        return redirect('kintai:client_timesheet_detail', pk=timesheet.pk)
+
+    context = {
+        'timecard': timecard,
+    }
+    return render(request, 'kintai/client_timecard_delete.html', context)

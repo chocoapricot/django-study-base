@@ -103,8 +103,10 @@
         {% if perms.kintai.add_clienttimecard %}
             {% if timesheet.is_editable or is_preview %}
                 {% if timesheet.pk %}
+                    <a href="{% url 'kintai:client_timecard_create' timesheet.pk %}" class="btn btn-sm btn-primary mb-2">日次勤怠追加</a>
                     <a href="{% url 'kintai:client_timecard_calendar' timesheet.pk %}" class="btn btn-sm btn-success mb-2">カレンダー入力</a>
                 {% else %}
+                    <a href="{% url 'kintai:client_timecard_create_initial' assignment.pk timesheet.target_month|date:'Y-m' %}" class="btn btn-sm btn-primary mb-2">日次勤怠追加</a>
                     <a href="{% url 'kintai:client_timecard_calendar_initial' assignment.pk timesheet.target_month|date:'Y-m' %}" class="btn btn-sm btn-success mb-2">カレンダー入力</a>
                 {% endif %}
             {% endif %}
@@ -120,6 +122,9 @@
                         <th style="width: 10%;">休憩(分)</th>
                         <th style="width: 15%;">労働時間</th>
                         <th style="width: 15%;">残業時間</th>
+                        {% if timesheet.is_editable %}
+                            <th style="width: 15%;">操作</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
@@ -137,6 +142,12 @@
                         <td class="text-end">{{ tc.break_minutes }}</td>
                         <td class="text-end">{{ tc.work_hours_display }}</td>
                         <td class="text-end">{{ tc.overtime_hours_display }}</td>
+                        {% if timesheet.is_editable %}
+                            <td class="text-center">
+                                <a href="{% url 'kintai:client_timecard_edit' tc.pk %}" class="btn btn-sm btn-outline-primary" title="編集"><i class="bi bi-pencil"></i></a>
+                                <a href="{% url 'kintai:client_timecard_delete' tc.pk %}" class="btn btn-sm btn-outline-danger" title="削除"><i class="bi bi-trash"></i></a>
+                            </td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>

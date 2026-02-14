@@ -1,0 +1,247 @@
+{% extends 'common/_base.html' %}
+{% load help_tags %}
+{% load favorite_tags staff_tags %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        月次勤怠詳細
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="text-muted mb-3">基本情報</h6>
+                <table class="table table-sm">
+                    <tr><th style="width: 40%;">クライアント</th><td>{{ timesheet.client.name }}</td></tr>
+                    <tr><th>スタッフ</th><td>{{ timesheet.staff.name }}{% favorite_star timesheet.staff %}{% staff_status_markers timesheet.staff %}</td></tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-muted mb-3">勤怠集計</h6>
+                <table class="table table-sm">
+                    <tr><th style="width: 40%;">対象年月</th><td>{{ timesheet.target_month|date:"Y年m月" }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        {% if timecard %}日次勤怠編集{% else %}日次勤怠作成{% endif %}
+        <span class="text-muted">- {{ timesheet.client.name }} / {{ timesheet.staff.name }} ({{ timesheet.target_month|date:"Y年m月" }})</span>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-4 text-start text-sm-end">
+                    <strong>勤務日 <span class="text-danger">*</span></strong>
+                </div>
+                <div class="col-sm-3">
+                    {{ form.work_date }}
+                    {% if form.work_date.errors %}
+                        <div class="text-danger">{{ form.work_date.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-4 text-start text-sm-end">
+                    <strong>勤務区分 <span class="text-danger">*</span></strong>
+                </div>
+                <div class="col-sm-3">
+                    {{ form.work_type }}
+                    {% if form.work_type.errors %}
+                        <div class="text-danger">{{ form.work_type.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center" id="work-time-pattern-row">
+                <div class="col-sm-4 text-start text-sm-end">
+                    <strong>就業時間パターン</strong>
+                </div>
+                <div class="col-sm-6">
+                    {{ form.work_time_pattern_work }}
+                    {% if form.work_time_pattern_work.errors %}
+                        <div class="text-danger">{{ form.work_time_pattern_work.errors }}</div>
+                    {% endif %}
+                    <small class="form-text text-muted">選択すると出勤時刻・退勤時刻・休憩時間が自動入力されます</small>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-4 text-start text-sm-end">
+                    <strong>出勤時刻</strong>
+                </div>
+                <div class="col-sm-2">
+                    {{ form.start_time }}
+                    {% if form.start_time.errors %}
+                        <div class="text-danger">{{ form.start_time.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-check">
+                        {{ form.start_time_next_day }}
+                        <label class="form-check-label text-nowrap" for="{{ form.start_time_next_day.id_for_label }}">翌日</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-4 text-start text-sm-end">
+                    <strong>退勤時刻</strong>
+                </div>
+                <div class="col-sm-2">
+                    {{ form.end_time }}
+                    {% if form.end_time.errors %}
+                        <div class="text-danger">{{ form.end_time.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-check">
+                        {{ form.end_time_next_day }}
+                        <label class="form-check-label text-nowrap" for="{{ form.end_time_next_day.id_for_label }}">翌日</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-4 text-start text-sm-end">
+                    <strong>休憩（分）</strong>
+                </div>
+                <div class="col-sm-2">
+                    {{ form.break_minutes }}
+                    {% if form.break_minutes.errors %}
+                        <div class="text-danger">{{ form.break_minutes.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-4 text-start text-sm-end">
+                    <strong>深夜休憩（分）</strong>
+                </div>
+                <div class="col-sm-2">
+                    {{ form.late_night_break_minutes }}
+                    {% if form.late_night_break_minutes.errors %}
+                        <div class="text-danger">{{ form.late_night_break_minutes.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-4 text-start text-sm-end">
+                    <strong>有給休暇日数</strong>
+                </div>
+                <div class="col-sm-4">
+                    {{ form.paid_leave_days }}
+                    {% if form.paid_leave_days.errors %}
+                        <div class="text-danger">{{ form.paid_leave_days.errors }}</div>
+                    {% endif %}
+                    <small class="form-text text-muted">0.5（半休）または1.0（全休）</small>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-4 text-start text-sm-end">
+                    <strong>メモ</strong>
+                </div>
+                <div class="col-sm">
+                    {{ form.memo }}
+                    {% if form.memo.errors %}
+                        <div class="text-danger">{{ form.memo.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12 text-start">
+                    <button type="submit" class="btn btn-sm btn-primary me-2">{% if timecard %}更新{% else %}作成{% endif %}</button>
+                    {% if timesheet.pk %}
+                        <a href="{% url 'kintai:client_timesheet_detail' timesheet.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% else %}
+                        <a href="{% url 'kintai:client_timesheet_preview' assignment.pk timesheet.target_month|date:'Y-m' %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const workTimesData = {{ work_times_data_json|safe }};
+    
+    const workTypeSelect = document.getElementById('{{ form.work_type.id_for_label }}');
+    const workTimePatternRow = document.getElementById('work-time-pattern-row');
+    const workTimePatternSelect = document.getElementById('{{ form.work_time_pattern_work.id_for_label }}');
+    const startTimeInput = document.getElementById('{{ form.start_time.id_for_label }}');
+    const startTimeRow = startTimeInput.closest('.row');
+    const breakMinutesInput = document.getElementById('{{ form.break_minutes.id_for_label }}');
+    const breakMinutesRow = breakMinutesInput.closest('.row');
+    const paidLeaveDaysInput = document.getElementById('{{ form.paid_leave_days.id_for_label }}');
+    const paidLeaveDaysRow = paidLeaveDaysInput.closest('.row');
+    const endTimeRow = document.getElementById('{{ form.end_time.id_for_label }}').closest('.row');
+    const lateNightBreakRow = document.getElementById('{{ form.late_night_break_minutes.id_for_label }}').closest('.row');
+    
+    const startTimeNextDayCheckbox = document.getElementById('{{ form.start_time_next_day.id_for_label }}');
+    const endTimeInput = document.getElementById('{{ form.end_time.id_for_label }}');
+    const endTimeNextDayCheckbox = document.getElementById('{{ form.end_time_next_day.id_for_label }}');
+    
+    function toggleFields() {
+        const workType = workTypeSelect.value;
+        
+        if (workType === '10') {  // 出勤
+            workTimePatternRow.style.display = '';
+            startTimeRow.style.display = '';
+            endTimeRow.style.display = '';
+            breakMinutesRow.style.display = '';
+            lateNightBreakRow.style.display = '';
+            paidLeaveDaysRow.style.display = 'none';
+        } else if (workType === '40') {  // 有給休暇
+            workTimePatternRow.style.display = 'none';
+            startTimeRow.style.display = 'none';
+            endTimeRow.style.display = 'none';
+            breakMinutesRow.style.display = 'none';
+            lateNightBreakRow.style.display = 'none';
+            paidLeaveDaysRow.style.display = '';
+        } else {
+            workTimePatternRow.style.display = 'none';
+            startTimeRow.style.display = 'none';
+            endTimeRow.style.display = 'none';
+            breakMinutesRow.style.display = 'none';
+            lateNightBreakRow.style.display = 'none';
+            paidLeaveDaysRow.style.display = 'none';
+        }
+    }
+    
+    function applyWorkTimePattern() {
+        const selectedId = workTimePatternSelect.value;
+        if (!selectedId) return;
+        
+        const workTime = workTimesData.find(wt => wt.id == selectedId);
+        if (!workTime) return;
+        
+        startTimeInput.value = workTime.start_time;
+        endTimeInput.value = workTime.end_time;
+        breakMinutesInput.value = workTime.break_minutes;
+        
+        startTimeNextDayCheckbox.checked = workTime.start_time_next_day;
+        endTimeNextDayCheckbox.checked = workTime.end_time_next_day;
+    }
+    
+    workTypeSelect.addEventListener('change', toggleFields);
+    workTimePatternSelect.addEventListener('change', applyWorkTimePattern);
+    toggleFields();
+});
+</script>
+{% endblock %}
