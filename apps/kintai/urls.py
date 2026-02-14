@@ -65,7 +65,7 @@ urlpatterns = [
     path('timerecord/approval/<int:pk>/cancel/', views_timerecord.timerecord_approval_cancel, name='timerecord_approval_cancel'),
 
     # クライアント勤怠
-    path('client/search/', views.client_contract_search, name='client_contract_search'),
+    path('client/contract/search/', views.client_contract_search, name='client_contract_search'),
     path('client/timesheet/create/', views.client_timesheet_create, name='client_timesheet_create'),
     path('client/timesheet/<int:pk>/', views.client_timesheet_detail, name='client_timesheet_detail'),
     path('client/timesheet/<int:pk>/delete/', views.client_timesheet_delete, name='client_timesheet_delete'),
