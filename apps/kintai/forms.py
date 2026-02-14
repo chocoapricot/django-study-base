@@ -1,6 +1,6 @@
 from django import forms
-from .models import StaffTimesheet, StaffTimecard, StaffTimerecord, StaffTimerecordBreak
-from apps.contract.models import StaffContract
+from .models import StaffTimesheet, StaffTimecard, ClientTimesheet, ClientTimecard, StaffTimerecord, StaffTimerecordBreak
+from apps.contract.models import StaffContract, ClientContract
 from apps.staff.models import Staff
 from django.utils import timezone
 from datetime import datetime, timedelta
@@ -356,3 +356,124 @@ class StaffTimerecordBreakForm(forms.ModelForm):
             raise forms.ValidationError('休憩終了時刻は休憩開始時刻より後の時刻を入力してください。')
 
         return cleaned_data
+
+
+class ClientTimesheetForm(forms.ModelForm):
+    """クライアント月次勤怠フォーム"""
+    target_month = forms.CharField(
+        label='対象年月',
+        widget=forms.DateInput(attrs={'type': 'month', 'class': 'form-control form-control-sm'}),
+        required=True
+    )
+
+    class Meta:
+        model = ClientTimesheet
+        fields = ['client_contract', 'staff']
+        widgets = {
+            'client_contract': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'staff': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.target_month:
+            self.initial['target_month'] = self.instance.target_month.strftime('%Y-%m')
+
+    def clean_target_month(self):
+        target_month_str = self.cleaned_data.get('target_month')
+        if target_month_str:
+            try:
+                selected_date = datetime.strptime(target_month_str, '%Y-%m').date()
+                return selected_date.replace(day=1)
+            except ValueError:
+                raise forms.ValidationError('無効な年月形式です。')
+        return None
+
+    def clean(self):
+        cleaned_data = super().clean()
+        client_contract = cleaned_data.get('client_contract')
+        target_month = cleaned_data.get('target_month')
+        staff = cleaned_data.get('staff')
+
+        if client_contract and target_month:
+            from calendar import monthrange
+            from datetime import date
+
+            _, last_day_num = monthrange(target_month.year, target_month.month)
+            last_day = date(target_month.year, target_month.month, last_day_num)
+
+            cc_start = client_contract.start_date
+            cc_end = client_contract.end_date
+
+            if cc_start and last_day < cc_start:
+                raise forms.ValidationError('指定した年月はクライアント契約の契約期間外です。')
+            if cc_end and target_month > cc_end:
+                raise forms.ValidationError('指定した年月はクライアント契約の契約期間外です。')
+
+            # ユニーク制約
+            qs = ClientTimesheet.objects.filter(
+                client_contract=client_contract,
+                staff=staff,
+                target_month=target_month
+            )
+            if self.instance and self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                raise forms.ValidationError('このクライアント契約、スタッフ、年月では既に月次勤怠が作成されています。')
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.target_month = self.cleaned_data.get('target_month')
+        if commit:
+            instance.save()
+        return instance
+
+
+class ClientTimecardForm(forms.ModelForm):
+    """クライアント日次勤怠フォーム"""
+    def __init__(self, *args, **kwargs):
+        self.timesheet = kwargs.pop('timesheet', None)
+        super().__init__(*args, **kwargs)
+
+        if self.timesheet and self.timesheet.client_contract and self.timesheet.client_contract.worktime_pattern:
+            self.fields['work_time_pattern_work'].queryset = self.timesheet.client_contract.worktime_pattern.work_times.filter(
+                time_name__is_active=True
+            ).order_by('display_order')
+        else:
+            from apps.master.models import WorkTimePatternWork
+            self.fields['work_time_pattern_work'].queryset = WorkTimePatternWork.objects.none()
+
+    class Meta:
+        model = ClientTimecard
+        fields = ['work_date', 'work_type', 'work_time_pattern_work', 'start_time', 'start_time_next_day', 'end_time', 'end_time_next_day', 'break_minutes', 'late_night_break_minutes', 'paid_leave_days', 'memo']
+        widgets = {
+            'work_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'work_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'work_time_pattern_work': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'start_time': forms.TimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'time'}),
+            'start_time_next_day': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'end_time': forms.TimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'time'}),
+            'end_time_next_day': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'break_minutes': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': 0}),
+            'late_night_break_minutes': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': 0}),
+            'paid_leave_days': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': 0, 'max': 1, 'step': 0.5}),
+            'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+        }
+
+    def clean(self):
+        cleaned = super().clean()
+        work_date = cleaned.get('work_date')
+        timesheet = self.timesheet
+        if not timesheet and hasattr(self, 'instance') and getattr(self.instance, 'timesheet', None):
+            timesheet = self.instance.timesheet
+
+        if timesheet and work_date:
+            cc = getattr(timesheet, 'client_contract', None)
+            if cc:
+                if cc.start_date and work_date < cc.start_date:
+                    raise forms.ValidationError('勤務日はクライアント契約の契約期間外です。')
+                if cc.end_date and work_date > cc.end_date:
+                    raise forms.ValidationError('勤務日はクライアント契約の契約期間外です。')
+        return cleaned

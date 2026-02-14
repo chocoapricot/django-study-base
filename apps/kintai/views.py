@@ -1,13 +1,21 @@
+import calendar
+import jpholiday
+from datetime import date, datetime, time as dt_time, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.utils import timezone
 from .models import StaffTimesheet, StaffTimecard
+from .models import ClientTimesheet, ClientTimecard
 from .forms import StaffTimesheetForm, StaffTimecardForm
+from .forms import ClientTimesheetForm, ClientTimecardForm
 from .utils import is_timerecord_locked
 from apps.profile.decorators import check_staff_agreement
+from django.db.models import Q
+from apps.common.middleware import get_current_tenant_id
 from apps.common.constants import Constants
+from apps.contract.models import ClientContract, ContractAssignment
 
 
 @login_required
@@ -30,7 +38,7 @@ def timesheet_list(request):
 def contract_search(request):
     """契約検索"""
     from datetime import date, datetime
-    from django.db.models import Q
+
     from apps.contract.models import StaffContract
     from apps.staff.utils import get_annotated_staff_queryset, annotate_staff_connection_info
     
@@ -52,7 +60,7 @@ def contract_search(request):
         target_date = date(year, month, 1)
 
     # 月末日を計算
-    import calendar
+
     _, last_day = calendar.monthrange(year, month)
     month_end = date(year, month, last_day)
 
@@ -153,7 +161,7 @@ def contract_search(request):
 def staff_search(request):
     """スタッフ検索"""
     from datetime import date
-    from django.db.models import Q
+
     from apps.contract.models import StaffContract
     from apps.staff.models import Staff
     from apps.staff.utils import get_annotated_staff_queryset, annotate_staff_connection_info
@@ -176,7 +184,7 @@ def staff_search(request):
         target_date = date(year, month, 1)
 
     # 月末日を計算
-    import calendar
+
     _, last_day = calendar.monthrange(year, month)
     month_end = date(year, month, last_day)
 
@@ -236,11 +244,11 @@ def staff_search(request):
 def staff_timecard_calendar(request, staff_pk, target_month):
     """スタッフ別日次勤怠カレンダー入力"""
     from datetime import date, time as dt_time
-    import calendar
+
     import jpholiday
     from apps.contract.models import StaffContract
     from apps.staff.models import Staff
-    from django.db.models import Q
+
     from django.core.exceptions import ValidationError
     
     staff = get_object_or_404(Staff.objects.select_related('international', 'disability'), pk=staff_pk)
@@ -774,7 +782,7 @@ def timecard_delete(request, pk):
 def timecard_calendar(request, timesheet_pk):
     """日次勤怠カレンダー入力"""
     from datetime import date, timedelta
-    import calendar
+
     import jpholiday
     from django.core.exceptions import ValidationError
     
@@ -964,7 +972,7 @@ def timecard_calendar(request, timesheet_pk):
 def timecard_calendar_initial(request, contract_pk, target_month):
     """初回日次勤怠カレンダー入力（同時に月次勤怠も作成）"""
     from datetime import date, timedelta
-    import calendar
+
     import jpholiday
     from apps.contract.models import StaffContract
     
@@ -1588,7 +1596,7 @@ def timecard_import_progress(request, task_id):
 def staff_timecard_register(request):
     """スタッフ向けタイムカード登録 - 契約選択画面"""
     from datetime import date
-    from django.db.models import Q
+
     from apps.contract.models import StaffContract
     from apps.staff.models import Staff
     
@@ -1617,7 +1625,7 @@ def staff_timecard_register(request):
         target_date = date(year, month, 1)
     
     # 月末日を計算
-    import calendar
+
     _, last_day = calendar.monthrange(year, month)
     month_end = date(year, month, last_day)
     
@@ -1721,3 +1729,207 @@ def staff_timecard_register_detail(request, contract_pk, target_month):
     
     # カレンダー入力画面にリダイレクト
     return redirect('kintai:timecard_calendar', timesheet_pk=timesheet.pk)
+from .models import ClientTimesheet, ClientTimecard
+from .forms import ClientTimesheetForm, ClientTimecardForm
+from apps.contract.models import ClientContract, ContractAssignment
+
+@login_required
+@permission_required('kintai.view_clienttimesheet', raise_exception=True)
+def client_contract_search(request):
+    """クライアント契約検索"""
+
+
+    today = timezone.localdate()
+    target_month_str = request.GET.get('target_month')
+
+    if target_month_str:
+        try:
+            year, month = map(int, target_month_str.split('-'))
+            target_date = date(year, month, 1)
+        except ValueError:
+            year, month = today.year, today.month
+            target_date = date(year, month, 1)
+    else:
+        year, month = today.year, today.month
+        target_date = date(year, month, 1)
+
+
+    _, last_day = calendar.monthrange(year, month)
+    month_end = date(year, month, last_day)
+
+    tenant_id = get_current_tenant_id()
+    # 指定月に有効なアサインメント（契約とスタッフの紐づけ）を取得
+    assignments = ContractAssignment.objects.select_related(
+        'client_contract', 'client_contract__client', 'staff_contract', 'staff_contract__staff'
+    ).filter(
+        tenant_id=tenant_id,
+        client_contract__start_date__lte=month_end
+    ).filter(
+        Q(client_contract__end_date__gte=target_date) | Q(client_contract__end_date__isnull=True)
+    ).order_by('client_contract__client__name', 'staff_contract__staff__employee_no')
+
+    assignment_list = []
+    for assignment in assignments:
+        timesheet = ClientTimesheet.objects.filter(
+            tenant_id=tenant_id,
+            client_contract=assignment.client_contract,
+            staff=assignment.staff_contract.staff,
+            target_month=target_date
+        ).first()
+
+        assignment_list.append({
+            'assignment': assignment,
+            'timesheet': timesheet,
+            'staff': assignment.staff_contract.staff,
+        })
+
+    context = {
+        'assignment_list': assignment_list,
+        'year': year,
+        'month': month,
+        'target_date': target_date,
+    }
+    return render(request, 'kintai/client_contract_search.html', context)
+
+@login_required
+@permission_required('kintai.add_clienttimesheet', raise_exception=True)
+def client_timesheet_create(request):
+    """クライアント月次勤怠作成"""
+    if request.method == 'POST':
+        form = ClientTimesheetForm(request.POST)
+        if form.is_valid():
+            timesheet = form.save()
+            messages.success(request, 'クライアント月次勤怠を作成しました。')
+            return redirect('kintai:client_timesheet_detail', pk=timesheet.pk)
+    else:
+        assignment_id = request.GET.get('assignment')
+        target_month = request.GET.get('target_month')
+        initial = {}
+        if assignment_id:
+            assignment = get_object_or_404(ContractAssignment, pk=assignment_id)
+            initial['client_contract'] = assignment.client_contract
+            initial['staff'] = assignment.staff_contract.staff
+        if target_month:
+            initial['target_month'] = target_month
+        form = ClientTimesheetForm(initial=initial)
+
+    context = {'form': form}
+    return render(request, 'kintai/client_timesheet_form.html', context)
+
+@login_required
+@permission_required('kintai.view_clienttimesheet', raise_exception=True)
+def client_timesheet_detail(request, pk):
+    """クライアント月次勤怠詳細"""
+    tenant_id = get_current_tenant_id()
+    timesheet = get_object_or_404(ClientTimesheet.objects.select_related(
+        'client_contract', 'client', 'staff'
+    ), pk=pk, tenant_id=tenant_id)
+    timecards = timesheet.timecards.all().order_by('work_date')
+
+    for tc in timecards:
+        tc.weekday = tc.work_date.weekday()
+        tc.weekday_name = ['月', '火', '水', '木', '金', '土', '日'][tc.weekday]
+        tc.is_holiday = jpholiday.is_holiday(tc.work_date)
+        try:
+            tc.holiday_name = jpholiday.is_holiday_name(tc.work_date)
+        except:
+            tc.holiday_name = None
+
+    context = {
+        'timesheet': timesheet,
+        'timecards': timecards,
+    }
+    return render(request, 'kintai/client_timesheet_detail.html', context)
+
+@login_required
+@permission_required('kintai.change_clienttimecard', raise_exception=True)
+def client_timecard_calendar(request, pk):
+    """クライアント日次勤怠カレンダー入力"""
+    tenant_id = get_current_tenant_id()
+    timesheet = get_object_or_404(ClientTimesheet, pk=pk, tenant_id=tenant_id)
+
+    if request.method == 'POST':
+        year = timesheet.target_month.year
+        month = timesheet.target_month.month
+        _, last_day = calendar.monthrange(year, month)
+
+        for day in range(1, last_day + 1):
+            work_date = date(year, month, day)
+            work_type = request.POST.get(f'work_type_{day}')
+
+            if not work_type:
+                ClientTimecard.objects.filter(tenant_id=tenant_id, timesheet=timesheet, work_date=work_date).delete()
+                continue
+
+            start_time_str = request.POST.get(f'start_time_{day}')
+            end_time_str = request.POST.get(f'end_time_{day}')
+
+            start_time = None
+            if start_time_str:
+                h, m = map(int, start_time_str.split(':'))
+                start_time = dt_time(h, m)
+
+            end_time = None
+            if end_time_str:
+                h, m = map(int, end_time_str.split(':'))
+                end_time = dt_time(h, m)
+
+            timecard, _ = ClientTimecard.objects.get_or_create(
+                timesheet=timesheet,
+                work_date=work_date,
+                defaults={
+                    'client_contract': timesheet.client_contract,
+                    'staff': timesheet.staff,
+                    'tenant_id': tenant_id
+                }
+            )
+            timecard.work_type = work_type
+            timecard.start_time = start_time
+            timecard.end_time = end_time
+            timecard.start_time_next_day = request.POST.get(f'start_time_next_day_{day}') == 'on'
+            timecard.end_time_next_day = request.POST.get(f'end_time_next_day_{day}') == 'on'
+            timecard.break_minutes = int(request.POST.get(f'break_minutes_{day}', 0) or 0)
+            timecard.paid_leave_days = float(request.POST.get(f'paid_leave_days_{day}', 0) or 0)
+            timecard.save(skip_timesheet_update=True)
+
+        timesheet.refresh_from_db()
+        timesheet.calculate_totals()
+        messages.success(request, '一括保存しました。')
+        return redirect('kintai:client_timesheet_detail', pk=timesheet.pk)
+
+    year = timesheet.target_month.year
+    month = timesheet.target_month.month
+    _, last_day = calendar.monthrange(year, month)
+
+    timecards_dict = {tc.work_date.day: tc for tc in timesheet.timecards.all()}
+
+    calendar_data = []
+    for day in range(1, last_day + 1):
+        work_date = date(year, month, day)
+        calendar_data.append({
+            'day': day,
+            'date': work_date,
+            'weekday_name': ['月', '火', '水', '木', '金', '土', '日'][work_date.weekday()],
+            'is_weekend': work_date.weekday() >= 5,
+            'is_holiday': jpholiday.is_holiday(work_date),
+            'timecard': timecards_dict.get(day),
+        })
+
+    context = {
+        'timesheet': timesheet,
+        'calendar_data': calendar_data,
+    }
+    return render(request, 'kintai/client_timecard_calendar.html', context)
+
+
+@login_required
+@permission_required('kintai.delete_clienttimesheet', raise_exception=True)
+def client_timesheet_delete(request, pk):
+    """クライアント月次勤怠削除"""
+    tenant_id = get_current_tenant_id()
+    timesheet = get_object_or_404(ClientTimesheet, pk=pk, tenant_id=tenant_id)
+    if request.method == 'POST':
+        timesheet.delete()
+        messages.success(request, 'クライアント月次勤怠を削除しました。')
+        return redirect('kintai:client_contract_search')
+    return render(request, 'kintai/client_timesheet_delete.html', {'timesheet': timesheet})
