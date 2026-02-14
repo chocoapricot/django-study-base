@@ -6,6 +6,9 @@ class StaffPayrollForm(forms.ModelForm):
         model = StaffPayroll
         fields = [
             'basic_pension_number',
+            'employment_insurance_number',
+            'previous_job_company_name',
+            'previous_job_retirement_date',
             'health_insurance_join_date',
             'health_insurance_non_enrollment_reason',
             'welfare_pension_join_date',
@@ -15,6 +18,9 @@ class StaffPayrollForm(forms.ModelForm):
         ]
         widgets = {
             'basic_pension_number': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': '例: 1234-567890'}),
+            'employment_insurance_number': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': '例: 1234-567890-1'}),
+            'previous_job_company_name': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': '前職会社名'}),
+            'previous_job_retirement_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control form-control-sm'}),
             'health_insurance_join_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control form-control-sm'}),
             'health_insurance_non_enrollment_reason': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'welfare_pension_join_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control form-control-sm'}),

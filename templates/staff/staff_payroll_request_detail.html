@@ -43,7 +43,7 @@
                         <td><strong>基礎年金番号</strong></td>
                         <td>
                             {% if staff.payroll %}
-                                {{ staff.payroll.basic_pension_number }}
+                                {{ staff.payroll.basic_pension_number|default:"-" }}
                                 <small class="text-muted d-block">（現在登録済み）</small>
                             {% else %}
                                 <span class="text-muted">未登録</span>
@@ -52,10 +52,67 @@
                         <td>
                             {% if staff.payroll.basic_pension_number != payroll_request.staff_payroll_profile.basic_pension_number or not staff.payroll %}
                                 <span class="text-primary fw-bold">
-                                    {{ payroll_request.staff_payroll_profile.basic_pension_number }}
+                                    {{ payroll_request.staff_payroll_profile.basic_pension_number|default:"-" }}
                                 </span>
                             {% else %}
-                                {{ payroll_request.staff_payroll_profile.basic_pension_number }}
+                                {{ payroll_request.staff_payroll_profile.basic_pension_number|default:"-" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr class="{% if staff.payroll.employment_insurance_number != payroll_request.staff_payroll_profile.employment_insurance_number or not staff.payroll %}table-primary{% endif %}">
+                        <td><strong>雇用保険被保険者番号</strong></td>
+                        <td>
+                            {% if staff.payroll %}
+                                {{ staff.payroll.employment_insurance_number|default:"-" }}
+                            {% else %}
+                                <span class="text-muted">未登録</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if staff.payroll.employment_insurance_number != payroll_request.staff_payroll_profile.employment_insurance_number or not staff.payroll %}
+                                <span class="text-primary fw-bold">
+                                    {{ payroll_request.staff_payroll_profile.employment_insurance_number|default:"-" }}
+                                </span>
+                            {% else %}
+                                {{ payroll_request.staff_payroll_profile.employment_insurance_number|default:"-" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr class="{% if staff.payroll.previous_job_company_name != payroll_request.staff_payroll_profile.previous_job_company_name or not staff.payroll %}table-primary{% endif %}">
+                        <td><strong>前職会社名</strong></td>
+                        <td>
+                            {% if staff.payroll %}
+                                {{ staff.payroll.previous_job_company_name|default:"-" }}
+                            {% else %}
+                                <span class="text-muted">未登録</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if staff.payroll.previous_job_company_name != payroll_request.staff_payroll_profile.previous_job_company_name or not staff.payroll %}
+                                <span class="text-primary fw-bold">
+                                    {{ payroll_request.staff_payroll_profile.previous_job_company_name|default:"-" }}
+                                </span>
+                            {% else %}
+                                {{ payroll_request.staff_payroll_profile.previous_job_company_name|default:"-" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr class="{% if staff.payroll.previous_job_retirement_date != payroll_request.staff_payroll_profile.previous_job_retirement_date or not staff.payroll %}table-primary{% endif %}">
+                        <td><strong>前職退職日</strong></td>
+                        <td>
+                            {% if staff.payroll %}
+                                {{ staff.payroll.previous_job_retirement_date|date:"Y/m/d"|default:"-" }}
+                            {% else %}
+                                <span class="text-muted">未登録</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if staff.payroll.previous_job_retirement_date != payroll_request.staff_payroll_profile.previous_job_retirement_date or not staff.payroll %}
+                                <span class="text-primary fw-bold">
+                                    {{ payroll_request.staff_payroll_profile.previous_job_retirement_date|date:"Y/m/d"|default:"-" }}
+                                </span>
+                            {% else %}
+                                {{ payroll_request.staff_payroll_profile.previous_job_retirement_date|date:"Y/m/d"|default:"-" }}
                             {% endif %}
                         </td>
                     </tr>

@@ -41,6 +41,30 @@
                         <div class="text-danger small">{{ form.basic_pension_number.errors.0 }}</div>
                     {% endif %}
                 </div>
+                <label for="{{ form.employment_insurance_number.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">雇用保険被保険者番号</label>
+                <div class="col-sm-2">
+                    {{ form.employment_insurance_number }}
+                    {% if form.employment_insurance_number.errors %}
+                        <div class="text-danger small">{{ form.employment_insurance_number.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.previous_job_company_name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">前職会社名</label>
+                <div class="col-sm-2">
+                    {{ form.previous_job_company_name }}
+                    {% if form.previous_job_company_name.errors %}
+                        <div class="text-danger small">{{ form.previous_job_company_name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <label for="{{ form.previous_job_retirement_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">前職退職日</label>
+                <div class="col-sm-2">
+                    {{ form.previous_job_retirement_date }}
+                    {% if form.previous_job_retirement_date.errors %}
+                        <div class="text-danger small">{{ form.previous_job_retirement_date.errors.0 }}</div>
+                    {% endif %}
+                </div>
             </div>
 
             <div class="row mb-3 align-items-center">

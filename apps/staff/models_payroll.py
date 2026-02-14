@@ -26,6 +26,30 @@ class StaffPayroll(MyTenantModel):
         ],
         help_text='10桁の数字で入力してください（ハイフンも含められます）'
     )
+    employment_insurance_number = models.CharField(
+        '雇用保険被保険者番号',
+        max_length=13,
+        blank=True,
+        null=True,
+        validators=[
+            RegexValidator(
+                regex=r'^[\d-]{11,13}$',
+                message='雇用保険被保険者番号は11桁の数字（ハイフン可）で入力してください'
+            )
+        ],
+        help_text='11桁の数字で入力してください（ハイフンも含められます）'
+    )
+    previous_job_company_name = models.CharField(
+        '前職会社名',
+        max_length=255,
+        blank=True,
+        null=True
+    )
+    previous_job_retirement_date = models.DateField(
+        '前職退職日',
+        blank=True,
+        null=True
+    )
     health_insurance_join_date = models.DateField('健康保険加入日', blank=True, null=True)
     health_insurance_non_enrollment_reason = models.TextField(
         '健康保険非加入理由',

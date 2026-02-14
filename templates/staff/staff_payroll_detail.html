@@ -16,6 +16,21 @@
             <div class="col-sm-2">
                 <p class="form-control-plaintext">{{ payroll.basic_pension_number|default:"-" }}</p>
             </div>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>雇用保険被保険者番号</strong></label>
+            <div class="col-sm-2">
+                <p class="form-control-plaintext">{{ payroll.employment_insurance_number|default:"-" }}</p>
+            </div>
+        </div>
+
+        <div class="row mb-3 mt-3">
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>前職会社名</strong></label>
+            <div class="col-sm-2">
+                <p class="form-control-plaintext">{{ payroll.previous_job_company_name|default:"-" }}</p>
+            </div>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>前職退職日</strong></label>
+            <div class="col-sm-2">
+                <p class="form-control-plaintext">{{ payroll.previous_job_retirement_date|date:"Y/m/d"|default:"-" }}</p>
+            </div>
         </div>
 
         <div class="row mb-3 mt-3">

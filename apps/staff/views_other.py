@@ -605,6 +605,9 @@ def staff_payroll_request_detail(request, staff_pk, pk):
                     staff=staff,
                     defaults={
                         'basic_pension_number': payroll_profile.basic_pension_number,
+                        'employment_insurance_number': payroll_profile.employment_insurance_number,
+                        'previous_job_company_name': payroll_profile.previous_job_company_name,
+                        'previous_job_retirement_date': payroll_profile.previous_job_retirement_date,
                     }
                 )
 
