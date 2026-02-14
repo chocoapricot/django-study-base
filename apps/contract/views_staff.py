@@ -366,6 +366,9 @@ def staff_contract_detail(request, pk):
         assignment.employment_conditions_issued = False
         assignment.employment_conditions_issued_at = None
         assignment.employment_conditions_issued_by = None
+        # 確認状態を確認
+        assignment.employment_conditions_confirmed = bool(assignment.confirmed_at)
+        assignment.employment_conditions_confirmed_at = assignment.confirmed_at
         
         if assignment.client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
             # 発行状態の判定
