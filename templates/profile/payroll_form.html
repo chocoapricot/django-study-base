@@ -1,4 +1,5 @@
 {% extends 'common/_base.html' %}
+{% load help_tags %}
 
 {% block title %}{% if is_new %}給与情報登録{% else %}給与情報編集{% endif %}{% endblock %}
 
@@ -24,7 +25,10 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.employment_insurance_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end" >雇用保険被保険者番号</label>
+                <label for="{{ form.employment_insurance_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end" >
+                    雇用保険被保険者番号
+                    {% my_help_icon "不明な場合には前職会社名と退職日を入力してください" %}
+                </label>
                 <div class="col-sm-4">
                     {{ form.employment_insurance_number }}
                     {% if form.employment_insurance_number.errors %}
@@ -35,7 +39,10 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.previous_job_company_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end" >前職会社名</label>
+                <label for="{{ form.previous_job_company_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end" >
+                    前職会社名
+                    {% my_help_icon "雇用保険被保険者番号が不明な場合に入力してください" %}
+                </label>
                 <div class="col-sm-4">
                     {{ form.previous_job_company_name }}
                     {% if form.previous_job_company_name.errors %}
@@ -45,7 +52,10 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.previous_job_retirement_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end" >前職退職日</label>
+                <label for="{{ form.previous_job_retirement_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end" >
+                    前職退職日
+                    {% my_help_icon "雇用保険被保険者番号が不明な場合に入力してください" %}
+                </label>
                 <div class="col-sm-4">
                     {{ form.previous_job_retirement_date }}
                     {% if form.previous_job_retirement_date.errors %}
