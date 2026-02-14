@@ -336,6 +336,55 @@ class StaffContractConfirmListTest(TestCase):
         item = staff_contract_items[0]
         self.assertEqual(item['sort_date'], staff_print.printed_at)
     
+    def test_contract_period_and_button_class_display(self):
+        """契約期間とボタンクラスが表示されることをテスト"""
+        self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
+        # スタッフ契約を作成（発行済み状態）
+        start_date = date(2025, 1, 1)
+        end_date = date(2025, 12, 31)
+        staff_contract = StaffContract.objects.create(
+            tenant_id=self.company.id,
+            staff=self.staff,
+            corporate_number=self.company.corporate_number,
+            contract_name='テストスタッフ契約',
+            contract_status=Constants.CONTRACT_STATUS.ISSUED,
+            contract_number='SC-2025-001',
+            start_date=start_date,
+            end_date=end_date,
+            contract_pattern=self.staff_pattern,
+            job_category=self.job_category,
+            created_by=self.user,
+            updated_by=self.user,
+        )
+
+        # スタッフ契約書の発行履歴を作成
+        StaffContractPrint.objects.create(
+            tenant_id=self.company.id,
+            staff_contract=staff_contract,
+            printed_by=self.user,
+            document_title='テストスタッフ契約書',
+        )
+
+        # スタッフ契約確認一覧にアクセス
+        response = self.client.get(reverse('contract:staff_contract_confirm_list'))
+
+        # レスポンスの確認
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode('utf-8')
+
+        # 契約期間が表示されていることを確認
+        expected_period = "2025/01/01 ～ 2025/12/31"
+        self.assertIn(expected_period, content)
+        self.assertIn("契約期間:", content)
+
+        # ボタンクラスが btn-info になっていることを確認
+        self.assertIn('class="btn btn-info btn-sm flex-grow-1"', content)
+        self.assertNotIn('class="btn btn-outline-info btn-sm flex-grow-1"', content)
+
     def tearDown(self):
         """テスト後のクリーンアップ"""
         pass

@@ -121,6 +121,14 @@
                                 {% endif %}
                             </div>
                             <div class="mb-1">
+                                <span class="text-muted">契約期間:</span>
+                                {% if item.type == 'staff_contract' %}
+                                    {{ item.contract.contract_period_display }}
+                                {% elif item.type == 'employment_conditions' %}
+                                    {{ item.assignment.assignment_start_date|date:"Y/m/d" }} ～ {{ item.assignment.assignment_end_date|date:"Y/m/d"|default:"無期限" }}
+                                {% endif %}
+                            </div>
+                            <div class="mb-1">
                                 <span class="text-muted">発行日時:</span>
                                 {{ item.latest_pdf.printed_at|date:"Y/m/d H:i"|default:"-" }}
                             </div>
@@ -142,11 +150,11 @@
 
                         <div class="d-flex mt-3 gap-2">
                             {% if item.type == 'staff_contract' and item.latest_pdf %}
-                                <a href="{% url 'contract:view_staff_contract_pdf' item.latest_pdf.pk %}" target="_blank" class="btn btn-outline-info btn-sm flex-grow-1">
+                                <a href="{% url 'contract:view_staff_contract_pdf' item.latest_pdf.pk %}" target="_blank" class="btn btn-info btn-sm flex-grow-1">
                                     <i class="bi bi-file-pdf"></i> PDF表示
                                 </a>
                             {% elif item.type == 'employment_conditions' and item.latest_pdf %}
-                                <a href="{% url 'contract:view_assignment_haken_print_pdf' item.latest_pdf.pk %}" target="_blank" class="btn btn-outline-info btn-sm flex-grow-1">
+                                <a href="{% url 'contract:view_assignment_haken_print_pdf' item.latest_pdf.pk %}" target="_blank" class="btn btn-info btn-sm flex-grow-1">
                                     <i class="bi bi-file-pdf"></i> PDF表示
                                 </a>
                             {% endif %}
