@@ -932,6 +932,22 @@ class ContractAssignment(MyTenantModel):
     def __str__(self):
         return f"{self.client_contract} - {self.staff_contract}"
     
+    @property
+    def assignment_period_display(self):
+        """表示用の割当期間文字列を返す"""
+        start_date = self.assignment_start_date or (self.staff_contract.start_date if self.staff_contract else None)
+        end_date = self.assignment_end_date or (self.staff_contract.end_date if self.staff_contract else None)
+        
+        if not start_date:
+            return "未設定"
+            
+        start_str = start_date.strftime('%Y/%m/%d')
+        if end_date:
+            end_str = end_date.strftime('%Y/%m/%d')
+        else:
+            end_str = '無期限'
+        return f"{start_str} ～ {end_str}"
+    
     def save(self, *args, **kwargs):
         """
         保存時に自動的にフィールドを設定する
