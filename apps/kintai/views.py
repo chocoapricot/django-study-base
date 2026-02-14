@@ -1762,10 +1762,11 @@ def client_contract_search(request):
     assignments = ContractAssignment.objects.select_related(
         'client_contract', 'client_contract__client', 'staff_contract', 'staff_contract__staff'
     ).filter(
-        tenant_id=tenant_id,
-        client_contract__start_date__lte=month_end
+        tenant_id=tenant_id
     ).filter(
-        Q(client_contract__end_date__gte=target_date) | Q(client_contract__end_date__isnull=True)
+        # アサイン割当期間が指定月と重なっているものを抽出
+        Q(assignment_start_date__lte=month_end) & 
+        (Q(assignment_end_date__gte=target_date) | Q(assignment_end_date__isnull=True))
     ).order_by('client_contract__client__name', 'staff_contract__staff__employee_no')
 
     assignment_list = []

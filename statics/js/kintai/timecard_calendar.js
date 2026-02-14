@@ -69,32 +69,50 @@ class TimecardCalendar {
         const workType = row.querySelector('.work-type-select').value;
         const startTime = row.querySelector('.start-time');
         const endTime = row.querySelector('.end-time');
+        const startNextDay = row.querySelector('.start-time-next-day');
+        const endNextDay = row.querySelector('.end-time-next-day');
         const breakMinutes = row.querySelector('.break-minutes');
         const paidLeave = row.querySelector('.paid-leave');
         
         if (workType === '10') {  // 出勤
-            startTime.disabled = false;
-            endTime.disabled = false;
-            breakMinutes.disabled = false;
-            paidLeave.disabled = true;
-            paidLeave.value = 0;
+            if (startTime) startTime.disabled = false;
+            if (endTime) endTime.disabled = false;
+            if (startNextDay) startNextDay.disabled = false;
+            if (endNextDay) endNextDay.disabled = false;
+            if (breakMinutes) breakMinutes.disabled = false;
+            if (paidLeave) {
+                paidLeave.disabled = true;
+                paidLeave.value = 0;
+            }
         } else if (workType === '40') {  // 有給休暇
-            startTime.disabled = true;
-            endTime.disabled = true;
-            breakMinutes.disabled = true;
-            paidLeave.disabled = false;
-            startTime.value = '';
-            endTime.value = '';
-            breakMinutes.value = 0;
+            if (startTime) startTime.disabled = true;
+            if (endTime) endTime.disabled = true;
+            if (startNextDay) startNextDay.disabled = true;
+            if (endNextDay) endNextDay.disabled = true;
+            if (breakMinutes) breakMinutes.disabled = true;
+            if (paidLeave) {
+                paidLeave.disabled = false;
+            }
+            if (startTime) startTime.value = '';
+            if (endTime) endTime.value = '';
+            if (startNextDay) startNextDay.checked = false;
+            if (endNextDay) endNextDay.checked = false;
+            if (breakMinutes) breakMinutes.value = 0;
         } else {  // その他
-            startTime.disabled = true;
-            endTime.disabled = true;
-            breakMinutes.disabled = true;
-            paidLeave.disabled = true;
-            startTime.value = '';
-            endTime.value = '';
-            breakMinutes.value = 0;
-            paidLeave.value = 0;
+            if (startTime) startTime.disabled = true;
+            if (endTime) endTime.disabled = true;
+            if (startNextDay) startNextDay.disabled = true;
+            if (endNextDay) endNextDay.disabled = true;
+            if (breakMinutes) breakMinutes.disabled = true;
+            if (paidLeave) {
+                paidLeave.disabled = true;
+                paidLeave.value = 0;
+            }
+            if (startTime) startTime.value = '';
+            if (endTime) endTime.value = '';
+            if (startNextDay) startNextDay.checked = false;
+            if (endNextDay) endNextDay.checked = false;
+            if (breakMinutes) breakMinutes.value = 0;
         }
     }
 
@@ -148,7 +166,8 @@ class TimecardCalendar {
                 row.querySelector('.start-time').value = '';
                 row.querySelector('.end-time').value = '';
                 row.querySelector('.break-minutes').value = '0';
-                row.querySelector('.paid-leave').value = '0';
+                const paidLeave = row.querySelector('.paid-leave');
+                if (paidLeave) paidLeave.value = '0';
                 this.toggleFields(day);
             } else {
                 // 平日
@@ -156,7 +175,8 @@ class TimecardCalendar {
                 row.querySelector('.start-time').value = this.options.defaultStartTime;
                 row.querySelector('.end-time').value = this.options.defaultEndTime;
                 row.querySelector('.break-minutes').value = this.options.defaultBreakMinutes;
-                row.querySelector('.paid-leave').value = '0';
+                const paidLeave = row.querySelector('.paid-leave');
+                if (paidLeave) paidLeave.value = '0';
                 this.toggleFields(day);
             }
         });
@@ -190,7 +210,8 @@ class TimecardCalendar {
             row.querySelector('.start-time').value = '';
             row.querySelector('.end-time').value = '';
             row.querySelector('.break-minutes').value = '0';
-            row.querySelector('.paid-leave').value = '0';
+            const paidLeave = row.querySelector('.paid-leave');
+            if (paidLeave) paidLeave.value = '0';
             
             // 翌日チェックボックスもクリア
             const startNextDay = row.querySelector('.start-time-next-day');
