@@ -1,0 +1,82 @@
+
+{% extends 'common/_base.html' %}
+
+{% block extra_css %}
+<style>
+    .text-saturday { color: #0066cc; }
+    .text-sunday { color: #cc0000; }
+    .table-saturday { background-color: #e6f2ff; }
+    .table-sunday { background-color: #ffe6e6; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-primary fw-bold">クライアント月次勤怠詳細</h5>
+                    <div>
+                        <a href="{% url 'kintai:client_timecard_calendar' timesheet.pk %}" class="btn btn-primary">勤務カレンダー</a>
+                        <a href="{% url 'kintai:client_contract_search' %}" class="btn btn-secondary">戻る</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm table-borderless">
+                                <tr><th>クライアント:</th><td>{{ timesheet.client.name }}</td></tr>
+                                <tr><th>スタッフ:</th><td>{{ timesheet.staff.name_last }}{{ timesheet.staff.name_first }}</td></tr>
+                                <tr><th>対象年月:</th><td>{{ timesheet.target_month|date:'Y年m月' }}</td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm table-bordered bg-light">
+                                <tr><th>出勤日数:</th><td>{{ timesheet.total_work_days }}日</td></tr>
+                                <tr><th>総労働時間:</th><td>{{ timesheet.total_work_hours_display }}</td></tr>
+                                <tr><th>残業時間:</th><td>{{ timesheet.total_overtime_hours_display }}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>日付</th>
+                            <th>曜日</th>
+                            <th>勤務区分</th>
+                            <th>開始</th>
+                            <th>終了</th>
+                            <th>休憩</th>
+                            <th>労働時間</th>
+                            <th>残業</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tc in timecards %}
+                        <tr class="{% if tc.is_holiday or tc.work_date.weekday == 6 %}table-sunday{% elif tc.work_date.weekday == 5 %}table-saturday{% endif %}">
+                            <td class="{% if tc.is_holiday or tc.work_date.weekday == 6 %}text-sunday fw-bold{% elif tc.work_date.weekday == 5 %}text-saturday fw-bold{% endif %}">{{ tc.work_date|date:'d' }}</td>
+                            <td class="{% if tc.is_holiday or tc.work_date.weekday == 6 %}text-sunday fw-bold{% elif tc.work_date.weekday == 5 %}text-saturday fw-bold{% endif %}">{{ tc.weekday_name }}</td>
+                            <td>{{ tc.get_work_type_display }}</td>
+                            <td>{{ tc.start_time|time:'H:i' }}{% if tc.start_time_next_day %}(翌){% endif %}</td>
+                            <td>{{ tc.end_time|time:'H:i' }}{% if tc.end_time_next_day %}(翌){% endif %}</td>
+                            <td>{{ tc.break_minutes }}</td>
+                            <td>{{ tc.work_hours_display }}</td>
+                            <td>{{ tc.overtime_hours_display }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
