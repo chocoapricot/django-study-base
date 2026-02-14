@@ -1,25 +1,33 @@
+{% extends 'common/common_delete.html' %}
+{% load staff_tags %}
 
-{% extends 'common/_base.html' %}
+{% block title %}削除確認{% endblock %}
 
-{% block content %}
-<div class="container-fluid py-4">
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-white py-3">
-            <h5 class="mb-0 text-danger fw-bold">クライアント月次勤怠削除確認</h5>
-        </div>
-        <div class="card-body">
-            <p>以下のクライアント月次勤怠を削除しますか？紐づく日次勤怠データもすべて削除されます。</p>
-            <table class="table table-bordered">
-                <tr><th>クライアント:</th><td>{{ timesheet.client.name }}</td></tr>
-                <tr><th>スタッフ:</th><td>{{ timesheet.staff.name_last }}{{ timesheet.staff.name_first }}</td></tr>
-                <tr><th>対象年月:</th><td>{{ timesheet.target_month|date:'Y年m月' }}</td></tr>
-            </table>
-            <form method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger">削除する</button>
-                <a href="{% url 'kintai:client_timesheet_detail' timesheet.pk %}" class="btn btn-secondary">キャンセル</a>
-            </form>
-        </div>
-    </div>
-</div>
+{% block delete_title %}削除確認{% endblock %}
+
+{% block card_header %}クライアント月次勤怠 削除確認{% endblock %}
+
+{% block delete_content %}
+    以下の月次勤怠データを削除します。この操作は取り消せません。
+{% endblock %}
+
+{% block content_after_alert %}
+    <table class="table table-sm table-bordered bg-white mt-3">
+        <tr>
+            <th style="width: 30%;" class="bg-light">クライアント</th>
+            <td>{{ timesheet.client.name }}</td>
+        </tr>
+        <tr>
+            <th class="bg-light">スタッフ</th>
+            <td>{{ timesheet.staff.name }}{% staff_status_markers timesheet.staff %}</td>
+        </tr>
+        <tr>
+            <th class="bg-light">対象年月</th>
+            <td>{{ timesheet.target_month|date:'Y年m月' }}</td>
+        </tr>
+    </table>
+{% endblock %}
+
+{% block back_button %}
+<a href="{% url 'kintai:client_timesheet_detail' timesheet.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
 {% endblock %}
