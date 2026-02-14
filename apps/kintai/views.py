@@ -1835,7 +1835,7 @@ def client_timesheet_detail(request, pk):
     for tc in timecards:
         tc.weekday = tc.work_date.weekday()
         tc.weekday_name = ['月', '火', '水', '木', '金', '土', '日'][tc.weekday]
-        tc.is_public_holiday = jpholiday.is_holiday(tc.work_date)
+        tc.is_national_holiday = jpholiday.is_holiday(tc.work_date)
         try:
             tc.holiday_name = jpholiday.is_holiday_name(tc.work_date)
         except:
