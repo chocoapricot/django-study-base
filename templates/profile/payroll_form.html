@@ -23,6 +23,37 @@
                 </div>
             </div>
 
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.employment_insurance_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end" >雇用保険被保険者番号</label>
+                <div class="col-sm-4">
+                    {{ form.employment_insurance_number }}
+                    {% if form.employment_insurance_number.errors %}
+                        <div class="text-danger small">{{ form.employment_insurance_number.errors.0 }}</div>
+                    {% endif %}
+                    <small class="text-muted">11桁の数字で入力してください（ハイフンも含められます）</small>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.previous_job_company_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end" >前職会社名</label>
+                <div class="col-sm-4">
+                    {{ form.previous_job_company_name }}
+                    {% if form.previous_job_company_name.errors %}
+                        <div class="text-danger small">{{ form.previous_job_company_name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.previous_job_retirement_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end" >前職退職日</label>
+                <div class="col-sm-4">
+                    {{ form.previous_job_retirement_date }}
+                    {% if form.previous_job_retirement_date.errors %}
+                        <div class="text-danger small">{{ form.previous_job_retirement_date.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
             <div class="d-flex justify-content-start">
                 <button type="submit" class="btn btn-sm btn-primary">
                     {% if is_new %}登録{% else %}更新{% endif %}
@@ -53,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="card-body py-2">
                     <div class="mb-2">• 基礎年金番号: 10桁の数字（ハイフン可）で入力してください</div>
+                    <div class="mb-2">• 雇用保険被保険者番号: 11桁の数字（ハイフン可）で入力してください</div>
                 </div>
             </div>
 

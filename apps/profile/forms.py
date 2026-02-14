@@ -343,7 +343,7 @@ class StaffProfilePayrollForm(forms.ModelForm):
     """スタッフ給与プロフィールフォーム"""
     class Meta:
         model = StaffProfilePayroll
-        fields = ['basic_pension_number']
+        fields = ['basic_pension_number', 'employment_insurance_number', 'previous_job_company_name', 'previous_job_retirement_date']
         widgets = {
             'basic_pension_number': forms.TextInput(attrs={
                 'class': 'form-control form-control-sm',
@@ -351,6 +351,21 @@ class StaffProfilePayrollForm(forms.ModelForm):
                 'placeholder': '123-456-7890',
                 'style': 'ime-mode:disabled;',
                 'autocomplete': 'off'
+            }),
+            'employment_insurance_number': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'maxlength': '13',
+                'placeholder': '1234-567890-1',
+                'style': 'ime-mode:disabled;',
+                'autocomplete': 'off'
+            }),
+            'previous_job_company_name': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'placeholder': '前職の会社名を入力'
+            }),
+            'previous_job_retirement_date': forms.DateInput(attrs={
+                'class': 'form-control form-control-sm',
+                'type': 'date'
             }),
         }
 

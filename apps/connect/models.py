@@ -213,7 +213,10 @@ class ConnectStaff(MyModel):
     def _is_payroll_different(self, profile_payroll, staff_payroll):
         """スタッフプロフィール給与情報とスタッフ給与情報を比較する"""
         fields_to_compare = [
-            'basic_pension_number'
+            'basic_pension_number',
+            'employment_insurance_number',
+            'previous_job_company_name',
+            'previous_job_retirement_date',
         ]
 
         for field in fields_to_compare:
