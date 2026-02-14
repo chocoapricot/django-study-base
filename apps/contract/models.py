@@ -1,6 +1,10 @@
 from django.db import models
 from apps.common.models import MyTenantModel, TenantManager, MyFlagModel
-from apps.common.constants import Constants
+from apps.common.constants import (
+    Constants,
+    get_limit_by_agreement_choices,
+    get_assignment_confirm_type_choices
+)
 from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from django.contrib.auth import get_user_model
@@ -325,11 +329,11 @@ class ClientContractPrint(MyTenantModel):
     クライアント契約書の発行履歴を管理するモデル。
     """
     class PrintType(models.TextChoices):
-        CONTRACT = '10', '契約書'
-        QUOTATION = '20', '見積書'
-        TEISHOKUBI_NOTIFICATION = '30', '抵触日通知書'
-        DISPATCH_NOTIFICATION = '40', '派遣先通知書'
-        DISPATCH_LEDGER = '50', '派遣先管理台帳'
+        CONTRACT = Constants.PRINT_TYPE.CONTRACT, '契約書'
+        QUOTATION = Constants.PRINT_TYPE.QUOTATION, '見積書'
+        TEISHOKUBI_NOTIFICATION = Constants.PRINT_TYPE.TEISHOKUBI_NOTIFICATION, '抵触日通知書'
+        DISPATCH_NOTIFICATION = Constants.PRINT_TYPE.DISPATCH_NOTIFICATION, '派遣先通知書'
+        DISPATCH_LEDGER = Constants.PRINT_TYPE.DISPATCH_LEDGER, '派遣先管理台帳'
 
     client_contract = models.ForeignKey(
         ClientContract,
@@ -816,19 +820,13 @@ class ClientContractHaken(MyTenantModel):
     limit_by_agreement = models.CharField(
         '協定対象派遣労働者に限定するか否かの別',
         max_length=1,
-        choices=[
-            (Constants.LIMIT_BY_AGREEMENT.NOT_LIMITED, '限定しない'),
-            (Constants.LIMIT_BY_AGREEMENT.LIMITED, '限定する')
-        ],
+        choices=get_limit_by_agreement_choices(),
         null=True, blank=True,
     )
     limit_indefinite_or_senior = models.CharField(
         '無期雇用派遣労働者又は60歳以上の者に限定するか否かの別',
         max_length=1,
-        choices=[
-            (Constants.LIMIT_BY_AGREEMENT.NOT_LIMITED, '限定しない'),
-            (Constants.LIMIT_BY_AGREEMENT.LIMITED, '限定する')
-        ],
+        choices=get_limit_by_agreement_choices(),
         null=True, blank=True,
     )
     work_location = models.TextField('就業場所', blank=True, null=True)
@@ -1203,10 +1201,7 @@ class ContractAssignmentConfirm(MyTenantModel):
     confirm_type = models.CharField(
         '確認種別',
         max_length=2,
-        choices=[
-            (Constants.ASSIGNMENT_CONFIRM_TYPE.EXTEND, '延長予定'),
-            (Constants.ASSIGNMENT_CONFIRM_TYPE.TERMINATE, '終了予定')
-        ],
+        choices=get_assignment_confirm_type_choices(),
         help_text='延長予定か終了予定かを選択してください'
     )
     termination_reason = models.TextField(
@@ -1242,7 +1237,7 @@ class ContractAssignmentHakenPrint(MyTenantModel):
     契約アサイン派遣関連書類の印刷履歴を管理するモデル。
     """
     class PrintType(models.TextChoices):
-        EMPLOYMENT_CONDITIONS = '10', '就業条件明示書'
+        EMPLOYMENT_CONDITIONS = Constants.PRINT_TYPE.EMPLOYMENT_CONDITIONS, '就業条件明示書'
 
     contract_assignment = models.ForeignKey(
         ContractAssignment,
