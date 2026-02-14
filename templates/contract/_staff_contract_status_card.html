@@ -9,7 +9,7 @@
             {% csrf_token %}
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="approvalSwitch" name="is_approved"
-                       onchange="this.form.submit()"
+                       onchange="if(this.checked){ if(confirm('契約を承認しますか？')){ this.form.submit(); } else { this.checked = false; } } else { if(confirm('承認を取り消しますか？')){ this.form.submit(); } else { this.checked = true; } }"
                        {% if contract.contract_status == Constants.CONTRACT_STATUS.APPROVED or contract.contract_status == Constants.CONTRACT_STATUS.ISSUED or contract.contract_status == Constants.CONTRACT_STATUS.CONFIRMED %}checked{% endif %}
                        {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT %}disabled{% endif %}>
                 <label class="form-check-label" for="approvalSwitch">
@@ -27,7 +27,7 @@
             {% csrf_token %}
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="issueSwitch" name="is_issued"
-                       onchange="this.form.submit()"
+                       onchange="if(this.checked){ if(confirm('契約書を発行しますか？')){ this.form.submit(); } else { this.checked = false; } } else { if(confirm('発行を取り消しますか？')){ this.form.submit(); } else { this.checked = true; } }"
                        {% if contract.contract_status == Constants.CONTRACT_STATUS.ISSUED or contract.contract_status == Constants.CONTRACT_STATUS.CONFIRMED %}checked{% endif %}
                        {% if contract.contract_status != Constants.CONTRACT_STATUS.APPROVED %}disabled{% endif %}
                        {% if contract.contract_status == Constants.CONTRACT_STATUS.ISSUED %}disabled{% endif %}>
