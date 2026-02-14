@@ -1,6 +1,11 @@
 from django.db import models
 from apps.common.models import MyTenantModel
 from apps.system.settings.models import Dropdowns
+from apps.common.constants import (
+    Constants,
+    get_domain_choices,
+    get_contract_term_position_choices
+)
 
 
 class ContractPattern(MyTenantModel):
@@ -11,8 +16,8 @@ class ContractPattern(MyTenantModel):
     domain = models.CharField(
         '対象',
         max_length=2,
-        choices=[('1', 'スタッフ'), ('10', 'クライアント')],
-        default='1',
+        choices=get_domain_choices(),
+        default=Constants.DOMAIN.STAFF,
     )
     contract_type_code = models.CharField('契約種別', max_length=2, blank=True, null=True)
     employment_type = models.ForeignKey(
@@ -52,15 +57,10 @@ class ContractTerms(MyTenantModel):
     )
     contract_clause = models.TextField('契約条項')
     contract_terms = models.TextField('契約文言')
-    POSITION_CHOICES = [
-        (1, '前文'),
-        (2, '本文'),
-        (3, '末文'),
-    ]
     display_position = models.IntegerField(
         '表示場所',
-        choices=POSITION_CHOICES,
-        default=2,
+        choices=get_contract_term_position_choices(),
+        default=Constants.CONTRACT_TERM_POSITION.BODY,
     )
     memo = models.CharField('メモ', max_length=255, blank=True, null=True)
     display_order = models.IntegerField('表示順', default=0)

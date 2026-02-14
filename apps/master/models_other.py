@@ -2,6 +2,12 @@ import os
 from uuid import uuid4
 from django.db import models
 from apps.common.models import MyTenantModel
+from apps.common.constants import (
+    Constants,
+    get_default_value_format_choices,
+    get_generative_ai_setting_format_choices,
+    get_user_parameter_format_choices
+)
 
 
 def information_file_path(instance, filename):
@@ -106,16 +112,14 @@ class DefaultValue(MyTenantModel):
     """
     システムの各項目における初期値を管理するマスターデータ。
     """
-    FORMAT_CHOICES = [
-        ('text', 'テキスト'),
-        ('textarea', 'テキストエリア'),
-        ('boolean', '真偽値'),
-        ('number', '数値'),
-    ]
-
     key = models.CharField('キー', max_length=255, primary_key=True)
     target_item = models.CharField('対象項目', max_length=255)
-    format = models.CharField('形式', max_length=10, choices=FORMAT_CHOICES, default='text')
+    format = models.CharField(
+        '形式',
+        max_length=10,
+        choices=get_default_value_format_choices(),
+        default=Constants.FORMAT_TYPE.TEXT
+    )
     value = models.TextField('値', blank=True)
     display_order = models.IntegerField('表示順', default=0)
 
@@ -132,7 +136,7 @@ class DefaultValue(MyTenantModel):
         """
         boolean形式の値をPythonのbool型で取得
         """
-        if self.format == 'boolean':
+        if self.format == Constants.FORMAT_TYPE.BOOLEAN:
             return self.value.lower() == 'true'
         return None
 
@@ -140,7 +144,7 @@ class DefaultValue(MyTenantModel):
         """
         number形式の値をPythonの数値型で取得
         """
-        if self.format == 'number':
+        if self.format == Constants.FORMAT_TYPE.NUMBER:
             try:
                 # 小数点が含まれている場合はfloat、そうでなければint
                 if '.' in self.value:
@@ -155,9 +159,9 @@ class DefaultValue(MyTenantModel):
         """
         形式に応じて適切にフォーマットされた値を取得
         """
-        if self.format == 'boolean':
+        if self.format == Constants.FORMAT_TYPE.BOOLEAN:
             return self.get_boolean_value()
-        elif self.format == 'number':
+        elif self.format == Constants.FORMAT_TYPE.NUMBER:
             return self.get_number_value()
         return self.value
 
@@ -166,17 +170,14 @@ class GenerativeAiSetting(MyTenantModel):
     """
     生成AI設定を管理するマスターデータ。
     """
-    FORMAT_CHOICES = [
-        ('text', 'テキスト'),
-        ('textarea', 'テキストエリア'),
-        ('boolean', '真偽値'),
-        ('number', '数値'),
-        ('choice', '選択肢'),
-    ]
-
     key = models.CharField('キー', max_length=255, primary_key=True)
     target_item = models.CharField('対象項目', max_length=255)
-    format = models.CharField('形式', max_length=10, choices=FORMAT_CHOICES, default='text')
+    format = models.CharField(
+        '形式',
+        max_length=10,
+        choices=get_generative_ai_setting_format_choices(),
+        default=Constants.FORMAT_TYPE.TEXT
+    )
     value = models.TextField('値', blank=True)
     choices = models.TextField('選択肢', blank=True, help_text='形式が「選択肢」の場合に、カンマ区切りで「値:表示名」を入力します。')
     display_order = models.IntegerField('表示順', default=0)
@@ -194,7 +195,7 @@ class GenerativeAiSetting(MyTenantModel):
         """
         boolean形式の値をPythonのbool型で取得
         """
-        if self.format == 'boolean':
+        if self.format == Constants.FORMAT_TYPE.BOOLEAN:
             return self.value.lower() == 'true'
         return None
 
@@ -202,7 +203,7 @@ class GenerativeAiSetting(MyTenantModel):
         """
         number形式の値をPythonの数値型で取得
         """
-        if self.format == 'number':
+        if self.format == Constants.FORMAT_TYPE.NUMBER:
             try:
                 # 小数点が含まれている場合はfloat、そうでなければint
                 if '.' in self.value:
@@ -217,9 +218,9 @@ class GenerativeAiSetting(MyTenantModel):
         """
         形式に応じて適切にフォーマットされた値を取得
         """
-        if self.format == 'boolean':
+        if self.format == Constants.FORMAT_TYPE.BOOLEAN:
             return self.get_boolean_value()
-        elif self.format == 'number':
+        elif self.format == Constants.FORMAT_TYPE.NUMBER:
             return self.get_number_value()
         return self.value
 
@@ -230,18 +231,14 @@ class UserParameter(MyTenantModel):
     """
     objects = models.Manager()
 
-    FORMAT_CHOICES = [
-        ('text', 'テキスト'),
-        ('textarea', 'テキストエリア'),
-        ('boolean', '真偽値'),
-        ('number', '数値'),
-        ('choice', '選択肢'),
-        ('color', '色'),
-    ]
-
     key = models.CharField('キー', max_length=255, primary_key=True)
     target_item = models.CharField('対象項目', max_length=255)
-    format = models.CharField('形式', max_length=10, choices=FORMAT_CHOICES, default='text')
+    format = models.CharField(
+        '形式',
+        max_length=10,
+        choices=get_user_parameter_format_choices(),
+        default=Constants.FORMAT_TYPE.TEXT
+    )
     value = models.TextField('値', blank=True)
     choices = models.TextField('選択肢', blank=True, help_text='形式が「選択肢」の場合に、カンマ区切りで「値:表示名」を入力します。')
     display_order = models.IntegerField('表示順', default=0)
@@ -259,7 +256,7 @@ class UserParameter(MyTenantModel):
         """
         boolean形式の値をPythonのbool型で取得
         """
-        if self.format == 'boolean':
+        if self.format == Constants.FORMAT_TYPE.BOOLEAN:
             return self.value.lower() == 'true'
         return None
 
@@ -267,7 +264,7 @@ class UserParameter(MyTenantModel):
         """
         number形式の値をPythonの数値型で取得
         """
-        if self.format == 'number':
+        if self.format == Constants.FORMAT_TYPE.NUMBER:
             try:
                 # 小数点が含まれている場合はfloat、そうでなければint
                 if '.' in self.value:
@@ -282,9 +279,9 @@ class UserParameter(MyTenantModel):
         """
         形式に応じて適切にフォーマットされた値を取得
         """
-        if self.format == 'boolean':
+        if self.format == Constants.FORMAT_TYPE.BOOLEAN:
             return self.get_boolean_value()
-        elif self.format == 'number':
+        elif self.format == Constants.FORMAT_TYPE.NUMBER:
             return self.get_number_value()
         return self.value
 
@@ -292,7 +289,7 @@ class UserParameter(MyTenantModel):
         """
         'choice' 形式の場合に、値に対応する表示名を取得する。
         """
-        if self.format != 'choice' or not self.choices:
+        if self.format != Constants.FORMAT_TYPE.CHOICE or not self.choices:
             return self.value
 
         choice_map = {}

@@ -146,6 +146,67 @@ class Constants:
         TOUCH_ON_TIME = 'tot'       # Touch On Time
         MANUAL = 'manual'           # 手入力
 
+    # 勤怠ステータス (kintai_status)
+    class KINTAI_STATUS:
+        DRAFT = '10'      # 作成中
+        SUBMITTED = '20'  # 提出済み
+        APPROVED = '30'   # 承認済み
+        REJECTED = '40'   # 差戻し
+
+    # 勤務区分 (work_type)
+    class WORK_TYPE:
+        WORK = '10'       # 出勤
+        HOLIDAY = '20'    # 休日
+        ABSENCE = '30'    # 欠勤
+        PAID_LEAVE = '40' # 有給休暇
+        SPECIAL_LEAVE = '50' # 特別休暇
+        COMPENSATORY_LEAVE = '60' # 代休
+        NO_WORK = '70'    # 稼働無し
+
+    # 時間外算出方式 (calculation_type)
+    class OVERTIME_CALCULATION_TYPE:
+        PREMIUM = 'premium'             # 割増
+        MONTHLY_RANGE = 'monthly_range' # 月単位時間範囲
+        VARIABLE = 'variable'           # 1ヶ月単位変形労働
+        FLEXTIME = 'flextime'           # 1ヶ月単位フレックス
+
+    # データ形式 (format_type)
+    class FORMAT_TYPE:
+        TEXT = 'text'
+        TEXTAREA = 'textarea'
+        BOOLEAN = 'boolean'
+        NUMBER = 'number'
+        CHOICE = 'choice'
+        COLOR = 'color'
+
+    # マスタ階層レベル (master_level)
+    class MASTER_LEVEL:
+        CATEGORY = 1
+        ITEM = 2
+
+    # 契約文言表示場所 (display_position)
+    class CONTRACT_TERM_POSITION:
+        PREAMBLE = 1    # 前文
+        BODY = 2        # 本文
+        POSTSCRIPT = 3  # 末文
+
+    # 評価点 (evaluation_rating)
+    class EVALUATION_RATING:
+        ONE = 1
+        TWO = 2
+        THREE = 3
+        FOUR = 4
+        FIVE = 5
+
+    # 印刷種別 (print_type)
+    class PRINT_TYPE:
+        CONTRACT = '10'                 # 契約書
+        QUOTATION = '20'                # 見積書
+        TEISHOKUBI_NOTIFICATION = '30'  # 抵触日通知書
+        DISPATCH_NOTIFICATION = '40'    # 派遣先通知書
+        DISPATCH_LEDGER = '50'          # 派遣先管理台帳
+        EMPLOYMENT_CONDITIONS = '10'    # 就業条件明示書 (契約アサイン)
+
 
 # CHOICESリスト生成ヘルパー(モデルで使用)
 def get_mail_type_choices():
@@ -248,6 +309,162 @@ def get_punch_method_choices():
         (Constants.PUNCH_METHOD.KING_OF_TIME, 'KING OF TIME'),
         (Constants.PUNCH_METHOD.TOUCH_ON_TIME, 'Touch On Time'),
         (Constants.PUNCH_METHOD.MANUAL, '手入力'),
+    ]
+
+
+def get_domain_choices():
+    """ドメインの選択肢リストを返す"""
+    return [
+        (Constants.DOMAIN.STAFF, 'スタッフ'),
+        (Constants.DOMAIN.CLIENT, 'クライアント'),
+    ]
+
+
+def get_kintai_status_choices():
+    """勤怠ステータスの選択肢リストを返す"""
+    return [
+        (Constants.KINTAI_STATUS.DRAFT, '作成中'),
+        (Constants.KINTAI_STATUS.SUBMITTED, '提出済み'),
+        (Constants.KINTAI_STATUS.APPROVED, '承認済み'),
+        (Constants.KINTAI_STATUS.REJECTED, '差戻し'),
+    ]
+
+
+def get_staff_work_type_choices():
+    """スタッフ勤務区分の選択肢リストを返す"""
+    return [
+        (Constants.WORK_TYPE.WORK, '出勤'),
+        (Constants.WORK_TYPE.HOLIDAY, '休日'),
+        (Constants.WORK_TYPE.ABSENCE, '欠勤'),
+        (Constants.WORK_TYPE.PAID_LEAVE, '有給休暇'),
+        (Constants.WORK_TYPE.SPECIAL_LEAVE, '特別休暇'),
+        (Constants.WORK_TYPE.COMPENSATORY_LEAVE, '代休'),
+        (Constants.WORK_TYPE.NO_WORK, '稼働無し'),
+    ]
+
+
+def get_client_work_type_choices():
+    """クライアント勤務区分の選択肢リストを返す"""
+    return [
+        (Constants.WORK_TYPE.WORK, '出勤'),
+        (Constants.WORK_TYPE.HOLIDAY, '休日'),
+        (Constants.WORK_TYPE.ABSENCE, '欠勤'),
+        (Constants.WORK_TYPE.NO_WORK, '稼働無し'),
+    ]
+
+
+def get_overtime_calculation_type_choices():
+    """時間外算出方式の選択肢リストを返す"""
+    return [
+        (Constants.OVERTIME_CALCULATION_TYPE.PREMIUM, '割増'),
+        (Constants.OVERTIME_CALCULATION_TYPE.MONTHLY_RANGE, '月単位時間範囲'),
+        (Constants.OVERTIME_CALCULATION_TYPE.VARIABLE, '1ヶ月単位変形労働'),
+        (Constants.OVERTIME_CALCULATION_TYPE.FLEXTIME, '1ヶ月単位フレックス'),
+    ]
+
+
+def get_default_value_format_choices():
+    """初期値マスタ形式の選択肢リストを返す"""
+    return [
+        (Constants.FORMAT_TYPE.TEXT, 'テキスト'),
+        (Constants.FORMAT_TYPE.TEXTAREA, 'テキストエリア'),
+        (Constants.FORMAT_TYPE.BOOLEAN, '真偽値'),
+        (Constants.FORMAT_TYPE.NUMBER, '数値'),
+    ]
+
+
+def get_generative_ai_setting_format_choices():
+    """生成AI設定形式の選択肢リストを返す"""
+    return [
+        (Constants.FORMAT_TYPE.TEXT, 'テキスト'),
+        (Constants.FORMAT_TYPE.TEXTAREA, 'テキストエリア'),
+        (Constants.FORMAT_TYPE.BOOLEAN, '真偽値'),
+        (Constants.FORMAT_TYPE.NUMBER, '数値'),
+        (Constants.FORMAT_TYPE.CHOICE, '選択肢'),
+    ]
+
+
+def get_user_parameter_format_choices():
+    """ユーザーパラメータ形式の選択肢リストを返す"""
+    return [
+        (Constants.FORMAT_TYPE.TEXT, 'テキスト'),
+        (Constants.FORMAT_TYPE.TEXTAREA, 'テキストエリア'),
+        (Constants.FORMAT_TYPE.BOOLEAN, '真偽値'),
+        (Constants.FORMAT_TYPE.NUMBER, '数値'),
+        (Constants.FORMAT_TYPE.CHOICE, '選択肢'),
+        (Constants.FORMAT_TYPE.COLOR, '色'),
+    ]
+
+
+def get_phrase_template_format_choices():
+    """汎用文言テンプレート書式の選択肢リストを返す"""
+    return [
+        (Constants.FORMAT_TYPE.TEXT, 'テキスト'),
+        (Constants.FORMAT_TYPE.TEXTAREA, 'テキストエリア'),
+    ]
+
+
+def get_qualification_level_choices():
+    """資格階層レベルの選択肢リストを返す"""
+    return [
+        (Constants.MASTER_LEVEL.CATEGORY, 'カテゴリ'),
+        (Constants.MASTER_LEVEL.ITEM, '資格'),
+    ]
+
+
+def get_skill_level_choices():
+    """技能階層レベルの選択肢リストを返す"""
+    return [
+        (Constants.MASTER_LEVEL.CATEGORY, 'カテゴリ'),
+        (Constants.MASTER_LEVEL.ITEM, '技能'),
+    ]
+
+
+def get_contract_term_position_choices():
+    """契約文言表示場所の選択肢リストを返す"""
+    return [
+        (Constants.CONTRACT_TERM_POSITION.PREAMBLE, '前文'),
+        (Constants.CONTRACT_TERM_POSITION.BODY, '本文'),
+        (Constants.CONTRACT_TERM_POSITION.POSTSCRIPT, '末文'),
+    ]
+
+
+def get_evaluation_rating_choices():
+    """評価点の選択肢リストを返す"""
+    return [(i, str(i)) for i in range(1, 6)]
+
+
+def get_client_print_type_choices():
+    """クライアント印刷種別の選択肢リストを返す"""
+    return [
+        (Constants.PRINT_TYPE.CONTRACT, '契約書'),
+        (Constants.PRINT_TYPE.QUOTATION, '見積書'),
+        (Constants.PRINT_TYPE.TEISHOKUBI_NOTIFICATION, '抵触日通知書'),
+        (Constants.PRINT_TYPE.DISPATCH_NOTIFICATION, '派遣先通知書'),
+        (Constants.PRINT_TYPE.DISPATCH_LEDGER, '派遣先管理台帳'),
+    ]
+
+
+def get_assignment_print_type_choices():
+    """契約アサイン印刷種別の選択肢リストを返す"""
+    return [
+        (Constants.PRINT_TYPE.EMPLOYMENT_CONDITIONS, '就業条件明示書'),
+    ]
+
+
+def get_limit_by_agreement_choices():
+    """限定の別の選択肢リストを返す"""
+    return [
+        (Constants.LIMIT_BY_AGREEMENT.NOT_LIMITED, '限定しない'),
+        (Constants.LIMIT_BY_AGREEMENT.LIMITED, '限定する')
+    ]
+
+
+def get_assignment_confirm_type_choices():
+    """契約割り当て確認種別の選択肢リストを返す"""
+    return [
+        (Constants.ASSIGNMENT_CONFIRM_TYPE.EXTEND, '延長予定'),
+        (Constants.ASSIGNMENT_CONFIRM_TYPE.TERMINATE, '終了予定')
     ]
 
 

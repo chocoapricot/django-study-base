@@ -6,7 +6,8 @@ from apps.common.constants import (
     get_time_rounding_unit_choices,
     get_time_rounding_method_choices,
     get_break_input_choices,
-    get_punch_method_choices
+    get_punch_method_choices,
+    get_overtime_calculation_type_choices
 )
 
 
@@ -170,13 +171,12 @@ class OvertimePattern(MyTenantModel):
     memo = models.TextField('メモ', blank=True, null=True)
 
     # 計算方式選択
-    CALCULATION_TYPE_CHOICES = [
-        ('premium', '割増'),
-        ('monthly_range', '月単位時間範囲'),
-        ('variable', '1ヶ月単位変形労働'),
-        ('flextime', '1ヶ月単位フレックス'),
-    ]
-    calculation_type = models.CharField('計算方式', max_length=20, choices=CALCULATION_TYPE_CHOICES, default='premium')
+    calculation_type = models.CharField(
+        '計算方式',
+        max_length=20,
+        choices=get_overtime_calculation_type_choices(),
+        default=Constants.OVERTIME_CALCULATION_TYPE.PREMIUM
+    )
 
     # 割増方式の設定
     daily_overtime_enabled = models.BooleanField('日単位時間外計算', default=False)

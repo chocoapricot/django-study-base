@@ -1,7 +1,12 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from apps.common.models import MyTenantModel
-from apps.common.constants import get_pay_unit_choices
+from apps.common.constants import (
+    Constants,
+    get_pay_unit_choices,
+    get_qualification_level_choices,
+    get_skill_level_choices
+)
 
 
 class Qualification(MyTenantModel):
@@ -10,13 +15,12 @@ class Qualification(MyTenantModel):
     カテゴリと資格の2階層構造を持つ。
     """
 
-    LEVEL_CHOICES = [
-        (1, 'カテゴリ'),
-        (2, '資格'),
-    ]
-
     name = models.CharField('名称', max_length=100)
-    level = models.IntegerField('階層レベル', choices=LEVEL_CHOICES, default=2)
+    level = models.IntegerField(
+        '階層レベル',
+        choices=get_qualification_level_choices(),
+        default=Constants.MASTER_LEVEL.ITEM
+    )
     parent = models.ForeignKey(
         'self',
         on_delete=models.CASCADE,
@@ -51,17 +55,17 @@ class Qualification(MyTenantModel):
     @property
     def is_category(self):
         """カテゴリかどうか"""
-        return self.level == 1
+        return self.level == Constants.MASTER_LEVEL.CATEGORY
 
     @property
     def level_display_name(self):
         """階層レベルの表示名"""
-        return dict(self.LEVEL_CHOICES).get(self.level, self.level)
+        return dict(get_qualification_level_choices()).get(self.level, self.level)
 
     @property
     def full_name(self):
         """フルパス名称"""
-        if self.level == 1:
+        if self.level == Constants.MASTER_LEVEL.CATEGORY:
             return self.name
         else:
             parent_name = self.parent.name if self.parent else "未分類"
@@ -89,14 +93,14 @@ class Qualification(MyTenantModel):
         from django.core.exceptions import ValidationError
 
         # レベル1（カテゴリ）は親を持てない
-        if self.level == 1 and self.parent:
+        if self.level == Constants.MASTER_LEVEL.CATEGORY and self.parent:
             raise ValidationError('カテゴリは親を持つことができません。')
 
         # レベル2（資格）は親が必要（レベル1のみ）
-        if self.level == 2:
+        if self.level == Constants.MASTER_LEVEL.ITEM:
             if not self.parent:
                 raise ValidationError('資格は親カテゴリが必要です。')
-            if self.parent.level != 1:
+            if self.parent.level != Constants.MASTER_LEVEL.CATEGORY:
                 raise ValidationError('資格の親はカテゴリである必要があります。')
 
         # 自分自身を親にできない
@@ -123,13 +127,12 @@ class Skill(MyTenantModel):
     カテゴリと技能の2階層構造を持つ。
     """
 
-    LEVEL_CHOICES = [
-        (1, 'カテゴリ'),
-        (2, '技能'),
-    ]
-
     name = models.CharField('名称', max_length=100)
-    level = models.IntegerField('階層レベル', choices=LEVEL_CHOICES, default=2)
+    level = models.IntegerField(
+        '階層レベル',
+        choices=get_skill_level_choices(),
+        default=Constants.MASTER_LEVEL.ITEM
+    )
     parent = models.ForeignKey(
         'self',
         on_delete=models.CASCADE,
@@ -164,17 +167,17 @@ class Skill(MyTenantModel):
     @property
     def is_category(self):
         """カテゴリかどうか"""
-        return self.level == 1
+        return self.level == Constants.MASTER_LEVEL.CATEGORY
 
     @property
     def level_display_name(self):
         """階層レベルの表示名"""
-        return dict(self.LEVEL_CHOICES).get(self.level, self.level)
+        return dict(get_skill_level_choices()).get(self.level, self.level)
 
     @property
     def full_name(self):
         """フルパス名称"""
-        if self.level == 1:
+        if self.level == Constants.MASTER_LEVEL.CATEGORY:
             return self.name
         else:
             parent_name = self.parent.name if self.parent else "未分類"
@@ -202,14 +205,14 @@ class Skill(MyTenantModel):
         from django.core.exceptions import ValidationError
 
         # レベル1（カテゴリ）は親を持てない
-        if self.level == 1 and self.parent:
+        if self.level == Constants.MASTER_LEVEL.CATEGORY and self.parent:
             raise ValidationError('カテゴリは親を持つことができません。')
 
         # レベル2（技能）は親が必要（レベル1のみ）
-        if self.level == 2:
+        if self.level == Constants.MASTER_LEVEL.ITEM:
             if not self.parent:
                 raise ValidationError('技能は親カテゴリが必要です。')
-            if self.parent.level != 1:
+            if self.parent.level != Constants.MASTER_LEVEL.CATEGORY:
                 raise ValidationError('技能の親はカテゴリである必要があります。')
 
         # 自分自身を親にできない
