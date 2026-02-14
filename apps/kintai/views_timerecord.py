@@ -1049,6 +1049,7 @@ def timerecord_approval_detail(request, pk):
             'date': current_date,
             'weekday': current_date.weekday(),
             'is_holiday': jpholiday.is_holiday(current_date),
+            'holiday_name': jpholiday.is_holiday_name(current_date) if jpholiday.is_holiday(current_date) else None,
             'timerecord': timerecord,
         })
         current_date += timedelta(days=1)

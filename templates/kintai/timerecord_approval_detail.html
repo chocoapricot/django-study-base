@@ -1,5 +1,5 @@
 {% extends 'common/_base.html' %}
-{% load favorite_tags %}
+{% load favorite_tags help_tags %}
 
 {% block extra_css %}
 <style>
@@ -84,6 +84,9 @@
                     <tr class="{% if data.weekday == 5 %}table-saturday{% elif data.weekday == 6 or data.is_holiday %}table-sunday{% endif %}">
                         <td class="align-middle {% if data.weekday == 5 %}text-saturday{% elif data.weekday == 6 or data.is_holiday %}text-sunday{% endif %} fw-bold">
                             {{ data.date|date:"m/d" }} ({{ data.date|date:"D" }})
+                            {% if data.is_holiday and data.holiday_name %}
+                                {% my_help_icon data.holiday_name %}
+                            {% endif %}
                         </td>
                         <td class="text-center align-middle">
                             {{ data.timerecord.rounded_start_time|date:"H:i"|default:"-" }}
