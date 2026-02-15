@@ -39,7 +39,21 @@
                             {{ item.assignment.client_contract.client.name }}<br>
                             <small class="text-muted">{{ item.assignment.client_contract.contract_name }}</small>
                         </td>
-                        <td>{{ item.staff.employee_no|default:"-" }}</td>
+                        <td>
+                            {{ item.staff.employee_no|default:"-" }}
+                            {% if item.staff.next_contact_date %}
+                                <i class="bi bi-alarm ms-1 text-primary" title="連絡予定あり: {{ item.staff.next_contact_date|date:'Y/m/d' }} {{ item.staff.next_contact_content }}"></i>
+                            {% endif %}
+                            {% if item.staff.has_pending_connection_request %}
+                                <i class="bi bi-arrow-up-circle" style="color:#17a2b8;" title="接続申請中"></i>
+                            {% elif item.staff.is_connected_approved %}
+                                {% if item.staff.has_pending_profile_request or item.staff.has_pending_mynumber_request or item.staff.has_pending_bank_request or item.staff.has_pending_contact_request or item.staff.has_pending_international_request or item.staff.has_pending_disability_request or item.staff.has_pending_payroll_request %}
+                                    <i class="bi bi-arrow-down-circle" style="color:#17a2b8;" title="変更あり"></i>
+                                {% else %}
+                                    <i class="bi bi-link" style="color:#17a2b8;" title="接続承認済み"></i>
+                                {% endif %}
+                            {% endif %}
+                        </td>
                         <td>
                             {{ item.staff.name }}{% favorite_star item.staff %}{% staff_status_markers item.staff %}
                         </td>
