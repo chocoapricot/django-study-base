@@ -61,6 +61,25 @@ class ClientKintaiViewTest(TestCase):
         self.assertContains(response, "Test Client")
         self.assertContains(response, "StaffTest")
 
+    def test_client_contract_search_with_icons(self):
+        from apps.staff.models_staff import StaffContactSchedule
+        from datetime import date
+
+        # Add a contact schedule
+        StaffContactSchedule.objects.create(
+            staff=self.staff,
+            contact_date=date.today(),
+            content="Test Contact",
+            tenant_id=self.tenant_id
+        )
+
+        response = self.client.get(reverse('kintai:client_contract_search'))
+        self.assertEqual(response.status_code, 200)
+
+        # Check if the icon for contact schedule is present
+        self.assertContains(response, 'bi-alarm')
+        self.assertContains(response, '連絡予定あり')
+
     def test_client_timesheet_create_and_calendar(self):
         # Create timesheet
         today = timezone.localdate()
