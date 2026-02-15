@@ -3,7 +3,7 @@
     "model": "settings.menu",
     "pk": 1,
     "fields": {
-        "version": 1770648094555109,
+        "version": 1771097277378801,
         "created_at": "2024-10-25T07:19:05.997Z",
         "created_by": 1,
         "updated_at": "2026-01-25T13:39:28.613Z",
@@ -24,7 +24,7 @@
     "model": "settings.menu",
     "pk": 2,
     "fields": {
-        "version": 1770648094567672,
+        "version": 1771097277384137,
         "created_at": "2024-10-25T07:19:42.113Z",
         "created_by": 1,
         "updated_at": "2026-01-25T13:37:06.071Z",
@@ -45,7 +45,7 @@
     "model": "settings.menu",
     "pk": 3,
     "fields": {
-        "version": 1770648094574892,
+        "version": 1771097277386922,
         "created_at": "2024-10-25T07:20:18.686Z",
         "created_by": 1,
         "updated_at": "2026-01-25T13:37:14.046Z",
@@ -66,7 +66,7 @@
     "model": "settings.menu",
     "pk": 4,
     "fields": {
-        "version": 1770648094576901,
+        "version": 1771097277389061,
         "created_at": "2024-10-25T07:20:18.686Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.659Z",
@@ -87,7 +87,7 @@
     "model": "settings.menu",
     "pk": 5,
     "fields": {
-        "version": 1770648094578786,
+        "version": 1771097277391106,
         "created_at": "2024-10-25T07:21:23.405Z",
         "created_by": 1,
         "updated_at": "2025-08-09T14:28:52.858Z",
@@ -108,7 +108,7 @@
     "model": "settings.menu",
     "pk": 6,
     "fields": {
-        "version": 1770648094580658,
+        "version": 1771097277393160,
         "created_at": "2025-08-06T12:12:24.013Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.696Z",
@@ -129,7 +129,7 @@
     "model": "settings.menu",
     "pk": 8,
     "fields": {
-        "version": 1770648094582496,
+        "version": 1771097277395181,
         "created_at": "2025-07-19T15:46:59.051Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.724Z",
@@ -150,7 +150,7 @@
     "model": "settings.menu",
     "pk": 9,
     "fields": {
-        "version": 1770648094584316,
+        "version": 1771097277397195,
         "created_at": "2025-07-19T15:46:59.051Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.744Z",
@@ -171,7 +171,7 @@
     "model": "settings.menu",
     "pk": 10,
     "fields": {
-        "version": 1770648094591994,
+        "version": 1771097277399171,
         "created_at": "2025-07-19T15:46:59.051Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.761Z",
@@ -192,7 +192,7 @@
     "model": "settings.menu",
     "pk": 11,
     "fields": {
-        "version": 1770648094593975,
+        "version": 1771097277401274,
         "created_at": "2025-08-09T13:20:50.317Z",
         "created_by": 1,
         "updated_at": "2026-02-02T13:22:04.736Z",
@@ -213,7 +213,7 @@
     "model": "settings.menu",
     "pk": 12,
     "fields": {
-        "version": 1770648094595825,
+        "version": 1771097277403571,
         "created_at": "2025-08-09T14:20:17.099Z",
         "created_by": 1,
         "updated_at": "2026-02-02T13:22:30.229Z",
@@ -234,7 +234,7 @@
     "model": "settings.menu",
     "pk": 13,
     "fields": {
-        "version": 1770648094598337,
+        "version": 1771097277406276,
         "created_at": "2025-08-09T14:20:17.115Z",
         "created_by": 1,
         "updated_at": "2026-02-02T13:22:19.049Z",
@@ -255,7 +255,7 @@
     "model": "settings.menu",
     "pk": 14,
     "fields": {
-        "version": 1770648094600866,
+        "version": 1771097277408991,
         "created_at": "2025-08-14T11:36:34.629Z",
         "created_by": 1,
         "updated_at": "2026-01-26T15:13:08.834Z",
@@ -276,7 +276,7 @@
     "model": "settings.menu",
     "pk": 15,
     "fields": {
-        "version": 1770648094607154,
+        "version": 1771097277410961,
         "created_at": "2025-08-26T15:16:55.328Z",
         "created_by": 1,
         "updated_at": "2025-08-29T16:21:51.475Z",
@@ -297,7 +297,7 @@
     "model": "settings.menu",
     "pk": 16,
     "fields": {
-        "version": 1770648094609818,
+        "version": 1771097277413046,
         "created_at": "2025-08-16T14:00:00Z",
         "created_by": 1,
         "updated_at": "2025-08-31T15:01:22.278Z",
@@ -318,7 +318,7 @@
     "model": "settings.menu",
     "pk": 17,
     "fields": {
-        "version": 1770648094612372,
+        "version": 1771097277415976,
         "created_at": "2025-08-26T15:00:00Z",
         "created_by": 1,
         "updated_at": "2025-08-31T15:01:34.360Z",
@@ -339,7 +339,7 @@
     "model": "settings.menu",
     "pk": 18,
     "fields": {
-        "version": 1770648094614861,
+        "version": 1771097277419743,
         "created_at": "2025-08-26T16:00:00Z",
         "created_by": 1,
         "updated_at": "2025-08-31T15:01:25.448Z",
@@ -360,7 +360,7 @@
     "model": "settings.menu",
     "pk": 19,
     "fields": {
-        "version": 1770648094617472,
+        "version": 1771097277424618,
         "created_at": "2025-08-26T17:00:00Z",
         "created_by": 1,
         "updated_at": "2025-08-31T15:01:37.478Z",
@@ -381,7 +381,7 @@
     "model": "settings.menu",
     "pk": 20,
     "fields": {
-        "version": 1770648094625325,
+        "version": 1771097277428998,
         "created_at": "2025-08-26T18:00:00Z",
         "created_by": 1,
         "updated_at": "2025-08-31T15:01:28.884Z",
@@ -402,7 +402,7 @@
     "model": "settings.menu",
     "pk": 21,
     "fields": {
-        "version": 1770648094628234,
+        "version": 1771097277432594,
         "created_at": "2025-08-16T13:00:00Z",
         "created_by": 1,
         "updated_at": "2025-08-31T15:01:18.152Z",
@@ -423,7 +423,7 @@
     "model": "settings.menu",
     "pk": 22,
     "fields": {
-        "version": 1770648094630781,
+        "version": 1771097277435586,
         "created_at": "2025-07-19T15:46:59.051Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.744Z",
@@ -444,7 +444,7 @@
     "model": "settings.menu",
     "pk": 23,
     "fields": {
-        "version": 1770648094632614,
+        "version": 1771097277437859,
         "created_at": "2025-09-08T15:45:00Z",
         "created_by": 1,
         "updated_at": "2025-12-05T14:32:54.314Z",
@@ -465,7 +465,7 @@
     "model": "settings.menu",
     "pk": 24,
     "fields": {
-        "version": 1770648094634440,
+        "version": 1771097277439872,
         "created_at": "2025-09-09T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-12-05T14:33:27.503Z",
@@ -486,7 +486,7 @@
     "model": "settings.menu",
     "pk": 25,
     "fields": {
-        "version": 1770648094642895,
+        "version": 1771097277441942,
         "created_at": "2025-09-10T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-10T00:00:00Z",
@@ -507,7 +507,7 @@
     "model": "settings.menu",
     "pk": 26,
     "fields": {
-        "version": 1770648094644878,
+        "version": 1771097277443892,
         "created_at": "2025-10-12T00:00:00Z",
         "created_by": 1,
         "updated_at": "2026-02-02T13:22:49.687Z",
@@ -528,7 +528,7 @@
     "model": "settings.menu",
     "pk": 27,
     "fields": {
-        "version": 1770648094647397,
+        "version": 1771097277446540,
         "created_at": "2025-10-16T00:00:00Z",
         "created_by": 1,
         "updated_at": "2026-02-02T13:22:57.903Z",
@@ -549,7 +549,7 @@
     "model": "settings.menu",
     "pk": 28,
     "fields": {
-        "version": 1770648094649870,
+        "version": 1771097277449517,
         "created_at": "2025-10-28T00:00:00Z",
         "created_by": 1,
         "updated_at": "2026-02-02T13:22:38.865Z",
@@ -570,7 +570,7 @@
     "model": "settings.menu",
     "pk": 29,
     "fields": {
-        "version": 1770648094659110,
+        "version": 1771097277452651,
         "created_at": "2025-11-15T10:53:15.666Z",
         "created_by": 1,
         "updated_at": "2026-02-02T13:23:16.394Z",
@@ -591,14 +591,14 @@
     "model": "settings.menu",
     "pk": 30,
     "fields": {
-        "version": 1770648094661523,
+        "version": 1771118614679795,
         "created_at": "2025-11-15T10:53:15.678Z",
         "created_by": 1,
-        "updated_at": "2026-02-02T13:23:39.803Z",
+        "updated_at": "2026-02-15T01:39:21.332Z",
         "updated_by": 1,
         "name": "契約検索",
         "url": "/kintai/contract/search/",
-        "icon": "bi-calendar-month",
+        "icon": "bi-calendar3",
         "icon_style": "color:#28a745;",
         "parent": 29,
         "level": 0,
@@ -612,14 +612,14 @@
     "model": "settings.menu",
     "pk": 31,
     "fields": {
-        "version": 1770648094664061,
+        "version": 1771118622881266,
         "created_at": "2025-11-25T11:34:45.985Z",
         "created_by": 1,
-        "updated_at": "2026-02-07T14:52:32.195Z",
+        "updated_at": "2026-02-15T01:39:29.533Z",
         "updated_by": 1,
         "name": "スタッフ検索",
         "url": "/kintai/staff/search/",
-        "icon": "bi-calendar-month",
+        "icon": "bi-calendar3",
         "icon_style": "color:#28a745;",
         "parent": 29,
         "level": 0,
@@ -633,7 +633,7 @@
     "model": "settings.menu",
     "pk": 32,
     "fields": {
-        "version": 1770648094666534,
+        "version": 1771097277460001,
         "created_at": "2025-12-05T14:50:00Z",
         "created_by": 1,
         "updated_at": "2025-12-05T14:50:00Z",
@@ -654,20 +654,20 @@
     "model": "settings.menu",
     "pk": 34,
     "fields": {
-        "version": 1770648094671633,
+        "version": 1771118532579380,
         "created_at": "2025-12-27T00:00:00Z",
         "created_by": 1,
-        "updated_at": "2026-01-17T16:57:00.196Z",
+        "updated_at": "2026-02-15T01:37:59.231Z",
         "updated_by": 1,
         "name": "勤怠打刻",
         "url": "/kintai/timerecord/punch/",
-        "icon": "bi-clock",
+        "icon": "bi-stopwatch",
         "icon_style": "color:#28a745;",
         "parent": null,
         "level": 0,
         "exact_match": false,
         "required_permission": "kintai.view_stafftimerecord",
-        "disp_seq": 80,
+        "disp_seq": 85,
         "active": true
     }
 },
@@ -675,10 +675,10 @@
     "model": "settings.menu",
     "pk": 35,
     "fields": {
-        "version": 1770648094675488,
+        "version": 1771118505594631,
         "created_at": "2026-01-10T16:00:00Z",
         "created_by": 1,
-        "updated_at": "2026-01-17T16:44:10.451Z",
+        "updated_at": "2026-02-15T01:37:32.246Z",
         "updated_by": 1,
         "name": "問い合わせ・ご連絡",
         "url": "/staff/inquiry/",
@@ -688,7 +688,7 @@
         "level": 0,
         "exact_match": true,
         "required_permission": "staff.view_staffinquiry",
-        "disp_seq": 85,
+        "disp_seq": 89,
         "active": true
     }
 },
@@ -696,7 +696,7 @@
     "model": "settings.menu",
     "pk": 36,
     "fields": {
-        "version": 1770747741626765,
+        "version": 1771097277467219,
         "created_at": "2026-01-25T15:03:08.580Z",
         "created_by": 1,
         "updated_at": "2026-02-10T18:38:08.279Z",
@@ -717,7 +717,7 @@
     "model": "settings.menu",
     "pk": 37,
     "fields": {
-        "version": 1770747730479279,
+        "version": 1771097277469324,
         "created_at": "2026-01-25T15:04:08.406Z",
         "created_by": 1,
         "updated_at": "2026-02-10T18:37:57.131Z",
@@ -738,7 +738,7 @@
     "model": "settings.menu",
     "pk": 38,
     "fields": {
-        "version": 1770648094682098,
+        "version": 1771097277471306,
         "created_at": "2026-02-07T12:00:00Z",
         "created_by": 1,
         "updated_at": "2026-02-07T13:30:12.406Z",
@@ -759,10 +759,10 @@
     "model": "settings.menu",
     "pk": 39,
     "fields": {
-        "version": 1770648094683998,
+        "version": 1771118587946753,
         "created_at": "2026-02-08T12:00:00Z",
         "created_by": 1,
-        "updated_at": "2026-02-08T12:00:00Z",
+        "updated_at": "2026-02-15T01:38:54.599Z",
         "updated_by": 1,
         "name": "勤怠打刻カレンダー",
         "url": "/kintai/timerecord/calender/",
@@ -772,7 +772,7 @@
         "level": 0,
         "exact_match": false,
         "required_permission": "kintai.view_stafftimerecord",
-        "disp_seq": 81,
+        "disp_seq": 86,
         "active": true
     }
 },
@@ -780,10 +780,10 @@
     "model": "settings.menu",
     "pk": 40,
     "fields": {
-        "version": 1770648094683999,
+        "version": 1771118568148363,
         "created_at": "2026-02-10T12:00:00Z",
         "created_by": 1,
-        "updated_at": "2026-02-10T12:00:00Z",
+        "updated_at": "2026-02-15T01:38:34.800Z",
         "updated_by": 1,
         "name": "勤怠打刻承認",
         "url": "/kintai/timerecord/approval/",
@@ -793,7 +793,7 @@
         "level": 0,
         "exact_match": false,
         "required_permission": "kintai.view_stafftimerecordapproval",
-        "disp_seq": 82,
+        "disp_seq": 87,
         "active": true
     }
 },
@@ -801,14 +801,14 @@
     "model": "settings.menu",
     "pk": 41,
     "fields": {
-        "version": 1770648094684000,
+        "version": 1771118628109254,
         "created_at": "2026-02-15T00:00:00Z",
         "created_by": 1,
-        "updated_at": "2026-02-15T00:00:00Z",
+        "updated_at": "2026-02-15T01:39:34.761Z",
         "updated_by": 1,
         "name": "クライアント勤怠",
-        "url": "/kintai/client/contract/search/",
-        "icon": "bi-calendar-check",
+        "url": "/kintai/client/search/",
+        "icon": "bi-calendar3",
         "icon_style": "color:#28a745;",
         "parent": null,
         "level": 0,
@@ -819,5 +819,3 @@
     }
 }
 ]
-
-
