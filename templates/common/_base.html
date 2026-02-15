@@ -185,6 +185,11 @@
         margin-left: 70px; /* 閉じたときのサイドバーの幅に合わせる */
         width: calc(100% - 70px);
     }
+
+    #mainContent.full-width {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
     
     .sidebar::-webkit-scrollbar { width: 8px; }
     .sidebar::-webkit-scrollbar-track { background: {% user_parameter 'LEFT_MENU_COLOR' '#f8f9fa' %}; }
@@ -354,6 +359,7 @@
 </head>
 <body class="no-transition">
 
+    {% if user.is_authenticated %}
     <!-- ヘッダー -->
     <div class="header">
         <div class="left-section">
@@ -489,12 +495,13 @@
     </ul>
   </div>
 </div>
+{% endif %}
 
 <!-- Main Content -->
 <div class="container-fluid mt-1 mb-3">
   <div class="row">
     <!-- Add id to main content area -->
-    <main id="mainContent" class="px-md-4 {% if request.session.is_sidebar_collapsed %}expanded{% endif %}" style="padding-top: 80px;">
+    <main id="mainContent" class="px-md-4 {% if not user.is_authenticated %}full-width{% elif request.session.is_sidebar_collapsed %}expanded{% endif %}" style="padding-top: {% if user.is_authenticated %}80px{% else %}20px{% endif %};">
             <!-- メッセージ表示 -->
         {% if messages %}
             {% for message in messages %}
