@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from .models_staff import Staff
 from ..common.models import MyTenantModel, TenantManager
+from apps.common.constants import Constants, get_evaluation_rating_choices
 
 class StaffEvaluation(MyTenantModel):
     """
@@ -24,9 +25,9 @@ class StaffEvaluation(MyTenantModel):
     
     # 評価項目
     rating = models.IntegerField(
-        '評価', 
-        choices=[(i, str(i)) for i in range(1, 6)], 
-        default=3,
+        '評価',
+        choices=get_evaluation_rating_choices(),
+        default=Constants.EVALUATION_RATING.THREE,
         help_text='1(悪い) - 5(良い)'
     )
     comment = models.TextField('コメント', blank=True, null=True)

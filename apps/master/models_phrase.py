@@ -1,5 +1,9 @@
 from django.db import models
 from ..common.models import MyTenantModel
+from apps.common.constants import (
+    Constants,
+    get_phrase_template_format_choices
+)
 
 
 class PhraseTemplateTitle(MyTenantModel):
@@ -7,11 +11,6 @@ class PhraseTemplateTitle(MyTenantModel):
     汎用文言タイトルを管理するモデル。
     admin画面からのみ操作可能。
     """
-    
-    FORMAT_CHOICES = [
-        ('text', 'テキスト'),
-        ('textarea', 'テキストエリア'),
-    ]
     
     key = models.CharField(
         '参照キー',
@@ -33,8 +32,8 @@ class PhraseTemplateTitle(MyTenantModel):
     format_type = models.CharField(
         '書式',
         max_length=10,
-        choices=FORMAT_CHOICES,
-        default='text',
+        choices=get_phrase_template_format_choices(),
+        default=Constants.FORMAT_TYPE.TEXT,
         help_text='入力フィールドの書式を選択してください'
     )
     is_active = models.BooleanField(

@@ -1,6 +1,12 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from apps.common.models import MyModel, MyTenantModel, TenantManager
+from apps.common.constants import (
+    Constants,
+    get_kintai_status_choices,
+    get_staff_work_type_choices,
+    get_client_work_type_choices
+)
 from apps.contract.models import StaffContract, ClientContract
 from apps.client.models import Client
 from apps.staff.models import Staff
@@ -49,13 +55,8 @@ class StaffTimesheet(MyTenantModel):
     status = models.CharField(
         'ステータス',
         max_length=2,
-        choices=[
-            ('10', '作成中'),
-            ('20', '提出済み'),
-            ('30', '承認済み'),
-            ('40', '差戻し'),
-        ],
-        default='10'
+        choices=get_kintai_status_choices(),
+        default=Constants.KINTAI_STATUS.DRAFT
     )
 
     # 提出・承認情報
@@ -159,13 +160,13 @@ class StaffTimesheet(MyTenantModel):
         """日次勤怠データから集計値を計算する"""
         timecards = self.timecards.all()
 
-        self.total_work_days = timecards.filter(work_type='10').count()
+        self.total_work_days = timecards.filter(work_type=Constants.WORK_TYPE.WORK).count()
         self.total_work_minutes = sum(tc.work_minutes or 0 for tc in timecards)
         self.total_overtime_minutes = sum(tc.overtime_minutes or 0 for tc in timecards)
         self.total_late_night_overtime_minutes = sum(tc.late_night_overtime_minutes or 0 for tc in timecards)
         self.total_holiday_work_minutes = sum(tc.holiday_work_minutes or 0 for tc in timecards)
         # 遅刻・早退の集計は廃止（個別timecardの値は残るが月次の集計フィールドは削除）
-        self.total_absence_days = timecards.filter(work_type='30').count()
+        self.total_absence_days = timecards.filter(work_type=Constants.WORK_TYPE.ABSENCE).count()
         self.total_paid_leave_days = sum(tc.paid_leave_days or 0 for tc in timecards)
 
         # --- 月単位時間範囲方式の割増・控除時間計算 ---
@@ -285,17 +286,17 @@ class StaffTimesheet(MyTenantModel):
     @property
     def is_editable(self):
         """編集可能かどうか"""
-        return self.status in ['10', '40']  # 作成中または差戻し
+        return self.status in [Constants.KINTAI_STATUS.DRAFT, Constants.KINTAI_STATUS.REJECTED]  # 作成中または差戻し
 
     @property
     def is_submitted(self):
         """提出済みかどうか"""
-        return self.status in ['20', '30']  # 提出済みまたは承認済み
+        return self.status in [Constants.KINTAI_STATUS.SUBMITTED, Constants.KINTAI_STATUS.APPROVED]  # 提出済みまたは承認済み
 
     @property
     def is_approved(self):
         """承認済みかどうか"""
-        return self.status == '30'
+        return self.status == Constants.KINTAI_STATUS.APPROVED
 
     @property
     def monthly_standard_hours(self):
@@ -416,13 +417,8 @@ class ClientTimesheet(MyTenantModel):
     status = models.CharField(
         'ステータス',
         max_length=2,
-        choices=[
-            ('10', '作成中'),
-            ('20', '提出済み'),
-            ('30', '承認済み'),
-            ('40', '差戻し'),
-        ],
-        default='10'
+        choices=get_kintai_status_choices(),
+        default=Constants.KINTAI_STATUS.DRAFT
     )
 
     # 提出・承認情報
@@ -512,12 +508,12 @@ class ClientTimesheet(MyTenantModel):
         """日次勤怠データから集計値を計算する"""
         timecards = self.timecards.all()
 
-        self.total_work_days = timecards.filter(work_type='10').count()
+        self.total_work_days = timecards.filter(work_type=Constants.WORK_TYPE.WORK).count()
         self.total_work_minutes = sum(tc.work_minutes or 0 for tc in timecards)
         self.total_overtime_minutes = sum(tc.overtime_minutes or 0 for tc in timecards)
         self.total_late_night_overtime_minutes = sum(tc.late_night_overtime_minutes or 0 for tc in timecards)
         self.total_holiday_work_minutes = sum(tc.holiday_work_minutes or 0 for tc in timecards)
-        self.total_absence_days = timecards.filter(work_type='30').count()
+        self.total_absence_days = timecards.filter(work_type=Constants.WORK_TYPE.ABSENCE).count()
 
         # --- 月単位時間範囲方式の割増・控除時間計算 ---
         self.total_premium_minutes = 0
@@ -621,17 +617,17 @@ class ClientTimesheet(MyTenantModel):
     @property
     def is_editable(self):
         """編集可能かどうか"""
-        return self.status in ['10', '40']
+        return self.status in [Constants.KINTAI_STATUS.DRAFT, Constants.KINTAI_STATUS.REJECTED]
 
     @property
     def is_submitted(self):
         """提出済みかどうか"""
-        return self.status in ['20', '30']
+        return self.status in [Constants.KINTAI_STATUS.SUBMITTED, Constants.KINTAI_STATUS.APPROVED]
 
     @property
     def is_approved(self):
         """承認済みかどうか"""
-        return self.status == '30'
+        return self.status == Constants.KINTAI_STATUS.APPROVED
 
     @property
     def monthly_standard_hours(self):
@@ -750,13 +746,8 @@ class ClientTimecard(MyTenantModel):
     work_type = models.CharField(
         '勤務区分',
         max_length=2,
-        choices=[
-            ('10', '出勤'),
-            ('20', '休日'),
-            ('30', '欠勤'),
-            ('70', '稼働無し'),
-        ],
-        default='10'
+        choices=get_client_work_type_choices(),
+        default=Constants.WORK_TYPE.WORK
     )
 
     # 勤務時間
@@ -803,7 +794,7 @@ class ClientTimecard(MyTenantModel):
     def clean(self):
         """バリデーション"""
         # 出勤の場合は出勤・退勤時刻が必須
-        if self.work_type == '10':  # 出勤
+        if self.work_type == Constants.WORK_TYPE.WORK:  # 出勤
             if not self.start_time or not self.end_time:
                 raise ValidationError('出勤の場合は出勤時刻と退勤時刻を入力してください。')
 
@@ -852,7 +843,7 @@ class ClientTimecard(MyTenantModel):
 
     def calculate_work_hours(self):
         """労働時間を計算する"""
-        if self.work_type != '10' or not self.start_time or not self.end_time:
+        if self.work_type != Constants.WORK_TYPE.WORK or not self.start_time or not self.end_time:
             self.work_minutes = 0
             self.overtime_minutes = 0
             self.late_night_overtime_minutes = 0
@@ -928,11 +919,11 @@ class ClientTimecard(MyTenantModel):
 
     @property
     def is_holiday(self):
-        return self.work_type in ['20', '70']
+        return self.work_type in [Constants.WORK_TYPE.HOLIDAY, Constants.WORK_TYPE.NO_WORK]
 
     @property
     def is_absence(self):
-        return self.work_type == '30'
+        return self.work_type == Constants.WORK_TYPE.ABSENCE
 
     @property
     def work_hours_display(self):
@@ -996,16 +987,8 @@ class StaffTimecard(MyTenantModel):
     work_type = models.CharField(
         '勤務区分',
         max_length=2,
-        choices=[
-            ('10', '出勤'),
-            ('20', '休日'),
-            ('30', '欠勤'),
-            ('40', '有給休暇'),
-            ('50', '特別休暇'),
-            ('60', '代休'),
-            ('70', '稼働無し'),
-        ],
-        default='10'
+        choices=get_staff_work_type_choices(),
+        default=Constants.WORK_TYPE.WORK
     )
 
     # 勤務時間
@@ -1059,7 +1042,7 @@ class StaffTimecard(MyTenantModel):
     def clean(self):
         """バリデーション"""
         # 出勤の場合は出勤・退勤時刻が必須
-        if self.work_type == '10':  # 出勤
+        if self.work_type == Constants.WORK_TYPE.WORK:  # 出勤
             if not self.start_time or not self.end_time:
                 raise ValidationError('出勤の場合は出勤時刻と退勤時刻を入力してください。')
 
@@ -1070,7 +1053,7 @@ class StaffTimecard(MyTenantModel):
                     raise ValidationError('退勤時刻は出勤時刻より後の時刻を入力してください。')
 
         # 有給休暇の場合は日数が必須
-        if self.work_type == '40':  # 有給休暇
+        if self.work_type == Constants.WORK_TYPE.PAID_LEAVE:  # 有給休暇
             if not self.paid_leave_days or self.paid_leave_days <= 0:
                 raise ValidationError('有給休暇の場合は有給休暇日数を入力してください。')
 
@@ -1125,7 +1108,7 @@ class StaffTimecard(MyTenantModel):
 
     def calculate_work_hours(self):
         """労働時間を計算する"""
-        if self.work_type != '10' or not self.start_time or not self.end_time:
+        if self.work_type != Constants.WORK_TYPE.WORK or not self.start_time or not self.end_time:
             # 出勤以外または時刻未入力の場合は0
             self.work_minutes = 0
             self.overtime_minutes = 0
@@ -1231,12 +1214,17 @@ class StaffTimecard(MyTenantModel):
     @property
     def is_holiday(self):
         """休日かどうか"""
-        return self.work_type in ['20', '40', '50', '60']
+        return self.work_type in [
+            Constants.WORK_TYPE.HOLIDAY,
+            Constants.WORK_TYPE.PAID_LEAVE,
+            Constants.WORK_TYPE.SPECIAL_LEAVE,
+            Constants.WORK_TYPE.COMPENSATORY_LEAVE
+        ]
 
     @property
     def is_absence(self):
         """欠勤かどうか"""
-        return self.work_type == '30'
+        return self.work_type == Constants.WORK_TYPE.ABSENCE
 
     @property
     def work_hours_display(self):
@@ -1638,13 +1626,8 @@ class StaffTimerecordApproval(MyTenantModel):
     status = models.CharField(
         '承認ステータス',
         max_length=2,
-        choices=[
-            ('10', '作成中'),
-            ('20', '提出済み'),
-            ('30', '承認済み'),
-            ('40', '差戻し'),
-        ],
-        default='10'
+        choices=get_kintai_status_choices(),
+        default=Constants.KINTAI_STATUS.DRAFT
     )
 
     class Meta:

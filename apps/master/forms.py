@@ -36,7 +36,8 @@ from apps.system.settings.models import Dropdowns
 from apps.common.constants import (
     Constants,
     get_break_input_choices,
-    get_location_fetch_choices
+    get_location_fetch_choices,
+    get_contract_term_position_choices
 )
 from apps.common.forms import MyRadioSelect
 
@@ -338,7 +339,7 @@ class ContractTermForm(forms.ModelForm):
                 query = query.exclude(pk=self.instance.pk)
 
             if query.exists():
-                position_name = dict(self.Meta.model.POSITION_CHOICES).get(display_position)
+                position_name = dict(get_contract_term_position_choices()).get(display_position)
                 raise ValidationError(f'この契約書パターンにはすでに「{position_name}」が登録されています。')
 
         return cleaned_data
