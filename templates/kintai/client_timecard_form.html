@@ -1,19 +1,54 @@
 {% extends 'common/_base.html' %}
-{% load help_tags %}
+{% load help_tags badge_tags %}
 {% load favorite_tags staff_tags %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header">
-        月次勤怠詳細
+    <div class="card-header d-flex justify-content-between align-items-center">
+        クライアント月次勤怠詳細
     </div>
     <div class="card-body">
         <div class="row">
             <div class="col-md-6">
                 <h6 class="text-muted mb-3">基本情報</h6>
                 <table class="table table-sm">
-                    <tr><th style="width: 40%;">クライアント</th><td>{{ timesheet.client.name }}</td></tr>
+                    <tr><th style="width: 40%;">クライアント</th><td><a href="{% url 'client:client_detail' timesheet.client.pk %}">{{ timesheet.client }}</a></td></tr>
+                    <tr><th>クライアント契約</th><td><a href="{% url 'contract:client_contract_detail' timesheet.client_contract.pk %}">{{ timesheet.client_contract.contract_name }}</a></td></tr>
                     <tr><th>スタッフ</th><td>{{ timesheet.staff.name }}{% favorite_star timesheet.staff %}{% staff_status_markers timesheet.staff %}</td></tr>
+                    <tr>
+                        <th>就業時間</th>
+                        <td>
+                            {% if timesheet.client_contract.worktime_pattern %}
+                                {% include 'common/_worktime_pattern_display.html' with worktime_pattern=timesheet.client_contract.worktime_pattern %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>時間外算出</th>
+                        <td>
+                            {% if timesheet.client_contract.overtime_pattern %}
+                                {% include 'common/_overtime_pattern_display.html' with overtime_pattern=timesheet.client_contract.overtime_pattern %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>ステータス</th>
+                        <td>
+                            {% if timesheet.status == '10' %}
+                                <span class="badge bg-secondary">作成中</span>
+                            {% elif timesheet.status == '20' %}
+                                <span class="badge bg-info">提出済み</span>
+                            {% elif timesheet.status == '30' %}
+                                <span class="badge bg-success">承認済み</span>
+                            {% elif timesheet.status == '40' %}
+                                <span class="badge bg-warning">差戻し</span>
+                            {% endif %}
+                        </td>
+                    </tr>
                 </table>
             </div>
             <div class="col-md-6">
