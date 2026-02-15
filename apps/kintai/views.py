@@ -16,6 +16,7 @@ from django.db.models import Q
 from apps.common.middleware import get_current_tenant_id
 from apps.common.constants import Constants
 from apps.contract.models import ClientContract, ContractAssignment
+from apps.staff.utils import get_annotated_staff_queryset, annotate_staff_connection_info
 
 
 @login_required
@@ -1769,12 +1770,28 @@ def client_contract_search(request):
         (Q(assignment_end_date__gte=target_date) | Q(assignment_end_date__isnull=True))
     ).order_by('client_contract__client__name', 'staff_contract__staff__employee_no')
 
+    # スタッフの注釈を事前に取得
+    staff_ids = [a.staff_contract.staff_id for a in assignments]
+    annotated_staffs = get_annotated_staff_queryset(request.user).filter(id__in=staff_ids).select_related('international', 'disability')
+    staff_map = {s.id: s for s in annotated_staffs}
+
     assignment_list = []
+    staff_to_annotate = []
     for assignment in assignments:
+        # 注釈付きスタッフに差し替え
+        staff = staff_map.get(assignment.staff_contract.staff_id)
+        if staff:
+            assignment.staff_contract.staff = staff
+        else:
+            staff = assignment.staff_contract.staff
+
+        if staff not in staff_to_annotate:
+            staff_to_annotate.append(staff)
+
         timesheet = ClientTimesheet.objects.filter(
             tenant_id=tenant_id,
             client_contract=assignment.client_contract,
-            staff=assignment.staff_contract.staff,
+            staff=staff,
             target_month=target_date
         ).first()
 
@@ -1786,8 +1803,12 @@ def client_contract_search(request):
             'assignment': assignment,
             'timesheet': timesheet,
             'input_days': input_days,
-            'staff': assignment.staff_contract.staff,
+            'staff': staff,
         })
+
+    # 接続情報の付与
+    if staff_to_annotate:
+        annotate_staff_connection_info(staff_to_annotate)
 
     context = {
         'assignment_list': assignment_list,
