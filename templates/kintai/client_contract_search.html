@@ -23,9 +23,8 @@
                         <th style="width: 6%;">社員番号</th>
                         <th style="width: 9%;">スタッフ</th>
                         <th style="width: 8%;">雇用形態</th>
-                        <th style="width: 5%;">締め日</th>
                         <th style="width: 12%;">契約期間</th>
-                        <th style="width: 7%;">対象年月</th>
+                        <th style="width: 5%;">締日</th>
                         <th style="width: 7%;">入力日数</th>
                         <th style="width: 7%;">出勤日数</th>
                         <th style="width: 7%;">総労働時間</th>
@@ -65,13 +64,14 @@
                                 -
                             {% endif %}
                         </td>
-                        <td class="text-center">{{ item.assignment.client_contract.payment_site.closing_day|default:"-" }}</td>
                         <td>{{ item.assignment.assignment_period_display }}</td>
-                        <td>
-                            {% if item.timesheet %}
-                                <a href="{% url 'kintai:client_timesheet_detail' item.timesheet.pk %}">{{ target_date|date:"Y年m月" }}</a>
+                        <td class="text-center">
+                            {% if item.assignment.client_contract.payment_site.closing_day %}
+                                <span class="badge {{ item.assignment.client_contract.payment_site.closing_day|badge_class }}">
+                                    {% if item.assignment.client_contract.payment_site.closing_day == 31 %}末日{% else %}{{ item.assignment.client_contract.payment_site.closing_day }}日{% endif %}
+                                </span>
                             {% else %}
-                                {{ target_date|date:"Y年m月" }}
+                                -
                             {% endif %}
                         </td>
                         <td class="text-end">
