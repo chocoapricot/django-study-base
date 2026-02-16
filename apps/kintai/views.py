@@ -1761,7 +1761,7 @@ def client_contract_search(request):
     tenant_id = get_current_tenant_id()
     # 指定月に有効なアサインメント（契約とスタッフの紐づけ）を取得
     assignments = ContractAssignment.objects.select_related(
-        'client_contract', 'client_contract__client', 'staff_contract', 'staff_contract__staff'
+        'client_contract', 'client_contract__client', 'client_contract__payment_site', 'staff_contract', 'staff_contract__staff'
     ).filter(
         tenant_id=tenant_id
     ).filter(
