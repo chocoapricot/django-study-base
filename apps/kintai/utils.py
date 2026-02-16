@@ -103,9 +103,12 @@ def apply_time_rounding(start_time, end_time, time_punch):
 def sync_timerecords_to_timecards(approval):
     """
     承認された勤怠申請に基づいて日次勤怠(StaffTimecard)を作成・更新する
+    契約アサインがある場合はクライアント日次勤怠(ClientTimecard)にも反映する
     """
     from django.utils import timezone
-    from .models import StaffTimerecord, StaffTimecard
+    from django.db.models import Q
+    from .models import StaffTimerecord, StaffTimecard, ClientTimecard
+    from apps.contract.models import ContractAssignment
 
     staff = approval.staff
     contract = approval.staff_contract
@@ -120,6 +123,7 @@ def sync_timerecords_to_timecards(approval):
     ).prefetch_related('breaks')
 
     updated_timesheets = set()
+    updated_client_timesheets = set()
 
     for tr in timerecords:
         # 開始・終了の両方が揃っている場合のみ処理
@@ -141,7 +145,7 @@ def sync_timerecords_to_timecards(approval):
         # 休憩時間の合計（分）
         total_break_minutes = tr.total_break_minutes
 
-        # StaffTimecardを取得または作成
+        # --- スタッフ勤怠(StaffTimecard)の更新 ---
         timecard = StaffTimecard.objects.filter(
             staff_contract=contract,
             work_date=tr.work_date
@@ -168,8 +172,48 @@ def sync_timerecords_to_timecards(approval):
         if timecard.timesheet:
             updated_timesheets.add(timecard.timesheet)
 
-    # 影響を受けた月次勤怠の集計を更新
+        # --- クライアント勤怠(ClientTimecard)の更新 ---
+        # 該当日の契約アサインを確認
+        assignment = ContractAssignment.objects.filter(
+            Q(staff_contract=contract),
+            Q(assignment_start_date__lte=tr.work_date),
+            Q(assignment_end_date__gte=tr.work_date) | Q(assignment_end_date__isnull=True)
+        ).first()
+
+        if assignment:
+            client_timecard = ClientTimecard.objects.filter(
+                client_contract=assignment.client_contract,
+                staff=staff,
+                work_date=tr.work_date
+            ).first()
+
+            if not client_timecard:
+                client_timecard = ClientTimecard(
+                    client_contract=assignment.client_contract,
+                    staff=staff,
+                    work_date=tr.work_date
+                )
+
+            client_timecard.work_type = '10'  # 出勤
+            client_timecard.start_time = start_time
+            client_timecard.start_time_next_day = start_next_day
+            client_timecard.end_time = end_time
+            client_timecard.end_time_next_day = end_next_day
+            client_timecard.break_minutes = total_break_minutes
+            client_timecard.memo = tr.memo
+
+            # 保存（集計更新は後でまとめて行う）
+            client_timecard.save(skip_timesheet_update=True)
+
+            if client_timecard.timesheet:
+                updated_client_timesheets.add(client_timecard.timesheet)
+
+    # スタッフ月次勤怠の集計を更新
     for ts in updated_timesheets:
+        ts.calculate_totals()
+
+    # クライアント月次勤怠の集計を更新
+    for ts in updated_client_timesheets:
         ts.calculate_totals()
 
 
