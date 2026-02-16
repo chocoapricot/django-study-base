@@ -19,15 +19,16 @@
             <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
                 <thead>
                     <tr>
-                        <th style="width: 14%;">クライアント</th>
+                        <th style="width: 13%;">クライアント</th>
                         <th style="width: 6%;">社員番号</th>
-                        <th style="width: 10%;">スタッフ</th>
+                        <th style="width: 9%;">スタッフ</th>
                         <th style="width: 8%;">雇用形態</th>
-                        <th style="width: 13%;">契約期間</th>
-                        <th style="width: 8%;">対象年月</th>
+                        <th style="width: 5%;">締め日</th>
+                        <th style="width: 12%;">契約期間</th>
+                        <th style="width: 7%;">対象年月</th>
                         <th style="width: 7%;">入力日数</th>
                         <th style="width: 7%;">出勤日数</th>
-                        <th style="width: 8%;">総労働時間</th>
+                        <th style="width: 7%;">総労働時間</th>
                         <th style="width: 8%;">残業時間</th>
                         <th style="width: 11%;">操作</th>
                     </tr>
@@ -64,6 +65,7 @@
                                 -
                             {% endif %}
                         </td>
+                        <td class="text-center">{{ item.assignment.client_contract.payment_site.closing_day|default:"-" }}</td>
                         <td>{{ item.assignment.assignment_period_display }}</td>
                         <td>
                             {% if item.timesheet %}
