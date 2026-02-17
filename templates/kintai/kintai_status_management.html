@@ -172,7 +172,7 @@
                             </a>
                         </div>
                     {% else %}
-                        <span class="text-muted">-</span>
+                        <span class="badge bg-light text-danger border border-danger">未作成</span>
                     {% endif %}
                 </td>
                 <td>
@@ -180,27 +180,33 @@
                         {% for ct in item.client_timesheet_list %}
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <div>
-                                    <small>{{ ct.timesheet.client.name|truncatechars:20 }}</small><br>
-                                    {% if ct.timesheet.status == '10' %}
-                                        <span class="badge bg-secondary status-badge">{{ ct.status_display }}</span>
-                                    {% elif ct.timesheet.status == '20' %}
-                                        <span class="badge bg-warning text-dark status-badge">{{ ct.status_display }}</span>
-                                    {% elif ct.timesheet.status == '30' %}
-                                        <span class="badge bg-success status-badge">{{ ct.status_display }}</span>
-                                    {% elif ct.timesheet.status == '40' %}
-                                        <span class="badge bg-danger status-badge">{{ ct.status_display }}</span>
+                                    <small>{{ ct.assignment.client_contract.client.name|truncatechars:20 }}</small><br>
+                                    {% if not ct.is_created %}
+                                        <span class="badge bg-light text-danger border border-danger status-badge">{{ ct.status_display }}</span>
                                     {% else %}
-                                        <span class="badge bg-secondary status-badge">{{ ct.status_display }}</span>
+                                        {% if ct.timesheet.status == '10' %}
+                                            <span class="badge bg-secondary status-badge">{{ ct.status_display }}</span>
+                                        {% elif ct.timesheet.status == '20' %}
+                                            <span class="badge bg-warning text-dark status-badge">{{ ct.status_display }}</span>
+                                        {% elif ct.timesheet.status == '30' %}
+                                            <span class="badge bg-success status-badge">{{ ct.status_display }}</span>
+                                        {% elif ct.timesheet.status == '40' %}
+                                            <span class="badge bg-danger status-badge">{{ ct.status_display }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary status-badge">{{ ct.status_display }}</span>
+                                        {% endif %}
+                                        <small class="text-muted">{{ ct.timecard_count }}日分</small>
                                     {% endif %}
-                                    <small class="text-muted">{{ ct.timecard_count }}日分</small>
                                 </div>
-                                <a href="{% url 'kintai:client_timesheet_detail' ct.timesheet.pk %}" class="btn btn-sm btn-outline-primary" title="詳細">
-                                    <i class="bi bi-eye"></i>
-                                </a>
+                                {% if ct.is_created %}
+                                    <a href="{% url 'kintai:client_timesheet_detail' ct.timesheet.pk %}" class="btn btn-sm btn-outline-primary" title="詳細">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                {% endif %}
                             </div>
                         {% endfor %}
                     {% else %}
-                        <span class="text-muted">-</span>
+                        <span class="text-muted">（アサインなし）</span>
                     {% endif %}
                 </td>
                 <td class="text-center">
@@ -242,7 +248,8 @@
         <li><strong>打刻データ:</strong> StaffTimerecord の登録件数</li>
         <li><strong>打刻承認:</strong> StaffTimerecordApproval の申請・承認状況</li>
         <li><strong>スタッフ勤怠:</strong> StaffTimesheet + StaffTimecard の作成・承認状況</li>
-        <li><strong>クライアント勤怠:</strong> ClientTimesheet + ClientTimecard の作成・承認状況</li>
+        <li><strong>クライアント勤怠:</strong> ClientTimesheet + ClientTimecard の作成・承認状況（アサインに基づき表示）</li>
+        <li><span class="badge bg-light text-danger border border-danger">未作成</span> : 契約またはアサインがあるが、月次勤怠レコードが未作成の状態</li>
     </ul>
     <h6>処理フロー</h6>
     <ol>
