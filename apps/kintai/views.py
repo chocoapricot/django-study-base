@@ -2333,11 +2333,16 @@ def kintai_status_management(request):
     tenant_id = get_current_tenant_id()
     
     # 指定月に有効なスタッフ契約を取得
+    # APPROVED ('10'), ISSUED ('20'), CONFIRMED ('30') を含める
     contracts = StaffContract.objects.select_related(
         'staff'
     ).filter(
         tenant_id=tenant_id,
-        contract_status=Constants.CONTRACT_STATUS.CONFIRMED,
+        contract_status__in=[
+            Constants.CONTRACT_STATUS.APPROVED,
+            Constants.CONTRACT_STATUS.ISSUED,
+            Constants.CONTRACT_STATUS.CONFIRMED
+        ],
         start_date__lte=month_end
     ).filter(
         Q(end_date__gte=target_date) | Q(end_date__isnull=True)
@@ -2382,20 +2387,40 @@ def kintai_status_management(request):
             staff_timecard_count = staff_timesheet.timecards.count()
         
         # 4. ClientTimesheet の作成状況（契約アサインメント経由）
-        client_timesheets = ClientTimesheet.objects.filter(
-            tenant_id=tenant_id,
-            staff=contract.staff,
-            target_month=target_date
-        ).select_related('client_contract', 'client')
-        
+        from apps.contract.models import ContractAssignment
+        assignments = ContractAssignment.objects.filter(
+            staff_contract=contract,
+            assignment_start_date__lte=month_end
+        ).filter(
+            Q(assignment_end_date__gte=target_date) | Q(assignment_end_date__isnull=True)
+        ).select_related('client_contract', 'client_contract__client')
+
         client_timesheet_list = []
-        for client_timesheet in client_timesheets:
-            client_timecard_count = client_timesheet.timecards.count()
-            client_timesheet_list.append({
-                'timesheet': client_timesheet,
-                'timecard_count': client_timecard_count,
-                'status_display': client_timesheet.get_status_display()
-            })
+        for assignment in assignments:
+            client_timesheet = ClientTimesheet.objects.filter(
+                tenant_id=tenant_id,
+                client_contract=assignment.client_contract,
+                staff=contract.staff,
+                target_month=target_date
+            ).first()
+
+            if client_timesheet:
+                client_timecard_count = client_timesheet.timecards.count()
+                client_timesheet_list.append({
+                    'assignment': assignment,
+                    'timesheet': client_timesheet,
+                    'timecard_count': client_timecard_count,
+                    'status_display': client_timesheet.get_status_display(),
+                    'is_created': True
+                })
+            else:
+                client_timesheet_list.append({
+                    'assignment': assignment,
+                    'timesheet': None,
+                    'timecard_count': 0,
+                    'status_display': '未作成',
+                    'is_created': False
+                })
         
         # 契約期間と対象月の重なる日数を計算
         c_start = contract.start_date
@@ -2412,27 +2437,43 @@ def kintai_status_management(request):
         # 総合ステータスの判定
         overall_status = 'not_started'  # 未着手
         
-        if client_timesheet_list:
-            # クライアント勤怠が作成されている場合
-            if all(ct['timesheet'].status == Constants.KINTAI_STATUS.APPROVED for ct in client_timesheet_list):
-                overall_status = 'completed'  # 完了
+        # 何らかのアクション（打刻、承認、勤怠作成）があるかチェック
+        has_action = (
+            timerecord_count > 0 or
+            approval is not None or
+            staff_timesheet is not None or
+            any(ct['is_created'] for ct in client_timesheet_list)
+        )
+
+        if not has_action:
+            overall_status = 'not_started'
+        else:
+            # 全て承認済みかチェック
+            all_approved = True
+
+            # スタッフ勤怠
+            if not staff_timesheet or staff_timesheet.status != Constants.KINTAI_STATUS.APPROVED:
+                all_approved = False
+
+            # クライアント勤怠（アサインがある場合）
+            if client_timesheet_list:
+                if any(not ct['is_created'] or ct['timesheet'].status != Constants.KINTAI_STATUS.APPROVED for ct in client_timesheet_list):
+                    all_approved = False
+
+            if all_approved:
+                overall_status = 'completed'
             else:
-                overall_status = 'in_progress'  # 進行中
-        elif staff_timesheet:
-            # スタッフ勤怠が作成されている場合
-            if staff_timesheet.status == Constants.KINTAI_STATUS.APPROVED:
-                overall_status = 'staff_approved'  # スタッフ勤怠承認済み
-            else:
-                overall_status = 'in_progress'  # 進行中
-        elif approval:
-            # 打刻承認がある場合
-            if approval.status == Constants.KINTAI_STATUS.APPROVED:
-                overall_status = 'approval_approved'  # 打刻承認済み
-            else:
-                overall_status = 'in_progress'  # 進行中
-        elif timerecord_count > 0:
-            # 打刻データがある場合
-            overall_status = 'timerecord_exists'  # 打刻データあり
+                # 進行中の詳細ステータス
+                if client_timesheet_list and any(ct['is_created'] and ct['timesheet'].status == Constants.KINTAI_STATUS.APPROVED for ct in client_timesheet_list):
+                    overall_status = 'in_progress'
+                elif staff_timesheet and staff_timesheet.status == Constants.KINTAI_STATUS.APPROVED:
+                    overall_status = 'staff_approved'
+                elif approval and approval.status == Constants.KINTAI_STATUS.APPROVED:
+                    overall_status = 'approval_approved'
+                elif timerecord_count > 0:
+                    overall_status = 'timerecord_exists'
+                else:
+                    overall_status = 'in_progress'
         
         contract_status_list.append({
             'contract': contract,
