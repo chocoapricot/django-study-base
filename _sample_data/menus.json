@@ -108,10 +108,10 @@
     "model": "settings.menu",
     "pk": 6,
     "fields": {
-        "version": 1771097277393160,
+        "version": 1771348117845580,
         "created_at": "2025-08-06T12:12:24.013Z",
         "created_by": 1,
-        "updated_at": "2025-08-14T10:18:29.696Z",
+        "updated_at": "2026-02-17T17:24:24.497Z",
         "updated_by": 1,
         "name": "マスタ管理",
         "url": "/master/",
@@ -121,7 +121,7 @@
         "level": 0,
         "exact_match": true,
         "required_permission": "master.view_qualification",
-        "disp_seq": 90,
+        "disp_seq": 95,
         "active": true
     }
 },
@@ -675,10 +675,10 @@
     "model": "settings.menu",
     "pk": 35,
     "fields": {
-        "version": 1771118505594631,
+        "version": 1771348128937091,
         "created_at": "2026-01-10T16:00:00Z",
         "created_by": 1,
-        "updated_at": "2026-02-15T01:37:32.246Z",
+        "updated_at": "2026-02-17T17:24:35.589Z",
         "updated_by": 1,
         "name": "問い合わせ・ご連絡",
         "url": "/staff/inquiry/",
@@ -688,7 +688,7 @@
         "level": 0,
         "exact_match": true,
         "required_permission": "staff.view_staffinquiry",
-        "disp_seq": 89,
+        "disp_seq": 92,
         "active": true
     }
 },
@@ -780,10 +780,10 @@
     "model": "settings.menu",
     "pk": 40,
     "fields": {
-        "version": 1771118568148363,
+        "version": 1771348147393149,
         "created_at": "2026-02-10T12:00:00Z",
         "created_by": 1,
-        "updated_at": "2026-02-15T01:38:34.800Z",
+        "updated_at": "2026-02-17T17:24:54.045Z",
         "updated_by": 1,
         "name": "勤怠打刻承認",
         "url": "/kintai/timerecord/approval/",
@@ -815,6 +815,27 @@
         "exact_match": false,
         "required_permission": "kintai.view_clienttimesheet",
         "disp_seq": 83,
+        "active": true
+    }
+},
+{
+    "model": "settings.menu",
+    "pk": 42,
+    "fields": {
+        "version": 1771348252941179,
+        "created_at": "2026-02-17T17:25:45.839Z",
+        "created_by": 1,
+        "updated_at": "2026-02-17T17:26:39.593Z",
+        "updated_by": 1,
+        "name": "勤怠状況確認",
+        "url": "/kintai/status/management/",
+        "icon": "bi-clock-history",
+        "icon_style": "color:#28a745;",
+        "parent": null,
+        "level": 0,
+        "exact_match": false,
+        "required_permission": "kintai.view_stafftimerecordapproval",
+        "disp_seq": 90,
         "active": true
     }
 }
