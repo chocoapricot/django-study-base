@@ -1,0 +1,253 @@
+{% extends "common/_base.html" %}
+{% load static %}
+
+{% block title %}勤怠登録状況管理{% endblock %}
+
+{% block extra_css %}
+<style>
+    .status-badge {
+        font-size: 0.85rem;
+        padding: 0.25rem 0.5rem;
+    }
+    .overall-status-not_started {
+        background-color: #6c757d;
+        color: white;
+    }
+    .overall-status-timerecord_exists {
+        background-color: #17a2b8;
+        color: white;
+    }
+    .overall-status-in_progress {
+        background-color: #ffc107;
+        color: #212529;
+    }
+    .overall-status-approval_approved {
+        background-color: #28a745;
+        color: white;
+    }
+    .overall-status-staff_approved {
+        background-color: #20c997;
+        color: white;
+    }
+    .overall-status-completed {
+        background-color: #007bff;
+        color: white;
+    }
+    .table-sm td, .table-sm th {
+        padding: 0.3rem;
+        font-size: 0.9rem;
+    }
+    .contract-row {
+        border-bottom: 2px solid #dee2e6;
+    }
+    .detail-row {
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %}
+
+{% block card_header %}
+    <i class="bi bi-clipboard-check me-2"></i>勤怠登録状況管理
+{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form method="get" class="d-flex align-items-center">
+            <label for="target_month" class="me-2 text-nowrap">対象年月:</label>
+            <input type="month" id="target_month" name="target_month" class="form-control form-control-sm me-2" 
+                   value="{{ year }}-{{ month|stringformat:'02d' }}" style="max-width: 200px;">
+            <button type="submit" class="btn btn-primary btn-sm">
+                <i class="bi bi-search me-1"></i>検索
+            </button>
+        </form>
+        <div class="mt-2">
+            <small class="text-muted">
+                <i class="bi bi-info-circle me-1"></i>
+                対象契約数: <strong>{{ contract_status_list|length }}</strong>件
+            </small>
+        </div>
+    </div>
+    <div class="col-md-6 text-end">
+        <span class="badge bg-secondary me-1">未着手 ({{ status_summary.not_started }})</span>
+        <span class="badge bg-info me-1">打刻あり ({{ status_summary.timerecord_exists }})</span>
+        <span class="badge bg-warning text-dark me-1">進行中 ({{ status_summary.in_progress }})</span>
+        <span class="badge bg-success me-1">打刻承認済 ({{ status_summary.approval_approved }})</span>
+        <span class="badge" style="background-color: #20c997;">スタッフ勤怠承認済 ({{ status_summary.staff_approved }})</span>
+        <span class="badge bg-primary ms-1">完了 ({{ status_summary.completed }})</span>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-sm table-hover">
+        <thead class="table-light">
+            <tr>
+                <th style="width: 10%;">スタッフ</th>
+                <th style="width: 15%;">契約先</th>
+                <th style="width: 8%;">契約期間</th>
+                <th style="width: 5%;">対象日数</th>
+                <th style="width: 8%;">打刻データ</th>
+                <th style="width: 10%;">打刻承認</th>
+                <th style="width: 12%;">スタッフ勤怠</th>
+                <th style="width: 17%;">クライアント勤怠</th>
+                <th style="width: 10%;">総合ステータス</th>
+                <th style="width: 5%;">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in contract_status_list %}
+            <tr class="contract-row">
+                <td>
+                    <a href="{% url 'staff:staff_detail' item.contract.staff.pk %}" class="text-decoration-none">
+                        {{ item.contract.staff.employee_no }}<br>
+                        <small>{{ item.contract.staff.full_name }}</small>
+                    </a>
+                </td>
+                <td>
+                    {% if item.contract.client %}
+                        <a href="{% url 'client:client_detail' item.contract.client.pk %}" class="text-decoration-none">
+                            {{ item.contract.client.name|truncatechars:30 }}
+                        </a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    <small>
+                        {{ item.contract.start_date|date:"Y/m/d" }}<br>
+                        ～<br>
+                        {% if item.contract.end_date %}
+                            {{ item.contract.end_date|date:"Y/m/d" }}
+                        {% else %}
+                            期限なし
+                        {% endif %}
+                    </small>
+                </td>
+                <td class="text-center">
+                    <span class="badge bg-secondary">{{ item.required_days }}日</span>
+                </td>
+                <td class="text-center">
+                    {% if item.timerecord_count > 0 %}
+                        <span class="badge bg-info">{{ item.timerecord_count }}件</span>
+                    {% else %}
+                        <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    {% if item.approval %}
+                        {% if item.approval_status == '10' %}
+                            <span class="badge bg-secondary">{{ item.approval_status_display }}</span>
+                        {% elif item.approval_status == '20' %}
+                            <span class="badge bg-warning text-dark">{{ item.approval_status_display }}</span>
+                        {% elif item.approval_status == '30' %}
+                            <span class="badge bg-success">{{ item.approval_status_display }}</span>
+                        {% elif item.approval_status == '40' %}
+                            <span class="badge bg-danger">{{ item.approval_status_display }}</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ item.approval_status_display }}</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if item.staff_timesheet %}
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                {% if item.staff_timesheet_status == '10' %}
+                                    <span class="badge bg-secondary">{{ item.staff_timesheet_status_display }}</span>
+                                {% elif item.staff_timesheet_status == '20' %}
+                                    <span class="badge bg-warning text-dark">{{ item.staff_timesheet_status_display }}</span>
+                                {% elif item.staff_timesheet_status == '30' %}
+                                    <span class="badge bg-success">{{ item.staff_timesheet_status_display }}</span>
+                                {% elif item.staff_timesheet_status == '40' %}
+                                    <span class="badge bg-danger">{{ item.staff_timesheet_status_display }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ item.staff_timesheet_status_display }}</span>
+                                {% endif %}
+                                <br><small class="text-muted">{{ item.staff_timecard_count }}日分</small>
+                            </div>
+                            <a href="{% url 'kintai:timesheet_detail' item.staff_timesheet.pk %}" class="btn btn-sm btn-outline-primary" title="詳細">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </div>
+                    {% else %}
+                        <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if item.client_timesheet_list %}
+                        {% for ct in item.client_timesheet_list %}
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div>
+                                    <small>{{ ct.timesheet.client.name|truncatechars:20 }}</small><br>
+                                    {% if ct.timesheet.status == '10' %}
+                                        <span class="badge bg-secondary status-badge">{{ ct.status_display }}</span>
+                                    {% elif ct.timesheet.status == '20' %}
+                                        <span class="badge bg-warning text-dark status-badge">{{ ct.status_display }}</span>
+                                    {% elif ct.timesheet.status == '30' %}
+                                        <span class="badge bg-success status-badge">{{ ct.status_display }}</span>
+                                    {% elif ct.timesheet.status == '40' %}
+                                        <span class="badge bg-danger status-badge">{{ ct.status_display }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary status-badge">{{ ct.status_display }}</span>
+                                    {% endif %}
+                                    <small class="text-muted">{{ ct.timecard_count }}日分</small>
+                                </div>
+                                <a href="{% url 'kintai:client_timesheet_detail' ct.timesheet.pk %}" class="btn btn-sm btn-outline-primary" title="詳細">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    {% if item.overall_status == 'not_started' %}
+                        <span class="badge overall-status-not_started">未着手</span>
+                    {% elif item.overall_status == 'timerecord_exists' %}
+                        <span class="badge overall-status-timerecord_exists">打刻あり</span>
+                    {% elif item.overall_status == 'in_progress' %}
+                        <span class="badge overall-status-in_progress">進行中</span>
+                    {% elif item.overall_status == 'approval_approved' %}
+                        <span class="badge overall-status-approval_approved">打刻承認済</span>
+                    {% elif item.overall_status == 'staff_approved' %}
+                        <span class="badge overall-status-staff_approved">スタッフ勤怠承認済</span>
+                    {% elif item.overall_status == 'completed' %}
+                        <span class="badge overall-status-completed">完了</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'contract:staff_contract_detail' item.contract.pk %}" class="btn btn-sm btn-outline-secondary" title="契約詳細">
+                        <i class="bi bi-file-text"></i>
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="10" class="text-center text-muted py-4">
+                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                    対象月に有効な契約がありません
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-4">
+    <h5>凡例</h5>
+    <ul class="list-unstyled">
+        <li><strong>打刻データ:</strong> StaffTimerecord の登録件数</li>
+        <li><strong>打刻承認:</strong> StaffTimerecordApproval の申請・承認状況</li>
+        <li><strong>スタッフ勤怠:</strong> StaffTimesheet + StaffTimecard の作成・承認状況</li>
+        <li><strong>クライアント勤怠:</strong> ClientTimesheet + ClientTimecard の作成・承認状況</li>
+    </ul>
+    <h6>処理フロー</h6>
+    <ol>
+        <li><strong>打刻あり:</strong> StaffTimerecord 登録 → 申請 → StaffTimerecordApproval 承認 → StaffTimesheet/Timecard + ClientTimesheet/Timecard 作成</li>
+        <li><strong>打刻なし:</strong> 直接 StaffTimesheet/Timecard + ClientTimesheet/Timecard を登録</li>
+    </ol>
+</div>
+{% endblock %}

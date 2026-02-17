@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.utils import timezone
 from .models import StaffTimesheet, StaffTimecard
 from .models import ClientTimesheet, ClientTimecard
+from .models import StaffTimerecord, StaffTimerecordApproval
 from .forms import StaffTimesheetForm, StaffTimecardForm
 from .forms import ClientTimesheetForm, ClientTimecardForm
 from .utils import is_timerecord_locked
@@ -2302,3 +2303,171 @@ def client_timecard_delete(request, pk):
         'timecard': timecard,
     }
     return render(request, 'kintai/client_timecard_delete.html', context)
+
+
+@login_required
+@permission_required('kintai.view_stafftimesheet', raise_exception=True)
+def kintai_status_management(request):
+    """勤怠登録状況管理画面"""
+    from datetime import date
+    from calendar import monthrange
+    from django.db.models import Q, Count, Max
+    
+    today = timezone.localdate()
+    target_month_str = request.GET.get('target_month')
+    
+    if target_month_str:
+        try:
+            year, month = map(int, target_month_str.split('-'))
+            target_date = date(year, month, 1)
+        except ValueError:
+            year, month = today.year, today.month
+            target_date = date(year, month, 1)
+    else:
+        year, month = today.year, today.month
+        target_date = date(year, month, 1)
+    
+    _, last_day = monthrange(year, month)
+    month_end = date(year, month, last_day)
+    
+    tenant_id = get_current_tenant_id()
+    
+    # 指定月に有効なスタッフ契約を取得
+    contracts = StaffContract.objects.select_related(
+        'staff'
+    ).filter(
+        tenant_id=tenant_id,
+        contract_status=Constants.CONTRACT_STATUS.CONFIRMED,
+        start_date__lte=month_end
+    ).filter(
+        Q(end_date__gte=target_date) | Q(end_date__isnull=True)
+    ).order_by('staff__employee_no', '-start_date')
+    
+    # 各契約の勤怠登録状況を集計
+    contract_status_list = []
+    for contract in contracts:
+        # 1. StaffTimerecord の登録状況
+        timerecords = StaffTimerecord.objects.filter(
+            staff_contract=contract,
+            work_date__year=year,
+            work_date__month=month
+        )
+        timerecord_count = timerecords.count()
+        
+        # 2. StaffTimerecordApproval の申請・承認状況
+        approval = StaffTimerecordApproval.objects.unfiltered().filter(
+            staff_contract=contract,
+            period_start__lte=month_end,
+            period_end__gte=target_date
+        ).first()
+        
+        approval_status = None
+        approval_status_display = '-'
+        if approval:
+            approval_status = approval.status
+            approval_status_display = approval.get_status_display()
+        
+        # 3. StaffTimesheet の作成状況
+        staff_timesheet = StaffTimesheet.objects.filter(
+            staff_contract=contract,
+            target_month=target_date
+        ).first()
+        
+        staff_timesheet_status = None
+        staff_timesheet_status_display = '-'
+        staff_timecard_count = 0
+        if staff_timesheet:
+            staff_timesheet_status = staff_timesheet.status
+            staff_timesheet_status_display = staff_timesheet.get_status_display()
+            staff_timecard_count = staff_timesheet.timecards.count()
+        
+        # 4. ClientTimesheet の作成状況（契約アサインメント経由）
+        client_timesheets = ClientTimesheet.objects.filter(
+            tenant_id=tenant_id,
+            staff=contract.staff,
+            target_month=target_date
+        ).select_related('client_contract', 'client')
+        
+        client_timesheet_list = []
+        for client_timesheet in client_timesheets:
+            client_timecard_count = client_timesheet.timecards.count()
+            client_timesheet_list.append({
+                'timesheet': client_timesheet,
+                'timecard_count': client_timecard_count,
+                'status_display': client_timesheet.get_status_display()
+            })
+        
+        # 契約期間と対象月の重なる日数を計算
+        c_start = contract.start_date
+        c_end = contract.end_date
+        
+        overlap_start = max(target_date, c_start) if c_start else target_date
+        overlap_end = min(month_end, c_end) if c_end else month_end
+        
+        if overlap_start <= overlap_end:
+            required_days = (overlap_end - overlap_start).days + 1
+        else:
+            required_days = 0
+        
+        # 総合ステータスの判定
+        overall_status = 'not_started'  # 未着手
+        
+        if client_timesheet_list:
+            # クライアント勤怠が作成されている場合
+            if all(ct['timesheet'].status == Constants.KINTAI_STATUS.APPROVED for ct in client_timesheet_list):
+                overall_status = 'completed'  # 完了
+            else:
+                overall_status = 'in_progress'  # 進行中
+        elif staff_timesheet:
+            # スタッフ勤怠が作成されている場合
+            if staff_timesheet.status == Constants.KINTAI_STATUS.APPROVED:
+                overall_status = 'staff_approved'  # スタッフ勤怠承認済み
+            else:
+                overall_status = 'in_progress'  # 進行中
+        elif approval:
+            # 打刻承認がある場合
+            if approval.status == Constants.KINTAI_STATUS.APPROVED:
+                overall_status = 'approval_approved'  # 打刻承認済み
+            else:
+                overall_status = 'in_progress'  # 進行中
+        elif timerecord_count > 0:
+            # 打刻データがある場合
+            overall_status = 'timerecord_exists'  # 打刻データあり
+        
+        contract_status_list.append({
+            'contract': contract,
+            'required_days': required_days,
+            'timerecord_count': timerecord_count,
+            'approval': approval,
+            'approval_status': approval_status,
+            'approval_status_display': approval_status_display,
+            'staff_timesheet': staff_timesheet,
+            'staff_timesheet_status': staff_timesheet_status,
+            'staff_timesheet_status_display': staff_timesheet_status_display,
+            'staff_timecard_count': staff_timecard_count,
+            'client_timesheet_list': client_timesheet_list,
+            'overall_status': overall_status,
+        })
+    
+    # ステータスごとの集計
+    status_summary = {
+        'not_started': 0,
+        'timerecord_exists': 0,
+        'in_progress': 0,
+        'approval_approved': 0,
+        'staff_approved': 0,
+        'completed': 0,
+    }
+    for item in contract_status_list:
+        status = item['overall_status']
+        if status in status_summary:
+            status_summary[status] += 1
+    
+    context = {
+        'contract_status_list': contract_status_list,
+        'status_summary': status_summary,
+        'year': year,
+        'month': month,
+        'target_date': target_date,
+    }
+    return render(request, 'kintai/kintai_status_management.html', context)

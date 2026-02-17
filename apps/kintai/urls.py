@@ -76,5 +76,8 @@ urlpatterns = [
     path('client/timecard/<int:pk>/delete/', views.client_timecard_delete, name='client_timecard_delete'),
     path('client/timecard/calendar/initial/<int:assignment_pk>/<str:target_month>/', views.client_timecard_calendar_initial, name='client_timecard_calendar_initial'),
     path('client/timecard/<int:pk>/calendar/', views.client_timecard_calendar, name='client_timecard_calendar'),
+    
+    # 勤怠登録状況管理
+    path('status/management/', views.kintai_status_management, name='kintai_status_management'),
 ]
 
