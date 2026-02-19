@@ -147,8 +147,14 @@ def contract_search(request):
             'required_days': required_days, # デバッグ表示用などに持たせておく
         })
 
+    from django.core.paginator import Paginator
+    paginator = Paginator(contract_list, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        'contract_list': contract_list,
+        'contract_list': page_obj,
+        'page_obj': page_obj,
         'year': year,
         'month': month,
         'target_date': target_date,
@@ -231,8 +237,14 @@ def staff_search(request):
             'input_days': input_days,
         })
 
+    from django.core.paginator import Paginator
+    paginator = Paginator(staff_list, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        'staff_list': staff_list,
+        'staff_list': page_obj,
+        'page_obj': page_obj,
         'year': year,
         'month': month,
         'target_date': target_date,
@@ -1811,8 +1823,14 @@ def client_contract_search(request):
     if staff_to_annotate:
         annotate_staff_connection_info(staff_to_annotate)
 
+    from django.core.paginator import Paginator
+    paginator = Paginator(assignment_list, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        'assignment_list': assignment_list,
+        'assignment_list': page_obj,
+        'page_obj': page_obj,
         'year': year,
         'month': month,
         'target_date': target_date,
@@ -2504,8 +2522,14 @@ def kintai_status_management(request):
         if status in status_summary:
             status_summary[status] += 1
     
+    from django.core.paginator import Paginator
+    paginator = Paginator(contract_status_list, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        'contract_status_list': contract_status_list,
+        'contract_status_list': page_obj,
+        'page_obj': page_obj,
         'status_summary': status_summary,
         'year': year,
         'month': month,

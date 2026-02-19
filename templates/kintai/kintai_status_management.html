@@ -37,7 +37,7 @@
         <span><i class="bi bi-clipboard-check me-2"></i>勤怠登録状況管理</span>
         <div class="text-end">
             <small class="text-muted">
-                対象契約数: <strong>{{ contract_status_list|length }}</strong>件
+                対象契約数: <strong>{{ contract_status_list.paginator.count }}</strong>件
             </small>
         </div>
     </div>
@@ -235,6 +235,8 @@
                 </tbody>
             </table>
         </div>
+
+        {% include 'common/_pagination.html' %}
 
         <div class="mt-4 legend-box shadow-sm">
             <h6 class="border-bottom pb-2 mb-3 fw-bold"><i class="bi bi-info-circle me-2"></i>凡例と処理フロー</h6>
