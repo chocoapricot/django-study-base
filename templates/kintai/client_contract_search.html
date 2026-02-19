@@ -119,6 +119,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% include 'common/_pagination.html' %}
         {% else %}
             <p class="text-muted">対象の契約が見つかりませんでした。</p>
         {% endif %}
